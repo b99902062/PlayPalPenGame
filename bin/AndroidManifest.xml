@@ -17,12 +17,18 @@
             android:name="com.example.playpalpengame.BeginActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
-            android:theme="@style/FullscreenTheme" >
+            android:theme="@style/FullscreenTheme" 
+            android:screenOrientation="landscape" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity 
+            android:name="com.example.playpalpengame.MainActivity"
+            android:theme="@style/FullscreenTheme" 
+            android:screenOrientation="landscape" >
         </activity>
     </application>
 

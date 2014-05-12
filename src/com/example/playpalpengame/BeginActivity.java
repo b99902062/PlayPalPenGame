@@ -1,14 +1,19 @@
 package com.example.playpalpengame;
 
-import com.example.playpalpengame.util.SystemUiHider;
-
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
+
+import com.example.playpalpengame.util.SystemUiHider;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -17,6 +22,7 @@ import android.view.View;
  * @see SystemUiHider
  */
 public class BeginActivity extends Activity {
+	
 	/**
 	 * Whether or not the system UI should be auto-hidden after
 	 * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -103,19 +109,20 @@ public class BeginActivity extends Activity {
 		contentView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				if (TOGGLE_ON_CLICK) {
-					mSystemUiHider.toggle();
-				} else {
-					mSystemUiHider.show();
-				}
+				
+				
+				
+				Intent newAct = new Intent();
+	            newAct.setClass( BeginActivity.this, MainActivity.class );
+	            startActivityForResult(newAct ,0);
+	            //BeginActivity.this.finish();
 			}
 		});
 
 		// Upon interacting with UI controls, delay any scheduled hide()
 		// operations to prevent the jarring behavior of controls going away
 		// while interacting with the UI.
-		findViewById(R.id.dummy_button).setOnTouchListener(
-				mDelayHideTouchListener);
+		
 	}
 
 	@Override
@@ -136,9 +143,6 @@ public class BeginActivity extends Activity {
 	View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
 		@Override
 		public boolean onTouch(View view, MotionEvent motionEvent) {
-			if (AUTO_HIDE) {
-				delayedHide(AUTO_HIDE_DELAY_MILLIS);
-			}
 			return false;
 		}
 	};
