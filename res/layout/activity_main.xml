@@ -18,7 +18,8 @@
     <HorizontalScrollView
         android:id="@+id/mainHorizontalScrollView"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:scrollbars="none" >
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -33,7 +34,7 @@
                     android:id="@+id/mainPracticeBtn1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="160dp"
+                    android:layout_marginTop="185dp"
                     android:src="@drawable/main_practice" />
 
                 <ImageView
@@ -41,14 +42,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="250dp"
-                    android:layout_marginTop="160dp"
+                    android:layout_marginTop="185dp"
                     android:src="@drawable/main_play" />
 
                 <ImageView
                     android:id="@+id/mainStall1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="225dp"
+                    android:layout_marginTop="275dp"
                     android:src="@drawable/main_stall_1" />
 
                 <ImageView
@@ -56,14 +57,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="150dp"
-                    android:layout_marginTop="275dp"
+                    android:layout_marginTop="325dp"
                     android:src="@drawable/main_monster_1" />
 
                 <ImageView
                     android:id="@+id/mainBadges1_1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="575dp"
+                    android:layout_marginTop="590dp"
                     android:src="@drawable/main_badges_1" />
 
                 <ImageView
@@ -73,7 +74,7 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentTop="true"
                     android:layout_marginLeft="60dp"
-                    android:layout_marginTop="575dp"
+                    android:layout_marginTop="590dp"
                     android:src="@drawable/main_badges_2" />
 
                 <ImageView
@@ -83,7 +84,7 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentTop="true"
                     android:layout_marginLeft="120dp"
-                    android:layout_marginTop="575dp"
+                    android:layout_marginTop="590dp"
                     android:src="@drawable/main_badges_3" />
 
                 <ImageView
@@ -93,7 +94,7 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentTop="true"
                     android:layout_marginLeft="180dp"
-                    android:layout_marginTop="575dp"
+                    android:layout_marginTop="590dp"
                     android:src="@drawable/main_badges_4" />
 
                 <ImageView
@@ -103,7 +104,7 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentTop="true"
                     android:layout_marginLeft="240dp"
-                    android:layout_marginTop="575dp"
+                    android:layout_marginTop="590dp"
                     android:src="@drawable/main_badges_5" />
 
                 <ImageView
@@ -113,7 +114,7 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentTop="true"
                     android:layout_marginLeft="300dp"
-                    android:layout_marginTop="575dp"
+                    android:layout_marginTop="590dp"
                     android:src="@drawable/main_badges_6" />
 
             </RelativeLayout>
@@ -127,7 +128,7 @@
                     android:id="@+id/mainPracticeBtn2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="160dp"
+                    android:layout_marginTop="185dp"
                     android:src="@drawable/main_practice" />
 
                 <ImageView
@@ -135,7 +136,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="250dp"
-                    android:layout_marginTop="160dp"
+                    android:layout_marginTop="185dp"
                     android:src="@drawable/main_play" />
 
                 <ImageView
@@ -143,7 +144,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
-                    android:layout_marginTop="225dp"
+                    android:layout_marginTop="275dp"
                     android:src="@drawable/main_stall_2" />
 
                 <ImageView
@@ -152,7 +153,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_marginLeft="150dp"
-                    android:layout_marginTop="275dp"
+                    android:layout_marginTop="325dp"
                     android:src="@drawable/main_monster_2" />
 
                 <ImageView
@@ -160,7 +161,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
-                    android:layout_marginTop="575dp"
+                    android:layout_marginTop="590dp"
                     android:src="@drawable/main_badges_1" />
 
                 <ImageView
@@ -169,7 +170,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_marginLeft="60dp"
-                    android:layout_marginTop="575dp"
+                    android:layout_marginTop="590dp"
                     android:src="@drawable/main_badges_2" />
 
                 <ImageView
@@ -178,7 +179,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_marginLeft="120dp"
-                    android:layout_marginTop="575dp"
+                    android:layout_marginTop="590dp"
                     android:src="@drawable/main_badges_3" />
 
                 <ImageView
@@ -187,7 +188,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_marginLeft="180dp"
-                    android:layout_marginTop="575dp"
+                    android:layout_marginTop="590dp"
                     android:src="@drawable/main_badges_4" />
 
                 <ImageView
@@ -196,7 +197,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_marginLeft="240dp"
-                    android:layout_marginTop="575dp"
+                    android:layout_marginTop="590dp"
                     android:src="@drawable/main_badges_5" />
 
                 <ImageView
@@ -205,20 +206,198 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_marginLeft="300dp"
-                    android:layout_marginTop="575dp"
+                    android:layout_marginTop="590dp"
                     android:src="@drawable/main_badges_6" />
 
             </RelativeLayout>
 
             <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent" >
+                android:layout_height="match_parent"
+                android:layout_marginLeft="100dp" >
+
+                <ImageView
+                    android:id="@+id/mainPracticeBtn3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginTop="185dp"
+                    android:src="@drawable/main_practice" />
+
+                <ImageView
+                    android:id="@+id/mainPlayBtn3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="250dp"
+                    android:layout_marginTop="185dp"
+                    android:src="@drawable/main_play" />
+
+                <ImageView
+                    android:id="@+id/mainStall3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginTop="275dp"
+                    android:src="@drawable/main_stall_3" />
+
+                <ImageView
+                    android:id="@+id/mainMonster3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="150dp"
+                    android:layout_marginTop="325dp"
+                    android:src="@drawable/main_monster_3" />
+
+                <ImageView
+                    android:id="@+id/mainBadges3_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginTop="590dp"
+                    android:src="@drawable/main_badges_1" />
+
+                <ImageView
+                    android:id="@+id/mainBadges3_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="60dp"
+                    android:layout_marginTop="590dp"
+                    android:src="@drawable/main_badges_2" />
+
+                <ImageView
+                    android:id="@+id/mainBadges3_3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="120dp"
+                    android:layout_marginTop="590dp"
+                    android:src="@drawable/main_badges_3" />
+
+                <ImageView
+                    android:id="@+id/mainBadges3_4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="180dp"
+                    android:layout_marginTop="590dp"
+                    android:src="@drawable/main_badges_4" />
+
+                <ImageView
+                    android:id="@+id/mainBadges3_5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="240dp"
+                    android:layout_marginTop="590dp"
+                    android:src="@drawable/main_badges_5" />
+
+                <ImageView
+                    android:id="@+id/mainBadges3_6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="300dp"
+                    android:layout_marginTop="590dp"
+                    android:src="@drawable/main_badges_6" />
 
             </RelativeLayout>
 
             <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent" >
+                android:layout_height="match_parent"
+                android:layout_marginLeft="100dp"
+                android:layout_marginRight="50dp" >
+
+                <ImageView
+                    android:id="@+id/mainPracticeBtn4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginTop="185dp"
+                    android:src="@drawable/main_practice" />
+
+                <ImageView
+                    android:id="@+id/mainPlayBtn4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="250dp"
+                    android:layout_marginTop="185dp"
+                    android:src="@drawable/main_play" />
+
+                <ImageView
+                    android:id="@+id/mainStall4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginTop="275dp"
+                    android:src="@drawable/main_stall_4" />
+
+                <ImageView
+                    android:id="@+id/mainMonster4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="150dp"
+                    android:layout_marginTop="325dp"
+                    android:src="@drawable/main_monster_4" />
+
+                <ImageView
+                    android:id="@+id/mainBadges4_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginTop="590dp"
+                    android:src="@drawable/main_badges_1" />
+
+                <ImageView
+                    android:id="@+id/mainBadges4_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="60dp"
+                    android:layout_marginTop="590dp"
+                    android:src="@drawable/main_badges_2" />
+
+                <ImageView
+                    android:id="@+id/mainBadges4_3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="120dp"
+                    android:layout_marginTop="590dp"
+                    android:src="@drawable/main_badges_3" />
+
+                <ImageView
+                    android:id="@+id/mainBadges4_4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="180dp"
+                    android:layout_marginTop="590dp"
+                    android:src="@drawable/main_badges_4" />
+
+                <ImageView
+                    android:id="@+id/mainBadges4_5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="240dp"
+                    android:layout_marginTop="590dp"
+                    android:src="@drawable/main_badges_5" />
+
+                <ImageView
+                    android:id="@+id/mainBadges4_6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="300dp"
+                    android:layout_marginTop="590dp"
+                    android:src="@drawable/main_badges_6" />
+
             </RelativeLayout>
 
         </LinearLayout>

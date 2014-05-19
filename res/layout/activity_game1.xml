@@ -1,0 +1,99 @@
+<FrameLayout xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    tools:context=".BeginActivity" xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+         The primary full-screen view. This can be replaced with whatever view
+         is needed to present your content, e.g. VideoView, SurfaceView,
+         TextureView, etc.
+    -->
+
+    <!--
+         This FrameLayout insets its children based on system windows using
+         android:fitsSystemWindows.
+    -->
+	    
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <ImageView
+            android:id="@+id/homeBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="25dp"
+            android:layout_marginTop="25dp"
+            android:src="@drawable/home" />
+
+        <ImageView
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="350dp"
+            android:layout_marginTop="40dp"
+            android:src="@drawable/progress" />
+
+        <ImageView
+            android:id="@+id/boardView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="190dp"
+            android:layout_marginTop="190dp"
+            android:src="@drawable/game1_board" />
+
+        <ImageView
+            android:id="@+id/carrotView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="190dp"
+            android:layout_marginTop="290dp"
+            android:src="@drawable/game1_carrot_1" />
+
+        <ImageView
+            android:id="@+id/cucumberView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="190dp"
+            android:layout_marginTop="290dp"
+            android:src="@drawable/game1_cucumber_1"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/potView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="390dp"
+            android:layout_marginTop="190dp"
+            android:src="@drawable/game1_pot_1"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/boardView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="190dp"
+            android:src="@drawable/game1_board_2"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/fireView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="340dp"
+            android:layout_marginTop="140dp"
+            android:src="@drawable/game1_fire_1"
+            android:visibility="invisible" />
+
+    </RelativeLayout>
+
+</FrameLayout>

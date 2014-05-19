@@ -109,9 +109,6 @@ public class BeginActivity extends Activity {
 		contentView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				
-				
-				
 				Intent newAct = new Intent();
 	            newAct.setClass( BeginActivity.this, MainActivity.class );
 	            startActivityForResult(newAct ,0);
