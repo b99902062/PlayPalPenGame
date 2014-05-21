@@ -8,6 +8,11 @@
 package com.example.playpalpengame;
 
 public final class R {
+    public static final class anim {
+        public static final int pot_drop_animation=0x7f040000;
+        public static final int pot_fire_animation=0x7f040001;
+        public static final int pot_stir_animation=0x7f040002;
+    }
     public static final class attr {
         /** 
         When set to alignMargins, causes alignment to take place between the outer
@@ -219,12 +224,12 @@ containing a value of this type.
         public static final int useDefaultMargins=0x7f010003;
     }
     public static final class color {
-        public static final int black_overlay=0x7f060000;
+        public static final int black_overlay=0x7f070000;
     }
     public static final class dimen {
         /**  The default gap between components in a layout. 
          */
-        public static final int default_gap=0x7f050000;
+        public static final int default_gap=0x7f060000;
     }
     public static final class drawable {
         public static final int game1_board=0x7f020000;
@@ -249,107 +254,126 @@ containing a value of this type.
         public static final int game1_ladle=0x7f020013;
         public static final int game1_pot_1=0x7f020014;
         public static final int game1_pot_2=0x7f020015;
-        public static final int home=0x7f020016;
-        public static final int ic_launcher=0x7f020017;
-        public static final int main_badges_1=0x7f020018;
-        public static final int main_badges_2=0x7f020019;
-        public static final int main_badges_3=0x7f02001a;
-        public static final int main_badges_4=0x7f02001b;
-        public static final int main_badges_5=0x7f02001c;
-        public static final int main_badges_6=0x7f02001d;
-        public static final int main_monster_1=0x7f02001e;
-        public static final int main_monster_2=0x7f02001f;
-        public static final int main_monster_3=0x7f020020;
-        public static final int main_monster_4=0x7f020021;
-        public static final int main_play=0x7f020022;
-        public static final int main_practice=0x7f020023;
-        public static final int main_stall_1=0x7f020024;
-        public static final int main_stall_2=0x7f020025;
-        public static final int main_stall_3=0x7f020026;
-        public static final int main_stall_4=0x7f020027;
-        public static final int progress=0x7f020028;
+        public static final int game1_pot_3=0x7f020016;
+        public static final int game1_pot_4=0x7f020017;
+        public static final int game1_pot_5=0x7f020018;
+        public static final int game1_pot_6=0x7f020019;
+        public static final int game2_basket_1=0x7f02001a;
+        public static final int game2_basket_2=0x7f02001b;
+        public static final int game2_fish=0x7f02001c;
+        public static final int game2_fish_1=0x7f02001d;
+        public static final int game2_fish_2=0x7f02001e;
+        public static final int game2_grill=0x7f02001f;
+        public static final int game2_net=0x7f020020;
+        public static final int home=0x7f020021;
+        public static final int ic_launcher=0x7f020022;
+        public static final int main_badges_1=0x7f020023;
+        public static final int main_badges_2=0x7f020024;
+        public static final int main_badges_3=0x7f020025;
+        public static final int main_badges_4=0x7f020026;
+        public static final int main_badges_5=0x7f020027;
+        public static final int main_badges_6=0x7f020028;
+        public static final int main_monster_1=0x7f020029;
+        public static final int main_monster_2=0x7f02002a;
+        public static final int main_monster_3=0x7f02002b;
+        public static final int main_monster_4=0x7f02002c;
+        public static final int main_play=0x7f02002d;
+        public static final int main_practice=0x7f02002e;
+        public static final int main_stall_1=0x7f02002f;
+        public static final int main_stall_2=0x7f020030;
+        public static final int main_stall_3=0x7f020031;
+        public static final int main_stall_4=0x7f020032;
+        public static final int progress=0x7f020033;
     }
     public static final class id {
-        public static final int alignBounds=0x7f040002;
-        public static final int alignMargins=0x7f040003;
-        public static final int boardView=0x7f040016;
-        public static final int boardView2=0x7f04001a;
-        public static final int bottom=0x7f040005;
-        public static final int carrotView=0x7f040017;
-        public static final int center=0x7f04000c;
-        public static final int center_horizontal=0x7f04000a;
-        public static final int center_vertical=0x7f040008;
-        public static final int clip_horizontal=0x7f04000f;
-        public static final int clip_vertical=0x7f04000e;
-        public static final int cucumberView=0x7f040018;
-        public static final int end=0x7f040011;
-        public static final int fill=0x7f04000d;
-        public static final int fill_horizontal=0x7f04000b;
-        public static final int fill_vertical=0x7f040009;
-        public static final int fireView=0x7f04001b;
-        public static final int fullscreen_content=0x7f040012;
-        public static final int fullscreen_content_controls=0x7f040013;
-        public static final int homeBtn=0x7f040014;
-        public static final int horizontal=0x7f040000;
-        public static final int left=0x7f040006;
-        public static final int mainBadges1_1=0x7f040021;
-        public static final int mainBadges1_2=0x7f040022;
-        public static final int mainBadges1_3=0x7f040023;
-        public static final int mainBadges1_4=0x7f040024;
-        public static final int mainBadges1_5=0x7f040025;
-        public static final int mainBadges1_6=0x7f040026;
-        public static final int mainBadges2_1=0x7f04002b;
-        public static final int mainBadges2_2=0x7f04002c;
-        public static final int mainBadges2_3=0x7f04002d;
-        public static final int mainBadges2_4=0x7f04002e;
-        public static final int mainBadges2_5=0x7f04002f;
-        public static final int mainBadges2_6=0x7f040030;
-        public static final int mainBadges3_1=0x7f040035;
-        public static final int mainBadges3_2=0x7f040036;
-        public static final int mainBadges3_3=0x7f040037;
-        public static final int mainBadges3_4=0x7f040038;
-        public static final int mainBadges3_5=0x7f040039;
-        public static final int mainBadges3_6=0x7f04003a;
-        public static final int mainBadges4_1=0x7f04003f;
-        public static final int mainBadges4_2=0x7f040040;
-        public static final int mainBadges4_3=0x7f040041;
-        public static final int mainBadges4_4=0x7f040042;
-        public static final int mainBadges4_5=0x7f040043;
-        public static final int mainBadges4_6=0x7f040044;
-        public static final int mainHorizontalScrollView=0x7f04001c;
-        public static final int mainMonster1=0x7f040020;
-        public static final int mainMonster2=0x7f04002a;
-        public static final int mainMonster3=0x7f040034;
-        public static final int mainMonster4=0x7f04003e;
-        public static final int mainPlayBtn1=0x7f04001e;
-        public static final int mainPlayBtn2=0x7f040028;
-        public static final int mainPlayBtn3=0x7f040032;
-        public static final int mainPlayBtn4=0x7f04003c;
-        public static final int mainPracticeBtn1=0x7f04001d;
-        public static final int mainPracticeBtn2=0x7f040027;
-        public static final int mainPracticeBtn3=0x7f040031;
-        public static final int mainPracticeBtn4=0x7f04003b;
-        public static final int mainStall1=0x7f04001f;
-        public static final int mainStall2=0x7f040029;
-        public static final int mainStall3=0x7f040033;
-        public static final int mainStall4=0x7f04003d;
-        public static final int potView=0x7f040019;
-        public static final int progressBar=0x7f040015;
-        public static final int right=0x7f040007;
-        public static final int start=0x7f040010;
-        public static final int top=0x7f040004;
-        public static final int vertical=0x7f040001;
+        public static final int alignBounds=0x7f050002;
+        public static final int alignMargins=0x7f050003;
+        public static final int basketView=0x7f05001d;
+        public static final int board2FrameLayout=0x7f05001b;
+        public static final int boardView=0x7f050016;
+        public static final int boardView2=0x7f05001c;
+        public static final int bottom=0x7f050005;
+        public static final int carrotView=0x7f050017;
+        public static final int center=0x7f05000c;
+        public static final int center_horizontal=0x7f05000a;
+        public static final int center_vertical=0x7f050008;
+        public static final int clip_horizontal=0x7f05000f;
+        public static final int clip_vertical=0x7f05000e;
+        public static final int cucumberView=0x7f050018;
+        public static final int end=0x7f050011;
+        public static final int fill=0x7f05000d;
+        public static final int fill_horizontal=0x7f05000b;
+        public static final int fill_vertical=0x7f050009;
+        public static final int fireView=0x7f050019;
+        public static final int fishView1=0x7f05001f;
+        public static final int fishView2=0x7f050020;
+        public static final int fishView3=0x7f050021;
+        public static final int fishView4=0x7f050022;
+        public static final int fullscreen_content=0x7f050012;
+        public static final int fullscreen_content_controls=0x7f050013;
+        public static final int grillView=0x7f05001e;
+        public static final int homeBtn=0x7f050014;
+        public static final int horizontal=0x7f050000;
+        public static final int left=0x7f050006;
+        public static final int mainBadges1_1=0x7f050028;
+        public static final int mainBadges1_2=0x7f050029;
+        public static final int mainBadges1_3=0x7f05002a;
+        public static final int mainBadges1_4=0x7f05002b;
+        public static final int mainBadges1_5=0x7f05002c;
+        public static final int mainBadges1_6=0x7f05002d;
+        public static final int mainBadges2_1=0x7f050032;
+        public static final int mainBadges2_2=0x7f050033;
+        public static final int mainBadges2_3=0x7f050034;
+        public static final int mainBadges2_4=0x7f050035;
+        public static final int mainBadges2_5=0x7f050036;
+        public static final int mainBadges2_6=0x7f050037;
+        public static final int mainBadges3_1=0x7f05003c;
+        public static final int mainBadges3_2=0x7f05003d;
+        public static final int mainBadges3_3=0x7f05003e;
+        public static final int mainBadges3_4=0x7f05003f;
+        public static final int mainBadges3_5=0x7f050040;
+        public static final int mainBadges3_6=0x7f050041;
+        public static final int mainBadges4_1=0x7f050046;
+        public static final int mainBadges4_2=0x7f050047;
+        public static final int mainBadges4_3=0x7f050048;
+        public static final int mainBadges4_4=0x7f050049;
+        public static final int mainBadges4_5=0x7f05004a;
+        public static final int mainBadges4_6=0x7f05004b;
+        public static final int mainHorizontalScrollView=0x7f050023;
+        public static final int mainMonster1=0x7f050027;
+        public static final int mainMonster2=0x7f050031;
+        public static final int mainMonster3=0x7f05003b;
+        public static final int mainMonster4=0x7f050045;
+        public static final int mainPlayBtn1=0x7f050025;
+        public static final int mainPlayBtn2=0x7f05002f;
+        public static final int mainPlayBtn3=0x7f050039;
+        public static final int mainPlayBtn4=0x7f050043;
+        public static final int mainPracticeBtn1=0x7f050024;
+        public static final int mainPracticeBtn2=0x7f05002e;
+        public static final int mainPracticeBtn3=0x7f050038;
+        public static final int mainPracticeBtn4=0x7f050042;
+        public static final int mainStall1=0x7f050026;
+        public static final int mainStall2=0x7f050030;
+        public static final int mainStall3=0x7f05003a;
+        public static final int mainStall4=0x7f050044;
+        public static final int potView=0x7f05001a;
+        public static final int progressBar=0x7f050015;
+        public static final int right=0x7f050007;
+        public static final int start=0x7f050010;
+        public static final int top=0x7f050004;
+        public static final int vertical=0x7f050001;
     }
     public static final class layout {
         public static final int activity_begin=0x7f030000;
         public static final int activity_game1=0x7f030001;
-        public static final int activity_loading=0x7f030002;
-        public static final int activity_main=0x7f030003;
+        public static final int activity_game2=0x7f030002;
+        public static final int activity_loading=0x7f030003;
+        public static final int activity_main=0x7f030004;
     }
     public static final class string {
-        public static final int app_name=0x7f070000;
-        public static final int dummy_button=0x7f070001;
-        public static final int dummy_content=0x7f070002;
+        public static final int app_name=0x7f080000;
+        public static final int dummy_button=0x7f080001;
+        public static final int dummy_content=0x7f080002;
     }
     public static final class style {
         /** 
@@ -376,15 +400,15 @@ containing a value of this type.
     
  API 14 theme customizations can go here. 
          */
-        public static final int AppBaseTheme=0x7f080000;
+        public static final int AppBaseTheme=0x7f090000;
         /**  Application theme. 
  All customizations that are NOT specific to a particular API-level can go here. 
          */
-        public static final int AppTheme=0x7f080001;
-        public static final int ButtonBar=0x7f080003;
-        public static final int ButtonBarButton=0x7f080004;
-        public static final int FullscreenActionBarStyle=0x7f080005;
-        public static final int FullscreenTheme=0x7f080002;
+        public static final int AppTheme=0x7f090001;
+        public static final int ButtonBar=0x7f090003;
+        public static final int ButtonBarButton=0x7f090004;
+        public static final int FullscreenActionBarStyle=0x7f090005;
+        public static final int FullscreenTheme=0x7f090002;
     }
     public static final class styleable {
         /** 
