@@ -38,5 +38,15 @@
             android:theme="@style/FullscreenTheme" 
             android:screenOrientation="landscape" >
         </activity>
+        <activity 
+            android:name="com.example.playpalpengame.Game1Activity"
+            android:theme="@style/FullscreenTheme" 
+            android:screenOrientation="landscape" >
+        </activity>
+        <activity 
+            android:name="com.example.playpalpengame.Game2Activity"
+            android:theme="@style/FullscreenTheme" 
+            android:screenOrientation="landscape" >
+        </activity>
     </application> 
 </manifest>

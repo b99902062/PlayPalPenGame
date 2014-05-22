@@ -13,27 +13,28 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		View playBtn1 = findViewById(R.id.mainStall1);
-		setStallListener(playBtn1, R.id.mainStall1);	
-		View playBtn2 = findViewById(R.id.mainStall2);
-		setStallListener(playBtn2, R.id.mainStall2);
-		View playBtn3 = findViewById(R.id.mainStall3);
-		setStallListener(playBtn3, R.id.mainStall3);
-		View playBtn4 = findViewById(R.id.mainStall4);
-		setStallListener(playBtn4, R.id.mainStall4);
+		View playBtn1 = findViewById(R.id.mainPlayBtn1);
+		setStallListener(playBtn1, 1);	
+		View playBtn2 = findViewById(R.id.mainPlayBtn2);
+		setStallListener(playBtn2, 2);
+		View playBtn3 = findViewById(R.id.mainPlayBtn3);
+		setStallListener(playBtn3, 3);
+		View playBtn4 = findViewById(R.id.mainPlayBtn4);
+		setStallListener(playBtn4, 4);
 		
 	}
 	
-	protected void setStallListener(View targetView, final int resId) {
+	protected void setStallListener(View targetView, final int gameIndex) {
 		targetView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				Intent newAct = new Intent();
 				newAct.setClass( MainActivity.this, LoadingActivity.class );
 				Bundle bundle = new Bundle();
-				bundle.putInt("stallResId", resId);
+				bundle.putInt("GameIndex", gameIndex);
 	            newAct.putExtras(bundle);
 	            startActivityForResult(newAct ,0);
+	            MainActivity.this.finish();
 			}
 		});		
 	}

@@ -82,20 +82,29 @@
             android:src="@drawable/game1_pot_1"
             android:visibility="invisible" />
 
-        <FrameLayout
-            android:id="@+id/board2FrameLayout"
+        <RelativeLayout
+            android:id="@+id/board2RelativeLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="190dp" >
+            android:layout_marginTop="190dp"
+            android:visibility="invisible" >
 
             <ImageView
                 android:id="@+id/boardView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/game1_board_2"
-                android:visibility="invisible" />
+                android:visibility="visible" />
 
-        </FrameLayout>
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/testProgressCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/boardView"
+            android:layout_marginLeft="89dp"
+            android:text="TextView" />
 
     </RelativeLayout>
 

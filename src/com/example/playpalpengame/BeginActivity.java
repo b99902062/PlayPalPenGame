@@ -22,7 +22,7 @@ import com.example.playpalpengame.util.SystemUiHider;
  * @see SystemUiHider
  */
 public class BeginActivity extends Activity {
-	
+
 	/**
 	 * Whether or not the system UI should be auto-hidden after
 	 * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -110,16 +110,16 @@ public class BeginActivity extends Activity {
 			@Override
 			public void onClick(View view) {
 				Intent newAct = new Intent();
-	            newAct.setClass( BeginActivity.this, MainActivity.class );
-	            startActivityForResult(newAct ,0);
-	            //BeginActivity.this.finish();
+				newAct.setClass(BeginActivity.this, MainActivity.class);
+				startActivityForResult(newAct, 0);
+				BeginActivity.this.finish();
 			}
 		});
 
 		// Upon interacting with UI controls, delay any scheduled hide()
 		// operations to prevent the jarring behavior of controls going away
 		// while interacting with the UI.
-		
+
 	}
 
 	@Override
