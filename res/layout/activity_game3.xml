@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF" >
+
+    <RelativeLayout
+        android:id="@+id/Game3RelativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <ImageView
+            android:id="@+id/homeBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="25dp"
+            android:layout_marginTop="25dp"
+            android:src="@drawable/home" />
+
+        <ImageView
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="380dp"
+            android:layout_marginTop="40dp"
+            android:src="@drawable/progress" />
+
+        <ImageView
+            android:id="@+id/Game3_mix"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="190dp"
+            android:src="@drawable/game3_mix1" />
+
+    </RelativeLayout>
+
+</FrameLayout>

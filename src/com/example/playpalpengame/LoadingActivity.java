@@ -53,11 +53,9 @@ public class LoadingActivity extends Activity {
 	    	else if(gameIndex == 2)
 	    		newAct.setClass( LoadingActivity.this, Game2Activity.class );
 	    	else if(gameIndex == 3)
-	    		;
-	    		//newAct.setClass( LoadingActivity.this, Game3Activity.class );
+	    		newAct.setClass( LoadingActivity.this, Game3Activity.class );
 	    	else if(gameIndex == 4)
-	    		;
-	    		//newAct.setClass( LoadingActivity.this, Game4Activity.class );
+	    		newAct.setClass( LoadingActivity.this, Game4Activity.class );
 	    	else
 	    		return;
             startActivityForResult(newAct ,0);

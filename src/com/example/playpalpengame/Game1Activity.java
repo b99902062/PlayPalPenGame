@@ -293,7 +293,7 @@ public class Game1Activity extends Activity {
 		});
 	}
 
-	protected TranslateAnimation CreateTranslateAnimation(int translateType) {
+	protected static TranslateAnimation CreateTranslateAnimation(int translateType) {
 		TranslateAnimation newAnim;
 
 		if (translateType == Game1Activity.FROM_OUTLEFT_TO_CUR)

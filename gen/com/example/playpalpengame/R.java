@@ -14,222 +14,17 @@ public final class R {
         public static final int pot_stir_animation=0x7f040002;
     }
     public static final class attr {
-        /** 
-        When set to alignMargins, causes alignment to take place between the outer
-        boundary of a view, as defined by its margins. When set to alignBounds,
-        causes alignment to take place between the edges of the view.
-        The default is alignMargins.
-        See {@link android.widget.GridLayout#setAlignmentMode(int)}.
-        
-         <p>Must be one of the following constant values.</p>
-<table>
-<colgroup align="left" />
-<colgroup align="left" />
-<colgroup align="left" />
-<tr><th>Constant</th><th>Value</th><th>Description</th></tr>
-<tr><td><code>alignBounds</code></td><td>0</td><td>
-            Align the bounds of the children.
-            See {@link android.widget.GridLayout#ALIGN_BOUNDS}.
-            </td></tr>
-<tr><td><code>alignMargins</code></td><td>1</td><td>
-            Align the margins of the children.
-            See {@link android.widget.GridLayout#ALIGN_MARGINS}.
-            </td></tr>
-</table>
-         */
-        public static final int alignmentMode=0x7f010004;
         /** <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
          */
-        public static final int buttonBarButtonStyle=0x7f01000d;
+        public static final int buttonBarButtonStyle=0x7f010001;
         /** <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
          */
-        public static final int buttonBarStyle=0x7f01000c;
-        /**  The maximum number of columns to create when automatically positioning children. 
-         <p>Must be an integer value, such as "<code>100</code>".
-<p>This may also be a reference to a resource (in the form
-"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
-theme attribute (in the form
-"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
-containing a value of this type.
-         */
-        public static final int columnCount=0x7f010002;
-        /** 
-        When set to true, forces column boundaries to appear in the same order
-        as column indices.
-        The default is true.
-        See {@link android.widget.GridLayout#setColumnOrderPreserved(boolean)}.
-        
-         <p>Must be a boolean value, either "<code>true</code>" or "<code>false</code>".
-<p>This may also be a reference to a resource (in the form
-"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
-theme attribute (in the form
-"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
-containing a value of this type.
-         */
-        public static final int columnOrderPreserved=0x7f010006;
-        /** 
-        The column boundary delimiting the left of the group of cells
-        occupied by this view.
-        
-         <p>Must be an integer value, such as "<code>100</code>".
-<p>This may also be a reference to a resource (in the form
-"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
-theme attribute (in the form
-"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
-containing a value of this type.
-         */
-        public static final int layout_column=0x7f010009;
-        /** 
-        The column span: the difference between the right and left
-        boundaries delimiting the group of cells occupied by this view.
-        The default is one.
-        See {@link android.widget.GridLayout.Spec}.
-        
-         <p>Must be an integer value, such as "<code>100</code>".
-<p>This may also be a reference to a resource (in the form
-"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
-theme attribute (in the form
-"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
-containing a value of this type.
-         */
-        public static final int layout_columnSpan=0x7f01000a;
-        /** 
-        Gravity specifies how a component should be placed in its group of cells.
-        The default is LEFT | BASELINE.
-        See {@link android.widget.GridLayout.LayoutParams#setGravity(int)}.
-        
-         <p>Must be one or more (separated by '|') of the following constant values.</p>
-<table>
-<colgroup align="left" />
-<colgroup align="left" />
-<colgroup align="left" />
-<tr><th>Constant</th><th>Value</th><th>Description</th></tr>
-<tr><td><code>top</code></td><td>0x30</td><td> Push object to the top of its container, not changing its size. </td></tr>
-<tr><td><code>bottom</code></td><td>0x50</td><td> Push object to the bottom of its container, not changing its size. </td></tr>
-<tr><td><code>left</code></td><td>0x03</td><td> Push object to the left of its container, not changing its size. </td></tr>
-<tr><td><code>right</code></td><td>0x05</td><td> Push object to the right of its container, not changing its size. </td></tr>
-<tr><td><code>center_vertical</code></td><td>0x10</td><td> Place object in the vertical center of its container, not changing its size. </td></tr>
-<tr><td><code>fill_vertical</code></td><td>0x70</td><td> Grow the vertical size of the object if needed so it completely fills its container. </td></tr>
-<tr><td><code>center_horizontal</code></td><td>0x01</td><td> Place object in the horizontal center of its container, not changing its size. </td></tr>
-<tr><td><code>fill_horizontal</code></td><td>0x07</td><td> Grow the horizontal size of the object if needed so it completely fills its container. </td></tr>
-<tr><td><code>center</code></td><td>0x11</td><td> Place the object in the center of its container in both the vertical and horizontal axis, not changing its size. </td></tr>
-<tr><td><code>fill</code></td><td>0x77</td><td> Grow the horizontal and vertical size of the object if needed so it completely fills its container. </td></tr>
-<tr><td><code>clip_vertical</code></td><td>0x80</td><td>
-             Additional option that can be set to have the top and/or bottom edges of
-             the child clipped to its container's bounds.
-             The clip will be based on the vertical gravity: a top gravity will clip the bottom
-             edge, a bottom gravity will clip the top edge, and neither will clip both edges.
-            </td></tr>
-<tr><td><code>clip_horizontal</code></td><td>0x08</td><td>
-             Additional option that can be set to have the left and/or right edges of
-             the child clipped to its container's bounds.
-             The clip will be based on the horizontal gravity: a left gravity will clip the right
-             edge, a right gravity will clip the left edge, and neither will clip both edges.
-            </td></tr>
-<tr><td><code>start</code></td><td>0x00800003</td><td> Push object to the beginning of its container, not changing its size. </td></tr>
-<tr><td><code>end</code></td><td>0x00800005</td><td> Push object to the end of its container, not changing its size. </td></tr>
-</table>
-         */
-        public static final int layout_gravity=0x7f01000b;
-        /**  END MarginLayout layoutparams 
-
-        The row boundary delimiting the top of the group of cells
-        occupied by this view.
-        
-         <p>Must be an integer value, such as "<code>100</code>".
-<p>This may also be a reference to a resource (in the form
-"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
-theme attribute (in the form
-"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
-containing a value of this type.
-         */
-        public static final int layout_row=0x7f010007;
-        /** 
-        The row span: the difference between the bottom and top
-        boundaries delimiting the group of cells occupied by this view.
-        The default is one.
-        See {@link android.widget.GridLayout.Spec}.
-        
-         <p>Must be an integer value, such as "<code>100</code>".
-<p>This may also be a reference to a resource (in the form
-"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
-theme attribute (in the form
-"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
-containing a value of this type.
-         */
-        public static final int layout_rowSpan=0x7f010008;
-        /** 
-              support versions. All attributes not present in ViewGroup/View are
-              redefined in the support library namespace.
-        
-
-        The orientation property is not used during layout. It is only used to
-        allocate row and column parameters when they are not specified by its children's
-        layout parameters. GridLayout works like LinearLayout in this case;
-        putting all the components either in a single row or in a single column -
-        depending on the value of this flag. In the horizontal case, a columnCount
-        property may be additionally supplied to force new rows to be created when a
-        row is full. The rowCount attribute may be used similarly in the vertical case.
-        The default is horizontal.
-        
-         <p>Must be one of the following constant values.</p>
-<table>
-<colgroup align="left" />
-<colgroup align="left" />
-<colgroup align="left" />
-<tr><th>Constant</th><th>Value</th><th>Description</th></tr>
-<tr><td><code>horizontal</code></td><td>0</td><td> Defines an horizontal widget. </td></tr>
-<tr><td><code>vertical</code></td><td>1</td><td> Defines a vertical widget. </td></tr>
-</table>
-         */
-        public static final int orientation=0x7f010000;
-        /**  The maximum number of rows to create when automatically positioning children. 
-         <p>Must be an integer value, such as "<code>100</code>".
-<p>This may also be a reference to a resource (in the form
-"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
-theme attribute (in the form
-"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
-containing a value of this type.
-         */
-        public static final int rowCount=0x7f010001;
-        /** 
-        When set to true, forces row boundaries to appear in the same order
-        as row indices.
-        The default is true.
-        See {@link android.widget.GridLayout#setRowOrderPreserved(boolean)}.
-        
-         <p>Must be a boolean value, either "<code>true</code>" or "<code>false</code>".
-<p>This may also be a reference to a resource (in the form
-"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
-theme attribute (in the form
-"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
-containing a value of this type.
-         */
-        public static final int rowOrderPreserved=0x7f010005;
-        /** 
-        When set to true, tells GridLayout to use default margins when none are specified
-        in a view's layout parameters.
-        The default value is false.
-        See {@link android.widget.GridLayout#setUseDefaultMargins(boolean)}.
-        
-         <p>Must be a boolean value, either "<code>true</code>" or "<code>false</code>".
-<p>This may also be a reference to a resource (in the form
-"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
-theme attribute (in the form
-"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
-containing a value of this type.
-         */
-        public static final int useDefaultMargins=0x7f010003;
+        public static final int buttonBarStyle=0x7f010000;
     }
     public static final class color {
-        public static final int black_overlay=0x7f070000;
-    }
-    public static final class dimen {
-        /**  The default gap between components in a layout. 
-         */
-        public static final int default_gap=0x7f060000;
+        public static final int black_overlay=0x7f050000;
     }
     public static final class drawable {
         public static final int game1_board=0x7f020000;
@@ -265,118 +60,119 @@ containing a value of this type.
         public static final int game2_fish_2=0x7f02001e;
         public static final int game2_grill=0x7f02001f;
         public static final int game2_net=0x7f020020;
-        public static final int home=0x7f020021;
-        public static final int ic_launcher=0x7f020022;
-        public static final int main_badges_1=0x7f020023;
-        public static final int main_badges_2=0x7f020024;
-        public static final int main_badges_3=0x7f020025;
-        public static final int main_badges_4=0x7f020026;
-        public static final int main_badges_5=0x7f020027;
-        public static final int main_badges_6=0x7f020028;
-        public static final int main_monster_1=0x7f020029;
-        public static final int main_monster_2=0x7f02002a;
-        public static final int main_monster_3=0x7f02002b;
-        public static final int main_monster_4=0x7f02002c;
-        public static final int main_play=0x7f02002d;
-        public static final int main_practice=0x7f02002e;
-        public static final int main_stall_1=0x7f02002f;
-        public static final int main_stall_2=0x7f020030;
-        public static final int main_stall_3=0x7f020031;
-        public static final int main_stall_4=0x7f020032;
-        public static final int progress=0x7f020033;
+        public static final int game3_eggbeat=0x7f020021;
+        public static final int game3_mix1=0x7f020022;
+        public static final int game3_mix2=0x7f020023;
+        public static final int game3_mix3=0x7f020024;
+        public static final int game3_oven=0x7f020025;
+        public static final int game3_oven2=0x7f020026;
+        public static final int game4_dough1=0x7f020027;
+        public static final int game4_dough2=0x7f020028;
+        public static final int game4_dough3=0x7f020029;
+        public static final int game4_dough4=0x7f02002a;
+        public static final int game4_dough5=0x7f02002b;
+        public static final int game4_ladle=0x7f02002c;
+        public static final int game4_plate=0x7f02002d;
+        public static final int home=0x7f02002e;
+        public static final int ic_launcher=0x7f02002f;
+        public static final int main_badges_1=0x7f020030;
+        public static final int main_badges_2=0x7f020031;
+        public static final int main_badges_3=0x7f020032;
+        public static final int main_badges_4=0x7f020033;
+        public static final int main_badges_5=0x7f020034;
+        public static final int main_badges_6=0x7f020035;
+        public static final int main_monster_1=0x7f020036;
+        public static final int main_monster_2=0x7f020037;
+        public static final int main_monster_3=0x7f020038;
+        public static final int main_monster_4=0x7f020039;
+        public static final int main_play=0x7f02003a;
+        public static final int main_practice=0x7f02003b;
+        public static final int main_stall_1=0x7f02003c;
+        public static final int main_stall_2=0x7f02003d;
+        public static final int main_stall_3=0x7f02003e;
+        public static final int main_stall_4=0x7f02003f;
+        public static final int progress=0x7f020040;
     }
     public static final class id {
-        public static final int Game2RelativeLayout=0x7f05001e;
-        public static final int alignBounds=0x7f050002;
-        public static final int alignMargins=0x7f050003;
-        public static final int basketView=0x7f05001f;
-        public static final int board2RelativeLayout=0x7f05001b;
-        public static final int boardView=0x7f050016;
-        public static final int boardView2=0x7f05001c;
-        public static final int bottom=0x7f050005;
-        public static final int carrotView=0x7f050017;
-        public static final int center=0x7f05000c;
-        public static final int center_horizontal=0x7f05000a;
-        public static final int center_vertical=0x7f050008;
-        public static final int clip_horizontal=0x7f05000f;
-        public static final int clip_vertical=0x7f05000e;
-        public static final int cucumberView=0x7f050018;
-        public static final int end=0x7f050011;
-        public static final int fill=0x7f05000d;
-        public static final int fill_horizontal=0x7f05000b;
-        public static final int fill_vertical=0x7f050009;
-        public static final int fireView=0x7f050019;
-        public static final int fishView1=0x7f050021;
-        public static final int fishView2=0x7f050022;
-        public static final int fishView3=0x7f050023;
-        public static final int fishView4=0x7f050024;
-        public static final int fullscreen_content=0x7f050012;
-        public static final int fullscreen_content_controls=0x7f050013;
-        public static final int grillView=0x7f050020;
-        public static final int homeBtn=0x7f050014;
-        public static final int horizontal=0x7f050000;
-        public static final int left=0x7f050006;
-        public static final int loadingRelativeLayout=0x7f050025;
-        public static final int mainBadges1_1=0x7f05002b;
-        public static final int mainBadges1_2=0x7f05002c;
-        public static final int mainBadges1_3=0x7f05002d;
-        public static final int mainBadges1_4=0x7f05002e;
-        public static final int mainBadges1_5=0x7f05002f;
-        public static final int mainBadges1_6=0x7f050030;
-        public static final int mainBadges2_1=0x7f050035;
-        public static final int mainBadges2_2=0x7f050036;
-        public static final int mainBadges2_3=0x7f050037;
-        public static final int mainBadges2_4=0x7f050038;
-        public static final int mainBadges2_5=0x7f050039;
-        public static final int mainBadges2_6=0x7f05003a;
-        public static final int mainBadges3_1=0x7f05003f;
-        public static final int mainBadges3_2=0x7f050040;
-        public static final int mainBadges3_3=0x7f050041;
-        public static final int mainBadges3_4=0x7f050042;
-        public static final int mainBadges3_5=0x7f050043;
-        public static final int mainBadges3_6=0x7f050044;
-        public static final int mainBadges4_1=0x7f050049;
-        public static final int mainBadges4_2=0x7f05004a;
-        public static final int mainBadges4_3=0x7f05004b;
-        public static final int mainBadges4_4=0x7f05004c;
-        public static final int mainBadges4_5=0x7f05004d;
-        public static final int mainBadges4_6=0x7f05004e;
-        public static final int mainHorizontalScrollView=0x7f050026;
-        public static final int mainMonster1=0x7f05002a;
-        public static final int mainMonster2=0x7f050034;
-        public static final int mainMonster3=0x7f05003e;
-        public static final int mainMonster4=0x7f050048;
-        public static final int mainPlayBtn1=0x7f050028;
-        public static final int mainPlayBtn2=0x7f050032;
-        public static final int mainPlayBtn3=0x7f05003c;
-        public static final int mainPlayBtn4=0x7f050046;
-        public static final int mainPracticeBtn1=0x7f050027;
-        public static final int mainPracticeBtn2=0x7f050031;
-        public static final int mainPracticeBtn3=0x7f05003b;
-        public static final int mainPracticeBtn4=0x7f050045;
-        public static final int mainStall1=0x7f050029;
-        public static final int mainStall2=0x7f050033;
-        public static final int mainStall3=0x7f05003d;
-        public static final int mainStall4=0x7f050047;
-        public static final int potView=0x7f05001a;
-        public static final int progressBar=0x7f050015;
-        public static final int right=0x7f050007;
-        public static final int start=0x7f050010;
-        public static final int testProgressCount=0x7f05001d;
-        public static final int top=0x7f050004;
-        public static final int vertical=0x7f050001;
+        public static final int Game2RelativeLayout=0x7f08000c;
+        public static final int Game3RelativeLayout=0x7f080013;
+        public static final int Game3_mix=0x7f080014;
+        public static final int Game4_dough=0x7f080016;
+        public static final int Game4_plate=0x7f080015;
+        public static final int basketView=0x7f08000d;
+        public static final int board2RelativeLayout=0x7f080009;
+        public static final int boardView=0x7f080004;
+        public static final int boardView2=0x7f08000a;
+        public static final int carrotView=0x7f080005;
+        public static final int cucumberView=0x7f080006;
+        public static final int fireView=0x7f080007;
+        public static final int fishView1=0x7f08000f;
+        public static final int fishView2=0x7f080010;
+        public static final int fishView3=0x7f080011;
+        public static final int fishView4=0x7f080012;
+        public static final int fullscreen_content=0x7f080000;
+        public static final int fullscreen_content_controls=0x7f080001;
+        public static final int grillView=0x7f08000e;
+        public static final int homeBtn=0x7f080002;
+        public static final int loadingRelativeLayout=0x7f080017;
+        public static final int mainBadges1_1=0x7f08001d;
+        public static final int mainBadges1_2=0x7f08001e;
+        public static final int mainBadges1_3=0x7f08001f;
+        public static final int mainBadges1_4=0x7f080020;
+        public static final int mainBadges1_5=0x7f080021;
+        public static final int mainBadges1_6=0x7f080022;
+        public static final int mainBadges2_1=0x7f080027;
+        public static final int mainBadges2_2=0x7f080028;
+        public static final int mainBadges2_3=0x7f080029;
+        public static final int mainBadges2_4=0x7f08002a;
+        public static final int mainBadges2_5=0x7f08002b;
+        public static final int mainBadges2_6=0x7f08002c;
+        public static final int mainBadges3_1=0x7f080031;
+        public static final int mainBadges3_2=0x7f080032;
+        public static final int mainBadges3_3=0x7f080033;
+        public static final int mainBadges3_4=0x7f080034;
+        public static final int mainBadges3_5=0x7f080035;
+        public static final int mainBadges3_6=0x7f080036;
+        public static final int mainBadges4_1=0x7f08003b;
+        public static final int mainBadges4_2=0x7f08003c;
+        public static final int mainBadges4_3=0x7f08003d;
+        public static final int mainBadges4_4=0x7f08003e;
+        public static final int mainBadges4_5=0x7f08003f;
+        public static final int mainBadges4_6=0x7f080040;
+        public static final int mainHorizontalScrollView=0x7f080018;
+        public static final int mainMonster1=0x7f08001c;
+        public static final int mainMonster2=0x7f080026;
+        public static final int mainMonster3=0x7f080030;
+        public static final int mainMonster4=0x7f08003a;
+        public static final int mainPlayBtn1=0x7f08001a;
+        public static final int mainPlayBtn2=0x7f080024;
+        public static final int mainPlayBtn3=0x7f08002e;
+        public static final int mainPlayBtn4=0x7f080038;
+        public static final int mainPracticeBtn1=0x7f080019;
+        public static final int mainPracticeBtn2=0x7f080023;
+        public static final int mainPracticeBtn3=0x7f08002d;
+        public static final int mainPracticeBtn4=0x7f080037;
+        public static final int mainStall1=0x7f08001b;
+        public static final int mainStall2=0x7f080025;
+        public static final int mainStall3=0x7f08002f;
+        public static final int mainStall4=0x7f080039;
+        public static final int potView=0x7f080008;
+        public static final int progressBar=0x7f080003;
+        public static final int testProgressCount=0x7f08000b;
     }
     public static final class layout {
         public static final int activity_begin=0x7f030000;
         public static final int activity_game1=0x7f030001;
         public static final int activity_game2=0x7f030002;
-        public static final int activity_loading=0x7f030003;
-        public static final int activity_main=0x7f030004;
+        public static final int activity_game3=0x7f030003;
+        public static final int activity_game4=0x7f030004;
+        public static final int activity_loading=0x7f030005;
+        public static final int activity_main=0x7f030006;
     }
     public static final class string {
-        public static final int app_name=0x7f080000;
-        public static final int dummy_button=0x7f080001;
-        public static final int dummy_content=0x7f080002;
+        public static final int app_name=0x7f060000;
+        public static final int dummy_button=0x7f060001;
+        public static final int dummy_content=0x7f060002;
     }
     public static final class style {
         /** 
@@ -403,15 +199,15 @@ containing a value of this type.
     
  API 14 theme customizations can go here. 
          */
-        public static final int AppBaseTheme=0x7f090000;
+        public static final int AppBaseTheme=0x7f070000;
         /**  Application theme. 
  All customizations that are NOT specific to a particular API-level can go here. 
          */
-        public static final int AppTheme=0x7f090001;
-        public static final int ButtonBar=0x7f090003;
-        public static final int ButtonBarButton=0x7f090004;
-        public static final int FullscreenActionBarStyle=0x7f090005;
-        public static final int FullscreenTheme=0x7f090002;
+        public static final int AppTheme=0x7f070001;
+        public static final int ButtonBar=0x7f070003;
+        public static final int ButtonBarButton=0x7f070004;
+        public static final int FullscreenActionBarStyle=0x7f070005;
+        public static final int FullscreenTheme=0x7f070002;
     }
     public static final class styleable {
         /** 
@@ -432,7 +228,7 @@ containing a value of this type.
            @see #ButtonBarContainerTheme_buttonBarStyle
          */
         public static final int[] ButtonBarContainerTheme = {
-            0x7f01000c, 0x7f01000d
+            0x7f010000, 0x7f010001
         };
         /**
           <p>This symbol is the offset where the {@link com.example.playpalpengame.R.attr#buttonBarButtonStyle}
@@ -454,457 +250,5 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
           @attr name com.example.playpalpengame:buttonBarStyle
         */
         public static final int ButtonBarContainerTheme_buttonBarStyle = 0;
-        /** Attributes that can be used with a GridLayout.
-           <p>Includes the following attributes:</p>
-           <table>
-           <colgroup align="left" />
-           <colgroup align="left" />
-           <tr><th>Attribute</th><th>Description</th></tr>
-           <tr><td><code>{@link #GridLayout_alignmentMode com.example.playpalpengame:alignmentMode}</code></td><td>
-        When set to alignMargins, causes alignment to take place between the outer
-        boundary of a view, as defined by its margins.</td></tr>
-           <tr><td><code>{@link #GridLayout_columnCount com.example.playpalpengame:columnCount}</code></td><td> The maximum number of columns to create when automatically positioning children.</td></tr>
-           <tr><td><code>{@link #GridLayout_columnOrderPreserved com.example.playpalpengame:columnOrderPreserved}</code></td><td>
-        When set to true, forces column boundaries to appear in the same order
-        as column indices.</td></tr>
-           <tr><td><code>{@link #GridLayout_orientation com.example.playpalpengame:orientation}</code></td><td>
-              support versions.</td></tr>
-           <tr><td><code>{@link #GridLayout_rowCount com.example.playpalpengame:rowCount}</code></td><td> The maximum number of rows to create when automatically positioning children.</td></tr>
-           <tr><td><code>{@link #GridLayout_rowOrderPreserved com.example.playpalpengame:rowOrderPreserved}</code></td><td>
-        When set to true, forces row boundaries to appear in the same order
-        as row indices.</td></tr>
-           <tr><td><code>{@link #GridLayout_useDefaultMargins com.example.playpalpengame:useDefaultMargins}</code></td><td>
-        When set to true, tells GridLayout to use default margins when none are specified
-        in a view's layout parameters.</td></tr>
-           </table>
-           @see #GridLayout_alignmentMode
-           @see #GridLayout_columnCount
-           @see #GridLayout_columnOrderPreserved
-           @see #GridLayout_orientation
-           @see #GridLayout_rowCount
-           @see #GridLayout_rowOrderPreserved
-           @see #GridLayout_useDefaultMargins
-         */
-        public static final int[] GridLayout = {
-            0x7f010000, 0x7f010001, 0x7f010002, 0x7f010003,
-            0x7f010004, 0x7f010005, 0x7f010006
-        };
-        /**
-          <p>
-          @attr description
-          
-        When set to alignMargins, causes alignment to take place between the outer
-        boundary of a view, as defined by its margins. When set to alignBounds,
-        causes alignment to take place between the edges of the view.
-        The default is alignMargins.
-        See {@link android.widget.GridLayout#setAlignmentMode(int)}.
-        
-
-
-          <p>Must be one of the following constant values.</p>
-<table>
-<colgroup align="left" />
-<colgroup align="left" />
-<colgroup align="left" />
-<tr><th>Constant</th><th>Value</th><th>Description</th></tr>
-<tr><td><code>alignBounds</code></td><td>0</td><td>
-            Align the bounds of the children.
-            See {@link android.widget.GridLayout#ALIGN_BOUNDS}.
-            </td></tr>
-<tr><td><code>alignMargins</code></td><td>1</td><td>
-            Align the margins of the children.
-            See {@link android.widget.GridLayout#ALIGN_MARGINS}.
-            </td></tr>
-</table>
-          <p>This is a private symbol.
-          @attr name com.example.playpalpengame:alignmentMode
-        */
-        public static final int GridLayout_alignmentMode = 4;
-        /**
-          <p>
-          @attr description
-           The maximum number of columns to create when automatically positioning children. 
-
-
-          <p>Must be an integer value, such as "<code>100</code>".
-<p>This may also be a reference to a resource (in the form
-"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
-theme attribute (in the form
-"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
-containing a value of this type.
-          <p>This is a private symbol.
-          @attr name com.example.playpalpengame:columnCount
-        */
-        public static final int GridLayout_columnCount = 2;
-        /**
-          <p>
-          @attr description
-          
-        When set to true, forces column boundaries to appear in the same order
-        as column indices.
-        The default is true.
-        See {@link android.widget.GridLayout#setColumnOrderPreserved(boolean)}.
-        
-
-
-          <p>Must be a boolean value, either "<code>true</code>" or "<code>false</code>".
-<p>This may also be a reference to a resource (in the form
-"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
-theme attribute (in the form
-"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
-containing a value of this type.
-          <p>This is a private symbol.
-          @attr name com.example.playpalpengame:columnOrderPreserved
-        */
-        public static final int GridLayout_columnOrderPreserved = 6;
-        /**
-          <p>
-          @attr description
-          
-              support versions. All attributes not present in ViewGroup/View are
-              redefined in the support library namespace.
-        
-
-        The orientation property is not used during layout. It is only used to
-        allocate row and column parameters when they are not specified by its children's
-        layout parameters. GridLayout works like LinearLayout in this case;
-        putting all the components either in a single row or in a single column -
-        depending on the value of this flag. In the horizontal case, a columnCount
-        property may be additionally supplied to force new rows to be created when a
-        row is full. The rowCount attribute may be used similarly in the vertical case.
-        The default is horizontal.
-        
-
-
-          <p>Must be one of the following constant values.</p>
-<table>
-<colgroup align="left" />
-<colgroup align="left" />
-<colgroup align="left" />
-<tr><th>Constant</th><th>Value</th><th>Description</th></tr>
-<tr><td><code>horizontal</code></td><td>0</td><td> Defines an horizontal widget. </td></tr>
-<tr><td><code>vertical</code></td><td>1</td><td> Defines a vertical widget. </td></tr>
-</table>
-          <p>This is a private symbol.
-          @attr name com.example.playpalpengame:orientation
-        */
-        public static final int GridLayout_orientation = 0;
-        /**
-          <p>
-          @attr description
-           The maximum number of rows to create when automatically positioning children. 
-
-
-          <p>Must be an integer value, such as "<code>100</code>".
-<p>This may also be a reference to a resource (in the form
-"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
-theme attribute (in the form
-"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
-containing a value of this type.
-          <p>This is a private symbol.
-          @attr name com.example.playpalpengame:rowCount
-        */
-        public static final int GridLayout_rowCount = 1;
-        /**
-          <p>
-          @attr description
-          
-        When set to true, forces row boundaries to appear in the same order
-        as row indices.
-        The default is true.
-        See {@link android.widget.GridLayout#setRowOrderPreserved(boolean)}.
-        
-
-
-          <p>Must be a boolean value, either "<code>true</code>" or "<code>false</code>".
-<p>This may also be a reference to a resource (in the form
-"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
-theme attribute (in the form
-"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
-containing a value of this type.
-          <p>This is a private symbol.
-          @attr name com.example.playpalpengame:rowOrderPreserved
-        */
-        public static final int GridLayout_rowOrderPreserved = 5;
-        /**
-          <p>
-          @attr description
-          
-        When set to true, tells GridLayout to use default margins when none are specified
-        in a view's layout parameters.
-        The default value is false.
-        See {@link android.widget.GridLayout#setUseDefaultMargins(boolean)}.
-        
-
-
-          <p>Must be a boolean value, either "<code>true</code>" or "<code>false</code>".
-<p>This may also be a reference to a resource (in the form
-"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
-theme attribute (in the form
-"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
-containing a value of this type.
-          <p>This is a private symbol.
-          @attr name com.example.playpalpengame:useDefaultMargins
-        */
-        public static final int GridLayout_useDefaultMargins = 3;
-        /** Attributes that can be used with a GridLayout_Layout.
-           <p>Includes the following attributes:</p>
-           <table>
-           <colgroup align="left" />
-           <colgroup align="left" />
-           <tr><th>Attribute</th><th>Description</th></tr>
-           <tr><td><code>{@link #GridLayout_Layout_android_layout_height android:layout_height}</code></td><td></td></tr>
-           <tr><td><code>{@link #GridLayout_Layout_android_layout_margin android:layout_margin}</code></td><td>
-              Specifies extra space on the left, top, right and bottom
-              sides of this view.</td></tr>
-           <tr><td><code>{@link #GridLayout_Layout_android_layout_marginBottom android:layout_marginBottom}</code></td><td>
-              Specifies extra space on the bottom side of this view.</td></tr>
-           <tr><td><code>{@link #GridLayout_Layout_android_layout_marginLeft android:layout_marginLeft}</code></td><td>
-              Specifies extra space on the left side of this view.</td></tr>
-           <tr><td><code>{@link #GridLayout_Layout_android_layout_marginRight android:layout_marginRight}</code></td><td>
-              Specifies extra space on the right side of this view.</td></tr>
-           <tr><td><code>{@link #GridLayout_Layout_android_layout_marginTop android:layout_marginTop}</code></td><td>
-              Specifies extra space on the top side of this view.</td></tr>
-           <tr><td><code>{@link #GridLayout_Layout_android_layout_width android:layout_width}</code></td><td>
-              support versions.</td></tr>
-           <tr><td><code>{@link #GridLayout_Layout_layout_column com.example.playpalpengame:layout_column}</code></td><td>
-        The column boundary delimiting the left of the group of cells
-        occupied by this view.</td></tr>
-           <tr><td><code>{@link #GridLayout_Layout_layout_columnSpan com.example.playpalpengame:layout_columnSpan}</code></td><td>
-        The column span: the difference between the right and left
-        boundaries delimiting the group of cells occupied by this view.</td></tr>
-           <tr><td><code>{@link #GridLayout_Layout_layout_gravity com.example.playpalpengame:layout_gravity}</code></td><td>
-        Gravity specifies how a component should be placed in its group of cells.</td></tr>
-           <tr><td><code>{@link #GridLayout_Layout_layout_row com.example.playpalpengame:layout_row}</code></td><td> END MarginLayout layoutparams 
-
-        The row boundary delimiting the top of the group of cells
-        occupied by this view.</td></tr>
-           <tr><td><code>{@link #GridLayout_Layout_layout_rowSpan com.example.playpalpengame:layout_rowSpan}</code></td><td>
-        The row span: the difference between the bottom and top
-        boundaries delimiting the group of cells occupied by this view.</td></tr>
-           </table>
-           @see #GridLayout_Layout_android_layout_height
-           @see #GridLayout_Layout_android_layout_margin
-           @see #GridLayout_Layout_android_layout_marginBottom
-           @see #GridLayout_Layout_android_layout_marginLeft
-           @see #GridLayout_Layout_android_layout_marginRight
-           @see #GridLayout_Layout_android_layout_marginTop
-           @see #GridLayout_Layout_android_layout_width
-           @see #GridLayout_Layout_layout_column
-           @see #GridLayout_Layout_layout_columnSpan
-           @see #GridLayout_Layout_layout_gravity
-           @see #GridLayout_Layout_layout_row
-           @see #GridLayout_Layout_layout_rowSpan
-         */
-        public static final int[] GridLayout_Layout = {
-            0x010100f4, 0x010100f5, 0x010100f6, 0x010100f7,
-            0x010100f8, 0x010100f9, 0x010100fa, 0x7f010007,
-            0x7f010008, 0x7f010009, 0x7f01000a, 0x7f01000b
-        };
-        /**
-          <p>This symbol is the offset where the {@link android.R.attr#layout_height}
-          attribute's value can be found in the {@link #GridLayout_Layout} array.
-          @attr name android:layout_height
-        */
-        public static final int GridLayout_Layout_android_layout_height = 1;
-        /**
-          <p>
-          @attr description
-          
-              Specifies extra space on the left, top, right and bottom
-              sides of this view. This space is outside this view's bounds.
-        
-          <p>This corresponds to the global attribute
-          resource symbol {@link android.R.attr#layout_margin}.
-          @attr name android:layout_margin
-        */
-        public static final int GridLayout_Layout_android_layout_margin = 2;
-        /**
-          <p>
-          @attr description
-          
-              Specifies extra space on the bottom side of this view.
-              This space is outside this view's bounds.
-        
-          <p>This corresponds to the global attribute
-          resource symbol {@link android.R.attr#layout_marginBottom}.
-          @attr name android:layout_marginBottom
-        */
-        public static final int GridLayout_Layout_android_layout_marginBottom = 6;
-        /**
-          <p>
-          @attr description
-          
-              Specifies extra space on the left side of this view.
-              This space is outside this view's bounds.
-        
-          <p>This corresponds to the global attribute
-          resource symbol {@link android.R.attr#layout_marginLeft}.
-          @attr name android:layout_marginLeft
-        */
-        public static final int GridLayout_Layout_android_layout_marginLeft = 3;
-        /**
-          <p>
-          @attr description
-          
-              Specifies extra space on the right side of this view.
-              This space is outside this view's bounds.
-        
-          <p>This corresponds to the global attribute
-          resource symbol {@link android.R.attr#layout_marginRight}.
-          @attr name android:layout_marginRight
-        */
-        public static final int GridLayout_Layout_android_layout_marginRight = 5;
-        /**
-          <p>
-          @attr description
-          
-              Specifies extra space on the top side of this view.
-              This space is outside this view's bounds.
-        
-          <p>This corresponds to the global attribute
-          resource symbol {@link android.R.attr#layout_marginTop}.
-          @attr name android:layout_marginTop
-        */
-        public static final int GridLayout_Layout_android_layout_marginTop = 4;
-        /**
-          <p>
-          @attr description
-          
-              support versions. All attributes not present in MarginLayout are
-              redefined in the support library name space.
-        
- START MarginLayout layoutparams 
-          <p>This corresponds to the global attribute
-          resource symbol {@link android.R.attr#layout_width}.
-          @attr name android:layout_width
-        */
-        public static final int GridLayout_Layout_android_layout_width = 0;
-        /**
-          <p>
-          @attr description
-          
-        The column boundary delimiting the left of the group of cells
-        occupied by this view.
-        
-
-
-          <p>Must be an integer value, such as "<code>100</code>".
-<p>This may also be a reference to a resource (in the form
-"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
-theme attribute (in the form
-"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
-containing a value of this type.
-          <p>This is a private symbol.
-          @attr name com.example.playpalpengame:layout_column
-        */
-        public static final int GridLayout_Layout_layout_column = 9;
-        /**
-          <p>
-          @attr description
-          
-        The column span: the difference between the right and left
-        boundaries delimiting the group of cells occupied by this view.
-        The default is one.
-        See {@link android.widget.GridLayout.Spec}.
-        
-
-
-          <p>Must be an integer value, such as "<code>100</code>".
-<p>This may also be a reference to a resource (in the form
-"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
-theme attribute (in the form
-"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
-containing a value of this type.
-          <p>This is a private symbol.
-          @attr name com.example.playpalpengame:layout_columnSpan
-        */
-        public static final int GridLayout_Layout_layout_columnSpan = 10;
-        /**
-          <p>
-          @attr description
-          
-        Gravity specifies how a component should be placed in its group of cells.
-        The default is LEFT | BASELINE.
-        See {@link android.widget.GridLayout.LayoutParams#setGravity(int)}.
-        
-
-
-          <p>Must be one or more (separated by '|') of the following constant values.</p>
-<table>
-<colgroup align="left" />
-<colgroup align="left" />
-<colgroup align="left" />
-<tr><th>Constant</th><th>Value</th><th>Description</th></tr>
-<tr><td><code>top</code></td><td>0x30</td><td> Push object to the top of its container, not changing its size. </td></tr>
-<tr><td><code>bottom</code></td><td>0x50</td><td> Push object to the bottom of its container, not changing its size. </td></tr>
-<tr><td><code>left</code></td><td>0x03</td><td> Push object to the left of its container, not changing its size. </td></tr>
-<tr><td><code>right</code></td><td>0x05</td><td> Push object to the right of its container, not changing its size. </td></tr>
-<tr><td><code>center_vertical</code></td><td>0x10</td><td> Place object in the vertical center of its container, not changing its size. </td></tr>
-<tr><td><code>fill_vertical</code></td><td>0x70</td><td> Grow the vertical size of the object if needed so it completely fills its container. </td></tr>
-<tr><td><code>center_horizontal</code></td><td>0x01</td><td> Place object in the horizontal center of its container, not changing its size. </td></tr>
-<tr><td><code>fill_horizontal</code></td><td>0x07</td><td> Grow the horizontal size of the object if needed so it completely fills its container. </td></tr>
-<tr><td><code>center</code></td><td>0x11</td><td> Place the object in the center of its container in both the vertical and horizontal axis, not changing its size. </td></tr>
-<tr><td><code>fill</code></td><td>0x77</td><td> Grow the horizontal and vertical size of the object if needed so it completely fills its container. </td></tr>
-<tr><td><code>clip_vertical</code></td><td>0x80</td><td>
-             Additional option that can be set to have the top and/or bottom edges of
-             the child clipped to its container's bounds.
-             The clip will be based on the vertical gravity: a top gravity will clip the bottom
-             edge, a bottom gravity will clip the top edge, and neither will clip both edges.
-            </td></tr>
-<tr><td><code>clip_horizontal</code></td><td>0x08</td><td>
-             Additional option that can be set to have the left and/or right edges of
-             the child clipped to its container's bounds.
-             The clip will be based on the horizontal gravity: a left gravity will clip the right
-             edge, a right gravity will clip the left edge, and neither will clip both edges.
-            </td></tr>
-<tr><td><code>start</code></td><td>0x00800003</td><td> Push object to the beginning of its container, not changing its size. </td></tr>
-<tr><td><code>end</code></td><td>0x00800005</td><td> Push object to the end of its container, not changing its size. </td></tr>
-</table>
-          <p>This is a private symbol.
-          @attr name com.example.playpalpengame:layout_gravity
-        */
-        public static final int GridLayout_Layout_layout_gravity = 11;
-        /**
-          <p>
-          @attr description
-           END MarginLayout layoutparams 
-
-        The row boundary delimiting the top of the group of cells
-        occupied by this view.
-        
-
-
-          <p>Must be an integer value, such as "<code>100</code>".
-<p>This may also be a reference to a resource (in the form
-"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
-theme attribute (in the form
-"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
-containing a value of this type.
-          <p>This is a private symbol.
-          @attr name com.example.playpalpengame:layout_row
-        */
-        public static final int GridLayout_Layout_layout_row = 7;
-        /**
-          <p>
-          @attr description
-          
-        The row span: the difference between the bottom and top
-        boundaries delimiting the group of cells occupied by this view.
-        The default is one.
-        See {@link android.widget.GridLayout.Spec}.
-        
-
-
-          <p>Must be an integer value, such as "<code>100</code>".
-<p>This may also be a reference to a resource (in the form
-"<code>@[<i>package</i>:]<i>type</i>:<i>name</i></code>") or
-theme attribute (in the form
-"<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
-containing a value of this type.
-          <p>This is a private symbol.
-          @attr name com.example.playpalpengame:layout_rowSpan
-        */
-        public static final int GridLayout_Layout_layout_rowSpan = 8;
     };
 }
