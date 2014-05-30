@@ -16,6 +16,7 @@
     -->
 	    
     <RelativeLayout
+        android:id="@+id/game1RelativeLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
@@ -105,6 +106,15 @@
             android:layout_alignLeft="@+id/boardView"
             android:layout_marginLeft="89dp"
             android:text="TextView" />
+
+        <ImageView
+            android:id="@+id/knifeView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:src="@drawable/game1_knife"
+            android:visibility="invisible" />
 
     </RelativeLayout>
 

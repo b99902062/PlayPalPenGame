@@ -1,6 +1,7 @@
 package com.example.playpalpengame;
 
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -35,7 +36,15 @@ public class Game1Activity extends Activity {
 
 	protected boolean isFoodCanTouch;
 	protected boolean isDoneDropFood;
+	protected boolean isLineGestureOn;
+	protected boolean isOnTrack;
 	protected int progressCount;
+	
+	protected int beginBoxCenterX;
+	protected int beginBoxCenterY;
+	protected int endBoxCenterX;
+	protected int endBoxCenterY;
+	protected int boxSize;
 	
 	protected ArrayList<View> foodInPot;
 
@@ -43,7 +52,9 @@ public class Game1Activity extends Activity {
 	protected ImageView cucumberView;
 	protected ImageView potView;
 	protected ImageView fireView;
+	protected ImageView knifeView;
 	protected RelativeLayout board2Layout;
+	protected RelativeLayout game1RelativeLayout;
 	
 	protected TextView progressCountText;
 
@@ -74,8 +85,38 @@ public class Game1Activity extends Activity {
 		View homeBtn = findViewById(R.id.homeBtn);
 		setHomeListener(homeBtn);
 
+		knifeView = (ImageView) findViewById(R.id.knifeView);
+		
 		carrotView = (ImageView) findViewById(R.id.carrotView);
 		setFoodListener(carrotView);
+		
+		game1RelativeLayout = (RelativeLayout) findViewById(R.id.game1RelativeLayout);
+		game1RelativeLayout.setOnHoverListener(new View.OnHoverListener() {
+            @Override
+            public boolean onHover(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_HOVER_ENTER:
+                    	knifeView.setVisibility(ImageView.VISIBLE);
+                        Log.d("PlayPal", "Enter");
+                        break;
+                    case MotionEvent.ACTION_HOVER_MOVE:
+                    	/*
+                    	if(event.getX() < 200 || event.getY() < 200)
+                    		break;
+                    	*/
+                    	RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                    	params.setMargins((int)event.getX() - 200, (int)event.getY() - 200 , 0, 0);
+                    	knifeView.setLayoutParams(params);
+                    	Log.d("PlayPal", "Move");
+                        break;
+                    case MotionEvent.ACTION_HOVER_EXIT:
+                    	knifeView.setVisibility(ImageView.INVISIBLE);
+                    	Log.d("PlayPal", "Exit");
+                        break;
+                }
+                return true;
+            }
+        });
 
 		cucumberView = (ImageView) findViewById(R.id.cucumberView);
 		setFoodListener(cucumberView);
@@ -93,23 +134,24 @@ public class Game1Activity extends Activity {
 	}
 
 	protected void setHomeListener(View targetView) {
-		targetView.setOnClickListener(new View.OnClickListener() {
+		targetView.setOnTouchListener(new View.OnTouchListener() {
 			@Override
-			public void onClick(View view) {
+			public boolean onTouch(View view, MotionEvent event) {
 				Intent newAct = new Intent();
 				newAct.setClass(Game1Activity.this, MainActivity.class);
 				startActivityForResult(newAct, 0);
 				Game1Activity.this.finish();
+				return true;
 			}
 		});
 	}
 
 	protected void setFoodListener(View targetView) {
-		targetView.setOnClickListener(new View.OnClickListener() {
+		targetView.setOnTouchListener(new View.OnTouchListener() {
 			@Override
-			public void onClick(View view) {
-				if (!isFoodCanTouch)
-					return;
+			public boolean onTouch(View view, MotionEvent event) {
+				if (!isFoodCanTouch || event.getAction() != MotionEvent.ACTION_DOWN)
+					return true;
 				progressCount++;
 				progressCountText.setText("ProgressCount: " + new String("" + progressCount));
 
@@ -126,6 +168,16 @@ public class Game1Activity extends Activity {
 							isFoodCanTouch = true;
 							carrotView.clearAnimation();
 							carrotView.setVisibility(ImageView.GONE);
+							
+							//Test
+							registerLineGesture(new Callable<Integer>() {
+								public Integer call() {
+									return test();
+								}
+							});
+							isLineGestureOn = true;
+							changeGaestureParams(500, 500, 500, 500, 200);
+							
 
 							Animation cucumberAnim = CreateTranslateAnimation(Game1Activity.FROM_OUTLEFT_TO_CUR);
 							cucumberView.setAnimation(cucumberAnim);
@@ -188,6 +240,7 @@ public class Game1Activity extends Activity {
 					});
 					cucumberAnim.startNow();
 				}
+				return true;
 			}
 		});
 	}
@@ -272,11 +325,11 @@ public class Game1Activity extends Activity {
 	}
 
 	protected void setPotListener(View targetView) {
-		targetView.setOnClickListener(new View.OnClickListener() {
+		targetView.setOnTouchListener(new View.OnTouchListener() {
 			@Override
-			public void onClick(View view) {
-				if(!isDoneDropFood)
-					return;
+			public boolean onTouch(View view, MotionEvent event) {
+				if(!isDoneDropFood || event.getAction() != MotionEvent.ACTION_DOWN)
+					return true;
 				/** Should be do circle */
 				progressCount++;
 				progressCountText.setText("ProgressCount: " + new String("" + progressCount));
@@ -289,6 +342,7 @@ public class Game1Activity extends Activity {
 					startActivityForResult(newAct, 0);
 					Game1Activity.this.finish();
 				}
+				return true;
 			}
 		});
 	}
@@ -343,5 +397,62 @@ public class Game1Activity extends Activity {
 				board2Layout.addView(tmpFood, params);
 			}
 		}
+	}
+	
+	protected void registerLineGesture(final Callable<Integer> func) {
+		game1RelativeLayout.setOnTouchListener(new View.OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				switch(event.getAction()) {
+					case MotionEvent.ACTION_DOWN:
+						if(isLineGestureOn) {
+							if(isWithinBox(true, (int)event.getX(), (int)event.getY()))
+								isOnTrack = true;
+							else
+								isOnTrack = false;
+						}
+						return true;
+					case MotionEvent.ACTION_UP:
+						if(isLineGestureOn) {
+							if(isWithinBox(false, (int)event.getX(), (int)event.getY()) && isOnTrack)
+								try {
+									func.call();
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							else
+								isOnTrack = false;
+						}
+						return true;
+				}
+				return false;
+			}
+		});
+	}
+	
+	protected void changeGaestureParams(int beginX, int beginY, int endX, int endY, int size) {
+		beginBoxCenterX = beginX;
+		beginBoxCenterY = beginY;
+		endBoxCenterX = endX;
+		endBoxCenterY = endY;
+		boxSize = size;
+	}
+	
+	protected boolean isWithinBox(boolean isBeginJudge, int targetX, int targetY) {
+		if(isBeginJudge) {
+			if(Math.abs(targetX - beginBoxCenterX) < boxSize && Math.abs(targetY - beginBoxCenterY) < boxSize)
+				return true;
+			return false;
+		}
+		else {
+			if(Math.abs(targetX - endBoxCenterX) < boxSize && Math.abs(targetY - endBoxCenterY) < boxSize)
+				return true;
+			return false;
+		}
+	}
+	
+	protected Integer test() {
+		Log.d("PlayPalGame", "Valid cut");
+		return 1;
 	}
 }
