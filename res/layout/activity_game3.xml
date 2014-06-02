@@ -3,7 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF" >
-
+	
+    <animation-list android:id="@+id/oven_animation" android:oneshot="false">
+	    <item android:drawable="@drawable/game3_oven1" android:duration="50" />
+	    <item android:drawable="@drawable/game3_oven2" android:duration="50" />
+	 </animation-list>
+    
     <RelativeLayout
         android:id="@+id/Game3RelativeLayout"
         android:layout_width="match_parent"
@@ -32,6 +37,30 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="190dp"
             android:src="@drawable/game3_mix1" />
+        
+        <ImageView
+            android:id="@+id/Game3_oven"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="190dp" />
+        
+        <ImageView
+            android:id="@+id/Game3_dough"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="190dp"
+            android:src="@drawable/game3_oven2"
+            android:visibility="invisible" />
+        
+        <ImageView 
+            android:id="@+id/Game3_eggbeat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/game3_eggbeat"
+            android:visibility="invisible" 
+            />
 
     </RelativeLayout>
 
