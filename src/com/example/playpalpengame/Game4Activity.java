@@ -1,7 +1,5 @@
 package com.example.playpalpengame;
 
-import java.util.ArrayList;
-
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -54,7 +52,7 @@ public class Game4Activity extends Activity {
 			@Override
 			public void onClick(View view){
 				if(doughProgress>=3){
-					Animation doughAnim = Game1Activity.CreateTranslateAnimation(Game1Activity.FROM_CUR_TO_OUTRIGHT);
+					Animation doughAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTRIGHT);
 					doughAnim.setAnimationListener(new AnimationListener() {
 						@Override
 						public void onAnimationEnd(Animation anim) {

@@ -1,7 +1,5 @@
 package com.example.playpalpengame;
 
-import java.util.ArrayList;
-
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -57,7 +55,7 @@ public class Game3Activity extends Activity {
 			@Override
 			public void onClick(View view){
 				if(mixingProgress>=3){
-					Animation mixAnim = Game1Activity.CreateTranslateAnimation(Game1Activity.FROM_CUR_TO_OUTRIGHT);
+					Animation mixAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTRIGHT);
 					mixAnim.setAnimationListener(new AnimationListener() {
 						@Override
 						public void onAnimationEnd(Animation anim) {

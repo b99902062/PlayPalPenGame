@@ -5,6 +5,7 @@ import java.util.concurrent.Callable;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Point;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,7 +15,6 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.DecelerateInterpolator;
-import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
@@ -26,33 +26,28 @@ public class Game1Activity extends Activity {
 	protected final int step1TotalProgressCount = 11;
 	protected final int step2TotalProgressCount = 35;
 	protected final int step3TotalProgressCount = 45;
-
-	protected final static int FROM_OUTLEFT_TO_CUR = 1;
-	protected final static int FROM_CUR_TO_OUTRIGHT = 2;
-	/** Not implemented */
-	protected final static int FROM_OUTRIGHT_TO_CUR = 3;
-	/** Not implemented */
-	protected final static int FROM_CUR_TO_OUTLEFT = 4;
+	
+	protected final int originBeginCenterX = 1800;
+	protected final int originBeginCenterY = 500;
+	protected final int originEndCenterX = 1800;
+	protected final int originEndCenterY = 1200;
+	protected int boxSize = 100;
+	protected int lineInterval = 250;
 
 	protected boolean isFoodCanTouch;
 	protected boolean isDoneDropFood;
-	protected boolean isLineGestureOn;
-	protected boolean isOnTrack;
 	protected int progressCount;
-	
-	protected int beginBoxCenterX;
-	protected int beginBoxCenterY;
-	protected int endBoxCenterX;
-	protected int endBoxCenterY;
-	protected int boxSize;
 	
 	protected ArrayList<View> foodInPot;
 
+	protected ImageView currentFoodView;
+	
 	protected ImageView carrotView;
 	protected ImageView cucumberView;
 	protected ImageView potView;
 	protected ImageView fireView;
 	protected ImageView knifeView;
+	protected ImageView dottedLineView;
 	protected RelativeLayout board2Layout;
 	protected RelativeLayout game1RelativeLayout;
 	
@@ -90,6 +85,11 @@ public class Game1Activity extends Activity {
 		carrotView = (ImageView) findViewById(R.id.carrotView);
 		setFoodListener(carrotView);
 		
+		cucumberView = (ImageView) findViewById(R.id.cucumberView);
+		
+		dottedLineView = (ImageView) findViewById(R.id.dottedLineView);
+		dottedLineView.setVisibility(ImageView.VISIBLE);
+		
 		game1RelativeLayout = (RelativeLayout) findViewById(R.id.game1RelativeLayout);
 		game1RelativeLayout.setOnHoverListener(new View.OnHoverListener() {
             @Override
@@ -100,10 +100,6 @@ public class Game1Activity extends Activity {
                         Log.d("PlayPal", "Enter");
                         break;
                     case MotionEvent.ACTION_HOVER_MOVE:
-                    	/*
-                    	if(event.getX() < 200 || event.getY() < 200)
-                    		break;
-                    	*/
                     	RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
                     	params.setMargins((int)event.getX() - 200, (int)event.getY() - 200 , 0, 0);
                     	knifeView.setLayoutParams(params);
@@ -118,9 +114,19 @@ public class Game1Activity extends Activity {
             }
         });
 
-		cucumberView = (ImageView) findViewById(R.id.cucumberView);
-		setFoodListener(cucumberView);
-
+		//Test
+		PlayPalUtility.registerLineGesture(game1RelativeLayout, new Callable<Integer>() {
+			public Integer call() {
+				return handleLineAction();
+			}
+		});
+		PlayPalUtility.setLineGesture(true);
+		PlayPalUtility.initialLineGestureParams(boxSize, new Point(originBeginCenterX, originBeginCenterY), new Point(originEndCenterX, originEndCenterY));
+		
+		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		params.setMargins(PlayPalUtility.getPoint(0, 0).x - boxSize, PlayPalUtility.getPoint(0, 0).y + boxSize, 0, 0);		
+		dottedLineView.setLayoutParams(params);
+		
 		potView = (ImageView) findViewById(R.id.potView);
 		board2Layout = (RelativeLayout) findViewById(R.id.board2RelativeLayout);
 
@@ -147,105 +153,10 @@ public class Game1Activity extends Activity {
 	}
 
 	protected void setFoodListener(View targetView) {
-		targetView.setOnTouchListener(new View.OnTouchListener() {
-			@Override
-			public boolean onTouch(View view, MotionEvent event) {
-				if (!isFoodCanTouch || event.getAction() != MotionEvent.ACTION_DOWN)
-					return true;
-				progressCount++;
-				progressCountText.setText("ProgressCount: " + new String("" + progressCount));
-
-				((ImageView) view)
-						.setImageResource(foodResArray[progressCount]);
-
-				if (progressCount == step1MidProgressCount) {
-					// Slide the cucumber
-					isFoodCanTouch = false;
-					Animation carrotAnim = CreateTranslateAnimation(Game1Activity.FROM_CUR_TO_OUTRIGHT);
-					carrotAnim.setAnimationListener(new AnimationListener() {
-						@Override
-						public void onAnimationEnd(Animation anim) {
-							isFoodCanTouch = true;
-							carrotView.clearAnimation();
-							carrotView.setVisibility(ImageView.GONE);
-							
-							//Test
-							registerLineGesture(new Callable<Integer>() {
-								public Integer call() {
-									return test();
-								}
-							});
-							isLineGestureOn = true;
-							changeGaestureParams(500, 500, 500, 500, 200);
-							
-
-							Animation cucumberAnim = CreateTranslateAnimation(Game1Activity.FROM_OUTLEFT_TO_CUR);
-							cucumberView.setAnimation(cucumberAnim);
-							cucumberView.setVisibility(ImageView.VISIBLE);
-							cucumberAnim.startNow();
-						}
-
-						@Override
-						public void onAnimationRepeat(Animation animation) {
-						}
-
-						@Override
-						public void onAnimationStart(Animation animation) {
-						}
-					});
-					carrotView.setAnimation(carrotAnim);
-					carrotAnim.startNow();
-				} else if (progressCount == step1TotalProgressCount) {
-					isFoodCanTouch = false;
-
-					Animation cucumberAnim = CreateTranslateAnimation(Game1Activity.FROM_CUR_TO_OUTRIGHT);
-					Animation boardAnim = CreateTranslateAnimation(Game1Activity.FROM_CUR_TO_OUTRIGHT);
-
-					ImageView boardView = (ImageView) findViewById(R.id.boardView);
-					boardView.setAnimation(boardAnim);
-					boardAnim.startNow();
-
-					cucumberView.setAnimation(cucumberAnim);
-					cucumberAnim.setAnimationListener(new AnimationListener() {
-						@Override
-						public void onAnimationEnd(Animation anim) {
-							ImageView boardView = (ImageView) findViewById(R.id.boardView);
-							boardView.clearAnimation();
-							boardView.setVisibility(ImageView.GONE);
-							cucumberView.clearAnimation();
-							cucumberView.setVisibility(ImageView.GONE);
-
-							potView.setVisibility(ImageView.VISIBLE);
-							Animation fadeIn = new AlphaAnimation(0, 1);
-							fadeIn.setInterpolator(new DecelerateInterpolator());
-							fadeIn.setDuration(2000);
-							potView.setAnimation(fadeIn);
-
-							board2Layout.setVisibility(ImageView.VISIBLE);
-							Animation board2Anim = CreateTranslateAnimation(Game1Activity.FROM_OUTLEFT_TO_CUR);
-							board2Layout.setAnimation(board2Anim);
-
-							randomSetupFood();
-
-							board2Anim.startNow();
-						}
-
-						@Override
-						public void onAnimationRepeat(Animation animation) {
-						}
-
-						@Override
-						public void onAnimationStart(Animation animation) {
-						}
-					});
-					cucumberAnim.startNow();
-				}
-				return true;
-			}
-		});
+		currentFoodView = (ImageView) targetView;
 	}
 
-	protected void DoOnClick(View view) {
+	protected void RemoveFromBoard(View view) {
 
 		progressCount++;
 		progressCountText.setText("ProgressCount: " + new String("" + progressCount));
@@ -253,7 +164,7 @@ public class Game1Activity extends Activity {
 		potDropAnim.start();
 
 		if (progressCount == step2TotalProgressCount) {
-			Animation boardAnim = CreateTranslateAnimation(Game1Activity.FROM_CUR_TO_OUTLEFT);
+			Animation boardAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTLEFT);
 			boardAnim.setAnimationListener(new AnimationListener() {
 				@Override
 				public void onAnimationEnd(Animation anim) {
@@ -261,6 +172,7 @@ public class Game1Activity extends Activity {
 					board2Layout.setVisibility(ImageView.GONE);
 
 					fireView.setVisibility(ImageView.VISIBLE);
+					fireAnim.setVisible(true, true);
 					fireAnim.start();
 					
 					isDoneDropFood = true;
@@ -303,7 +215,7 @@ public class Game1Activity extends Activity {
 						if (x_cord > maxXBoardBound) {
 							if(!foodInPot.contains(view)) {
 								foodInPot.add(view);
-								DoOnClick(view);
+								RemoveFromBoard(view);
 							}
 						}
 						if (x_cord < minXBoardBound) 
@@ -347,39 +259,6 @@ public class Game1Activity extends Activity {
 		});
 	}
 
-	protected static TranslateAnimation CreateTranslateAnimation(int translateType) {
-		TranslateAnimation newAnim;
-
-		if (translateType == Game1Activity.FROM_OUTLEFT_TO_CUR)
-			newAnim = new TranslateAnimation(Animation.RELATIVE_TO_PARENT,
-					(float) -1.0, Animation.RELATIVE_TO_SELF, (float) 0.0,
-					Animation.RELATIVE_TO_SELF, (float) 0.0,
-					Animation.RELATIVE_TO_SELF, (float) 0.0);
-		else if (translateType == Game1Activity.FROM_CUR_TO_OUTRIGHT)
-			newAnim = new TranslateAnimation(Animation.RELATIVE_TO_SELF,
-					(float) 0.0, Animation.RELATIVE_TO_PARENT, (float) 1.0,
-					Animation.RELATIVE_TO_SELF, (float) 0.0,
-					Animation.RELATIVE_TO_SELF, (float) 0.0);
-		else if (translateType == Game1Activity.FROM_OUTRIGHT_TO_CUR)
-			newAnim = new TranslateAnimation(Animation.RELATIVE_TO_PARENT,
-					(float) 1.0, Animation.RELATIVE_TO_SELF, (float) 0.0,
-					Animation.RELATIVE_TO_SELF, (float) 0.0,
-					Animation.RELATIVE_TO_SELF, (float) 0.0);
-		else if (translateType == Game1Activity.FROM_CUR_TO_OUTLEFT)
-			newAnim = new TranslateAnimation(Animation.RELATIVE_TO_SELF,
-					(float) 0.0, Animation.RELATIVE_TO_PARENT, (float) -1.0,
-					Animation.RELATIVE_TO_SELF, (float) 0.0,
-					Animation.RELATIVE_TO_SELF, (float) 0.0);
-		else
-			newAnim = new TranslateAnimation(Animation.RELATIVE_TO_SELF,
-					(float) 0.0, Animation.RELATIVE_TO_SELF, (float) 0.0,
-					Animation.RELATIVE_TO_SELF, (float) 0.0,
-					Animation.RELATIVE_TO_SELF, (float) 0.0);
-		newAnim.setDuration(2000);
-		newAnim.setRepeatCount(0);
-		return newAnim;
-	}
-
 	protected void randomSetupFood() {
 		// for test
 		int[] foodResId = {R.drawable.game1_food_1, R.drawable.game1_food_2};
@@ -399,60 +278,122 @@ public class Game1Activity extends Activity {
 		}
 	}
 	
-	protected void registerLineGesture(final Callable<Integer> func) {
-		game1RelativeLayout.setOnTouchListener(new View.OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				switch(event.getAction()) {
-					case MotionEvent.ACTION_DOWN:
-						if(isLineGestureOn) {
-							if(isWithinBox(true, (int)event.getX(), (int)event.getY()))
-								isOnTrack = true;
-							else
-								isOnTrack = false;
+	protected Integer handleLineAction() {
+		if (!isFoodCanTouch)
+			return 0;
+		progressCount++;
+		progressCountText.setText("ProgressCount: " + new String("" + progressCount));
+		
+		PlayPalUtility.changeGestureParams(true, 0, new Point(-lineInterval, 0), new Point(-lineInterval, 0));
+		
+		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		params.setMargins(PlayPalUtility.getPoint(0, 0).x - boxSize, PlayPalUtility.getPoint(0, 0).y + boxSize, 0, 0);
+		dottedLineView.setLayoutParams(params);
+
+		((ImageView) currentFoodView)
+				.setImageResource(foodResArray[progressCount]);
+
+		if (progressCount == step1MidProgressCount) {
+			// Slide the cucumber
+			isFoodCanTouch = false;
+			PlayPalUtility.setLineGesture(false);
+			PlayPalUtility.clearGestureSets();
+			dottedLineView.setVisibility(ImageView.INVISIBLE);
+			Animation carrotAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTRIGHT);
+			carrotAnim.setAnimationListener(new AnimationListener() {
+				@Override
+				public void onAnimationEnd(Animation anim) {
+					isFoodCanTouch = true;
+					carrotView.clearAnimation();
+					carrotView.setVisibility(ImageView.GONE);
+					
+					Animation cucumberAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_OUTLEFT_TO_CUR);
+					cucumberView.setAnimation(cucumberAnim);
+					cucumberView.setVisibility(ImageView.VISIBLE);
+					setFoodListener(cucumberView);
+					
+					cucumberAnim.setAnimationListener(new AnimationListener() {
+						@Override
+						public void onAnimationEnd(Animation anim) {
+							PlayPalUtility.setLineGesture(true);
+							dottedLineView.setVisibility(ImageView.VISIBLE);
+							PlayPalUtility.initialLineGestureParams(boxSize, new Point(originBeginCenterX, originBeginCenterY), new Point(originEndCenterX, originEndCenterY));
+							RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+							params.setMargins(PlayPalUtility.getPoint(0, 0).x - boxSize, PlayPalUtility.getPoint(0, 0).y + boxSize, 0, 0);
+							dottedLineView.setLayoutParams(params);
 						}
-						return true;
-					case MotionEvent.ACTION_UP:
-						if(isLineGestureOn) {
-							if(isWithinBox(false, (int)event.getX(), (int)event.getY()) && isOnTrack)
-								try {
-									func.call();
-								} catch (Exception e) {
-									e.printStackTrace();
-								}
-							else
-								isOnTrack = false;
+
+						@Override
+						public void onAnimationRepeat(Animation animation) {
 						}
-						return true;
+
+						@Override
+						public void onAnimationStart(Animation animation) {
+						}
+					});
+					
+					cucumberAnim.startNow();
 				}
-				return false;
-			}
-		});
-	}
-	
-	protected void changeGaestureParams(int beginX, int beginY, int endX, int endY, int size) {
-		beginBoxCenterX = beginX;
-		beginBoxCenterY = beginY;
-		endBoxCenterX = endX;
-		endBoxCenterY = endY;
-		boxSize = size;
-	}
-	
-	protected boolean isWithinBox(boolean isBeginJudge, int targetX, int targetY) {
-		if(isBeginJudge) {
-			if(Math.abs(targetX - beginBoxCenterX) < boxSize && Math.abs(targetY - beginBoxCenterY) < boxSize)
-				return true;
-			return false;
+
+				@Override
+				public void onAnimationRepeat(Animation animation) {
+				}
+
+				@Override
+				public void onAnimationStart(Animation animation) {
+				}
+			});
+			carrotView.setAnimation(carrotAnim);
+			carrotAnim.startNow();
+		} else if (progressCount == step1TotalProgressCount) {
+			isFoodCanTouch = false;
+
+			Animation cucumberAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTRIGHT);
+			Animation boardAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTRIGHT);
+
+			ImageView boardView = (ImageView) findViewById(R.id.boardView);
+			boardView.setAnimation(boardAnim);
+			boardAnim.startNow();
+			
+			dottedLineView.setVisibility(ImageView.GONE);
+			PlayPalUtility.setLineGesture(false);
+
+			cucumberView.setAnimation(cucumberAnim);
+			cucumberAnim.setAnimationListener(new AnimationListener() {
+				@Override
+				public void onAnimationEnd(Animation anim) {
+					ImageView boardView = (ImageView) findViewById(R.id.boardView);
+					boardView.clearAnimation();
+					boardView.setVisibility(ImageView.GONE);
+					cucumberView.clearAnimation();
+					cucumberView.setVisibility(ImageView.GONE);
+
+					potView.setVisibility(ImageView.VISIBLE);
+					Animation fadeIn = new AlphaAnimation(0, 1);
+					fadeIn.setInterpolator(new DecelerateInterpolator());
+					fadeIn.setDuration(2000);
+					potView.setAnimation(fadeIn);
+
+					board2Layout.setVisibility(ImageView.VISIBLE);
+					Animation board2Anim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_OUTLEFT_TO_CUR);
+					board2Layout.setAnimation(board2Anim);
+
+					randomSetupFood();
+
+					board2Anim.startNow();
+				}
+
+				@Override
+				public void onAnimationRepeat(Animation animation) {
+				}
+
+				@Override
+				public void onAnimationStart(Animation animation) {
+				}
+			});
+			cucumberAnim.startNow();
 		}
-		else {
-			if(Math.abs(targetX - endBoxCenterX) < boxSize && Math.abs(targetY - endBoxCenterY) < boxSize)
-				return true;
-			return false;
-		}
-	}
-	
-	protected Integer test() {
-		Log.d("PlayPalGame", "Valid cut");
+		
 		return 1;
 	}
 }

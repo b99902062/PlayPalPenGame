@@ -116,6 +116,16 @@
             android:src="@drawable/game1_knife"
             android:visibility="invisible" />
 
+        <ImageView
+            android:id="@+id/dottedLineView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/carrotView"
+            android:layout_marginLeft="29dp"
+            android:layout_toRightOf="@+id/progressBar"
+            android:src="@drawable/dotted_line"
+            android:visibility="invisible" />
+
     </RelativeLayout>
 
 </FrameLayout>

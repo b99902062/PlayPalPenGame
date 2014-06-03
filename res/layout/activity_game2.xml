@@ -95,6 +95,13 @@
             android:src="@drawable/game2_fish"
             android:visibility="invisible" />
 
+        <ImageView
+            android:id="@+id/netView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/game2_net"
+            android:visibility="invisible" />
+
     </RelativeLayout>
 
 </FrameLayout>
