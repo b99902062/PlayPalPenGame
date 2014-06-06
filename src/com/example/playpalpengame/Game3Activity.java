@@ -1,6 +1,7 @@
 package com.example.playpalpengame;
 
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -23,8 +24,18 @@ public class Game3Activity extends Activity {
 		R.drawable.game3_mix2,
 		R.drawable.game3_mix3};
 	
+	protected int[] cakeArray = {
+			R.drawable.game3_cake1,	
+			R.drawable.game3_cake2,
+			R.drawable.game3_cake3,
+			R.drawable.game3_cake4,
+			R.drawable.game3_cake5 };
+		
+	protected int boxSize;
+	protected int cakeProgress;
 	protected int mixingProgress;
-	protected int curProgress; 
+	protected int curProgress;
+	
 	ImageView mixView;
 	ImageView doughView;
 	ImageView ovenView;
@@ -32,7 +43,6 @@ public class Game3Activity extends Activity {
 	AnimationDrawable ovenAnimation;
 	protected RelativeLayout game3RelativeLayout;
 
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
@@ -78,9 +88,6 @@ public class Game3Activity extends Activity {
         });
 	}	
 
-
-
-
 	protected void setHomeListener(View targetView) {
 		targetView.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -102,7 +109,7 @@ public class Game3Activity extends Activity {
 				
 				Log.d("PenPalGame",""+mixingProgress);
 				if(mixingProgress>=2){
-					Animation mixAnim = Game1Activity.CreateTranslateAnimation(Game1Activity.FROM_CUR_TO_OUTRIGHT);
+					Animation mixAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTRIGHT);
 					mixAnim.setAnimationListener(new AnimationListener() {
 						@Override
 						public void onAnimationEnd(Animation anim) {
