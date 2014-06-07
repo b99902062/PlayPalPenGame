@@ -18,10 +18,12 @@ public class Game4Activity extends Activity {
 	protected int curProgress;
 	protected int doughProgress;
 	protected int cookieProgress;
+	
 	protected int[] doughResArray = {
 		R.drawable.game4_dough1,
 		R.drawable.game4_dough2,
 		R.drawable.game4_dough3};
+	
 	protected int[] cookieResArray = {
 		R.drawable.game4_cookie1,
 		R.drawable.game4_cookie2,	
@@ -40,6 +42,7 @@ public class Game4Activity extends Activity {
 		R.id.Game4_cookie7,
 	};
 	
+	int  curCookieType;
 	View doughView;
 
 	@Override
@@ -76,14 +79,14 @@ public class Game4Activity extends Activity {
 				if(curProgress != 0)
 					return;
 				
-				if(doughProgress>=4){
-					Animation doughAnim = Game1Activity.CreateTranslateAnimation(Game1Activity.FROM_CUR_TO_OUTRIGHT);
+				if(doughProgress>=3){
+					Animation doughAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTRIGHT);
 					doughAnim.setAnimationListener(new AnimationListener() {
 						@Override
 						public void onAnimationEnd(Animation anim) {
-							doughView.clearAnimation();
 							doughView.setVisibility(ImageView.GONE);
-							curProgress++;
+							doughView.clearAnimation();
+							doughView.setOnClickListener(null);
 						}
 
 						@Override
@@ -96,8 +99,22 @@ public class Game4Activity extends Activity {
 					});
 					doughView.setAnimation(doughAnim);
 					doughAnim.startNow();
+					
+					curProgress++;//set to 1		
+					initCookieView();
+					for(int i=0; i<cookieArray.length; i++){
+						ImageView curCookie = (ImageView)findViewById(cookieArray[i]);
+						curCookie.setVisibility(ImageView.VISIBLE);
+						setCookieListener(curCookie);
+						
+						Animation cookieAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_OUTLEFT_TO_CUR);
+						curCookie.setAnimation(cookieAnim);
+						cookieAnim.startNow();
+					}
+					
 					return;
 				}
+				
 				doughProgress++;
 				((ImageView) view).setImageResource(doughResArray[doughProgress]);				
 				Log.d("PenPalGame",""+doughProgress);
@@ -107,25 +124,61 @@ public class Game4Activity extends Activity {
 	
 	
 	protected void setCookieListener(View targetView){
+		curCookieType = (Integer)targetView.getTag();
 		targetView.setOnClickListener(new View.OnClickListener(){
 			@Override
 			public void onClick(View view){
 				if(curProgress != 1)
 					return;
 				
-				curProgress++;
+				switch(curCookieType){
+					case 1:
+						Log.d("PenPal","cookie type 1");
+						break;
+						
+					case 2:
+						Log.d("PenPal","cookie type 2");
+						break;
+					
+					case 3:
+						Log.d("PenPal","cookie type 3");
+						break;
+						
+					default:
+						Log.d("PenPal","error cookie type");
+				}
+				view.setBackgroundResource(cookieResArray[curCookieType+3]);
+				curProgress++;//set to 2
 			}
 		});
 	}
 	
 	protected void setCookieListener2(View targetView){
+		curCookieType = (Integer)targetView.getTag();
 		targetView.setOnClickListener(new View.OnClickListener(){
 			@Override
 			public void onClick(View view){
 				if(curProgress != 2)
 					return;
-				
-				curProgress++;
+				switch(curCookieType){
+					case 0:
+						Log.d("PenPal","cookie type 1");
+						
+						break;
+						
+					case 1:
+						Log.d("PenPal","cookie type 2");
+						break;
+					
+					case 2:
+						Log.d("PenPal","cookie type 3");
+						break;
+						
+					default:
+						Log.d("PenPal","error cookie type");
+				}		
+				view.setVisibility(ImageView.GONE);
+				curProgress++;//set to 3
 			}
 		});
 	}
@@ -136,6 +189,7 @@ public class Game4Activity extends Activity {
 			ImageView curView = (ImageView)findViewById(cookieArray[i]);
 			int idx = ran.nextInt(3);
 			curView.setBackgroundResource(cookieResArray[idx]);
+			curView.setTag(idx);
 		}
 	}
 }
