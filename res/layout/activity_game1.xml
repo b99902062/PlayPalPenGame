@@ -69,7 +69,6 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="340dp"
             android:layout_marginTop="140dp"
-            android:src="@drawable/game1_fire_1"
             android:visibility="invisible" />
 
         <ImageView

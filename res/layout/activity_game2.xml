@@ -95,6 +95,13 @@
             android:src="@drawable/game2_fish"
             android:visibility="invisible" />
 
+        <TextView
+            android:id="@+id/testProgressCount2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="48dp"
+            android:text="ProgressCount:" />
+
         <ImageView
             android:id="@+id/netView"
             android:layout_width="wrap_content"

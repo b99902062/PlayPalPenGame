@@ -68,7 +68,7 @@ public class Game1Activity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_game1);
-
+		
 		isFoodCanTouch = true;
 		isDoneDropFood = false;
 		progressCount = 0;
@@ -115,7 +115,7 @@ public class Game1Activity extends Activity {
         });
 
 		//Test
-		PlayPalUtility.registerLineGesture(game1RelativeLayout, new Callable<Integer>() {
+		PlayPalUtility.registerLineGesture(game1RelativeLayout, this, new Callable<Integer>() {
 			public Integer call() {
 				return handleLineAction();
 			}
@@ -143,6 +143,10 @@ public class Game1Activity extends Activity {
 		targetView.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View view, MotionEvent event) {
+				PlayPalUtility.setLineGesture(false);
+	            PlayPalUtility.clearGestureSets();
+				PlayPalUtility.unregisterLineGesture(game1RelativeLayout);
+				
 				Intent newAct = new Intent();
 				newAct.setClass(Game1Activity.this, MainActivity.class);
 				startActivityForResult(newAct, 0);
@@ -285,11 +289,12 @@ public class Game1Activity extends Activity {
 		progressCountText.setText("ProgressCount: " + new String("" + progressCount));
 		
 		PlayPalUtility.changeGestureParams(true, 0, new Point(-lineInterval, 0), new Point(-lineInterval, 0));
-		
+
 		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		Log.d("PlayPalUtility", String.format("GetPoint(0, 0) = (%d, %d)", PlayPalUtility.getPoint(0, 0).x, PlayPalUtility.getPoint(0, 0).y));
 		params.setMargins(PlayPalUtility.getPoint(0, 0).x - boxSize, PlayPalUtility.getPoint(0, 0).y + boxSize, 0, 0);
 		dottedLineView.setLayoutParams(params);
-
+		
 		((ImageView) currentFoodView)
 				.setImageResource(foodResArray[progressCount]);
 
@@ -357,6 +362,8 @@ public class Game1Activity extends Activity {
 			
 			dottedLineView.setVisibility(ImageView.GONE);
 			PlayPalUtility.setLineGesture(false);
+			PlayPalUtility.clearGestureSets();
+			PlayPalUtility.unregisterLineGesture(game1RelativeLayout);
 
 			cucumberView.setAnimation(cucumberAnim);
 			cucumberAnim.setAnimationListener(new AnimationListener() {
