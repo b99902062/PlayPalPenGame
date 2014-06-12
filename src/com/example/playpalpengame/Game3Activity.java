@@ -14,32 +14,42 @@ import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Point;
 import android.graphics.drawable.AnimationDrawable;
 
 
 public class Game3Activity extends Activity {
 	
-	protected int[] mixArray = {
+	protected int[] foodResArray = {
 		R.drawable.game3_mix1,
 		R.drawable.game3_mix2,
-		R.drawable.game3_mix3};
+		R.drawable.game3_mix3,
+		
+		R.drawable.game3_cake1,	
+		R.drawable.game3_cake2,
+		R.drawable.game3_cake3,
+		R.drawable.game3_cake4,
+		R.drawable.game3_cake5 };
 	
-	protected int[] cakeArray = {
-			R.drawable.game3_cake1,	
-			R.drawable.game3_cake2,
-			R.drawable.game3_cake3,
-			R.drawable.game3_cake4,
-			R.drawable.game3_cake5 };
+	protected Point[] pointArray = {
+			new Point(1760,300),
+			new Point(800,300),
+			new Point(800,1300),
+			new Point(1760,1300) };
 		
 	protected int boxSize;
 	protected int cakeProgress;
 	protected int mixingProgress;
 	protected int curProgress;
+		
+	protected Point centerPoint = new Point(1280,800);	//2560*1600
 	
 	ImageView mixView;
-	ImageView doughView;
 	ImageView ovenView;
 	ImageView eggbeatView;
+	ImageView dottedLineView;
+	ImageView currentFoodView;
+
 	AnimationDrawable ovenAnimation;
 	protected RelativeLayout game3RelativeLayout;
 
@@ -50,48 +60,80 @@ public class Game3Activity extends Activity {
 
 		View homeBtn = findViewById(R.id.homeBtn);
 		setHomeListener(homeBtn);
-
-		mixView =  (ImageView)findViewById(R.id.Game3_mix);
-		doughView = (ImageView)findViewById(R.id.Game3_dough);
-		ovenView = (ImageView)findViewById(R.id.Game3_oven);
-		eggbeatView = (ImageView)findViewById(R.id.Game3_eggbeat);
-		setMixListener(mixView);
-
+		
 		curProgress    = 0;
 		mixingProgress = 0;
+		boxSize = 100;
 		
 		
+		mixView =  (ImageView)findViewById(R.id.Game3_mix);
+		ovenView = (ImageView)findViewById(R.id.Game3_oven);
+		eggbeatView = (ImageView)findViewById(R.id.Game3_eggbeat);
+		dottedLineView = (ImageView) findViewById(R.id.dottedLineView);
 		game3RelativeLayout = (RelativeLayout) findViewById(R.id.Game3RelativeLayout);
+		
+		setFoodListener(mixView);
+
+		//setMixListener(mixView);
+		
+		PlayPalUtility.registerLineGesture(game3RelativeLayout, this, new Callable<Integer>() {
+			public Integer call() {
+				return handleLineAction(mixView);
+			}
+		});
+
+		PlayPalUtility.setLineGesture(true);
+		PlayPalUtility.initialLineGestureParams(boxSize, centerPoint, pointArray[mixingProgress]);//mixingProgress=0
+		
+		
+		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		params.setMargins(PlayPalUtility.getPoint(0, 0).x - boxSize, PlayPalUtility.getPoint(0, 0).y + boxSize, 0, 0);		
+		dottedLineView.setLayoutParams(params);
+		dottedLineView.setVisibility(ImageView.VISIBLE);
+		
+		
+		
+		
 		game3RelativeLayout.setOnHoverListener(new View.OnHoverListener() {
             @Override
             public boolean onHover(View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_HOVER_ENTER:
                     	eggbeatView.setVisibility(ImageView.VISIBLE);
-                        Log.d("PlayPal", "Enter");
+                        //Log.d("PlayPal", "Enter");
                         break;
-                    
+                     
                     case MotionEvent.ACTION_HOVER_MOVE:
                     	RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
                     	params.setMargins((int)event.getX() - 200, (int)event.getY() - 200 , 0, 0);
                     	eggbeatView.setLayoutParams(params);
-                    	Log.d("PlayPal", "Move");
+                    	//Log.d("PlayPal", "Move");
                         break;
 
                     case MotionEvent.ACTION_HOVER_EXIT:
                     	eggbeatView.setVisibility(ImageView.INVISIBLE);
-                    	Log.d("PlayPal", "Exit");
+                    	//Log.d("PlayPal", "Exit");
                         break;
                 }
                 return true;
             }
         });
+		
+		
 	}	
-
+	
+	protected void setFoodListener(View targetView) {
+		currentFoodView = (ImageView) targetView;
+	}
+	
 	protected void setHomeListener(View targetView) {
 		targetView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
+				PlayPalUtility.setLineGesture(false);
+	            PlayPalUtility.clearGestureSets();
+				PlayPalUtility.unregisterLineGesture(game3RelativeLayout);
+				
 				Intent newAct = new Intent();
 				newAct.setClass(Game3Activity.this, MainActivity.class);
 				startActivityForResult(newAct, 0);
@@ -113,9 +155,9 @@ public class Game3Activity extends Activity {
 					mixAnim.setAnimationListener(new AnimationListener() {
 						@Override
 						public void onAnimationEnd(Animation anim) {
-							doughView.setVisibility(ImageView.VISIBLE);
+							mixView.setVisibility(ImageView.VISIBLE);
 							
-							ovenView.setBackgroundResource(R.id.oven_animation);
+							ovenView.setBackgroundResource(R.drawable.game3_oven_animation);
 							ovenAnimation = (AnimationDrawable) ovenView.getBackground();
 							ovenAnimation.start();
 							
@@ -138,7 +180,7 @@ public class Game3Activity extends Activity {
 				}
 				
 				mixingProgress++;
-				((ImageView) view).setImageResource(mixArray[mixingProgress]);
+				//((ImageView) view).setImageResource(doughArray[mixingProgress]);
 				Log.d("PenPalGame",""+mixingProgress);
 			}
 		});
@@ -170,4 +212,58 @@ public class Game3Activity extends Activity {
 		});
 	}
 	
+	
+	protected Integer handleLineAction(View view){
+		Log.d("PenPalGame","mixingProgress "+mixingProgress);		
+		
+		mixingProgress++;
+		currentFoodView.setImageResource(foodResArray[mixingProgress]);
+		game3RelativeLayout.invalidate();//?
+		
+		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		params.setMargins(PlayPalUtility.getPoint(0, 0).x - boxSize, PlayPalUtility.getPoint(0, 0).y + boxSize, 0, 0);
+		dottedLineView.setLayoutParams(params);
+
+		PlayPalUtility.changeGestureParams(false, 0, pointArray[mixingProgress], centerPoint);
+		
+		if( mixingProgress == 3){
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
+			Animation mixAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTRIGHT);
+			mixAnim.setAnimationListener(new AnimationListener() {
+				@Override
+				public void onAnimationEnd(Animation anim) {	
+					mixView.setVisibility(ImageView.GONE);
+					mixView.clearAnimation();
+					
+					PlayPalUtility.setLineGesture(false);
+					PlayPalUtility.clearGestureSets();
+					dottedLineView.setVisibility(ImageView.INVISIBLE);
+					
+					setFoodListener(ovenView);//?
+				}
+
+				@Override
+				public void onAnimationRepeat(Animation animation) {
+				}
+
+				@Override
+				public void onAnimationStart(Animation animation) {
+				}
+			});
+			currentFoodView.setAnimation(mixAnim);
+			mixAnim.startNow();
+			
+			ovenView.setBackgroundResource(R.drawable.game3_oven_animation);
+			ovenAnimation = (AnimationDrawable) ovenView.getBackground();
+			ovenAnimation.start();
+			
+			curProgress++;
+		}
+		return 1;	
+	}
 }
