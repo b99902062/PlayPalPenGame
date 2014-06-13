@@ -31,18 +31,25 @@ public class Game3Activity extends Activity {
 		R.drawable.game3_cake4,
 		R.drawable.game3_cake5 };
 	
+	
+	protected Point centerPoint = new Point(1280,800);	//center of 2560*1600
 	protected Point[] pointArray = {
-			new Point(1760,300),
-			new Point(800,300),
-			new Point(800,1300),
-			new Point(1760,1300) };
+			new Point(1660,800),
+			new Point(1280,400),
+			new Point(900,800),
+			new Point(1280,1200),
+			
+			new Point(1860,800),
+			new Point(1280,200),
+			new Point(700,800),
+			new Point(1280,1400), };
 		
 	protected int boxSize;
 	protected int cakeProgress;
 	protected int mixingProgress;
 	protected int curProgress;
 		
-	protected Point centerPoint = new Point(1280,800);	//2560*1600
+	
 	
 	ImageView mixView;
 	ImageView ovenView;
@@ -83,7 +90,11 @@ public class Game3Activity extends Activity {
 		});
 
 		PlayPalUtility.setLineGesture(true);
-		PlayPalUtility.initialLineGestureParams(boxSize, centerPoint, pointArray[mixingProgress]);//mixingProgress=0
+		PlayPalUtility.initialLineGestureParams(boxSize, centerPoint, 
+				pointArray[4*mixingProgress],
+				pointArray[4*mixingProgress+1],
+				pointArray[4*mixingProgress+2],
+				pointArray[4*mixingProgress+3]);
 		
 		
 		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
@@ -124,6 +135,7 @@ public class Game3Activity extends Activity {
 	
 	protected void setFoodListener(View targetView) {
 		currentFoodView = (ImageView) targetView;
+		currentFoodView.setVisibility(ImageView.VISIBLE);
 	}
 	
 	protected void setHomeListener(View targetView) {
@@ -218,21 +230,17 @@ public class Game3Activity extends Activity {
 		
 		mixingProgress++;
 		currentFoodView.setImageResource(foodResArray[mixingProgress]);
-		game3RelativeLayout.invalidate();//?
 		
-		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		params.setMargins(PlayPalUtility.getPoint(0, 0).x - boxSize, PlayPalUtility.getPoint(0, 0).y + boxSize, 0, 0);
-		dottedLineView.setLayoutParams(params);
-
-		PlayPalUtility.changeGestureParams(false, 0, pointArray[mixingProgress], centerPoint);
 		
-		if( mixingProgress == 3){
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			
+		if(mixingProgress < 2){
+			PlayPalUtility.changeGestureParams(false, 0, 
+					centerPoint, 
+					pointArray[4*mixingProgress],
+					pointArray[4*mixingProgress+1],
+					pointArray[4*mixingProgress+2],
+					pointArray[4*mixingProgress+3]);
+		}
+		else if( mixingProgress == 2){
 			Animation mixAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTRIGHT);
 			mixAnim.setAnimationListener(new AnimationListener() {
 				@Override
@@ -244,7 +252,7 @@ public class Game3Activity extends Activity {
 					PlayPalUtility.clearGestureSets();
 					dottedLineView.setVisibility(ImageView.INVISIBLE);
 					
-					setFoodListener(ovenView);//?
+					setFoodListener(ovenView);
 				}
 
 				@Override
@@ -264,6 +272,24 @@ public class Game3Activity extends Activity {
 			
 			curProgress++;
 		}
+		else if(curProgress == 2)
+		{
+			try {
+				Thread.sleep(3000);
+			} catch (InterruptedException e) {
+				Log.d("Penpalgame","thread sleep error");
+				e.printStackTrace();
+			}
+			
+		}
+		
+		
+		
+		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		params.setMargins(PlayPalUtility.getPoint(0, 0).x - boxSize, PlayPalUtility.getPoint(0, 0).y + boxSize, 0, 0);
+		dottedLineView.setLayoutParams(params);
+		
+		
 		return 1;	
 	}
 }
