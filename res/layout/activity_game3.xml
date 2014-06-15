@@ -25,6 +25,13 @@
             android:layout_marginTop="40dp"
             android:src="@drawable/progress" />
 
+         <ImageView 
+            android:id="@+id/Game3_beat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/game3_eggbeat"
+            android:visibility="invisible"/>
+        
         <ImageView
             android:id="@+id/Game3_mix"
             android:layout_width="wrap_content"
@@ -51,13 +58,6 @@
             android:visibility="invisible" />
         
         <ImageView 
-            android:id="@+id/Game3_eggbeat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/game3_eggbeat"
-            android:visibility="invisible"/>
-        
-        <ImageView 
             android:id="@+id/Game3_cake"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -67,11 +67,13 @@
             android:visibility="invisible"/>
 		
          <ImageView
-            android:id="@+id/dottedLineView"
+            android:id="@+id/Game3_butter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/dotted_line"
+            android:src="@drawable/game3_butter"
             android:visibility="invisible"/>
+        
+ 
             
     </RelativeLayout>
 

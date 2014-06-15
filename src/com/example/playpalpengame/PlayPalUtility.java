@@ -94,7 +94,7 @@ public class PlayPalUtility {
 					
 					switch(event.getAction()) {
 						case MotionEvent.ACTION_DOWN:
-							Log.d("PlayPal", String.format("DOWN: (%d, %d)", (int)event.getX(), (int)event.getY()));
+							//Log.d("PlayPal", String.format("DOWN: (%d, %d)", (int)event.getX(), (int)event.getY()));
 							if(isWithinBox(setIndex, 0, new Point((int)event.getX(), (int)event.getY()))) {
 								Log.d("PlayPalTest", String.format("Set: %d, Start 0", setIndex));
 								isPointPassedList.set(0, Boolean.valueOf(true));
@@ -103,7 +103,7 @@ public class PlayPalUtility {
 								isPointPassedList.set(0, Boolean.valueOf(false));
 							break;
 						case MotionEvent.ACTION_MOVE:
-							Log.d("PlayPal", String.format("MOVE: (%d, %d)", (int)event.getX(), (int)event.getY()));
+							//Log.d("PlayPal", String.format("MOVE: (%d, %d)", (int)event.getX(), (int)event.getY()));
 							if(isPointPassedList.get(0) == Boolean.FALSE)
 								break;
 							for(int i=1; i<isPointPassedList.size(); i++) {
@@ -117,7 +117,7 @@ public class PlayPalUtility {
 							}
 							break;
 						case MotionEvent.ACTION_UP:
-							Log.d("PlayPal", String.format("UP: (%d, %d)", (int)event.getX(), (int)event.getY()));
+							//Log.d("PlayPal", String.format("UP: (%d, %d)", (int)event.getX(), (int)event.getY()));
 							if(isPointPassedList.get(0) == Boolean.FALSE)
 								break;
 							Log.d("PlayPalTest", "Before check whole");

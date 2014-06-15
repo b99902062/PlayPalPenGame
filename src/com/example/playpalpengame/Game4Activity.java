@@ -2,22 +2,39 @@ package com.example.playpalpengame;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.Callable;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Point;
 
 
 public class Game4Activity extends Activity {
 	
+	protected RelativeLayout game4RelativeLayout;
+	protected ImageView doughView;
+	protected ImageView laddleView;
+	
 	protected int curProgress;
-	protected int doughProgress;
-	protected int cookieProgress;
+	protected int  curCookieType;
+	
+	protected Point centerPoint = new Point(1280,800);
+	protected Point[] pointArray = {
+			new Point(1660,1200),
+			new Point(1660,400),
+			new Point(900,400),
+			new Point(900,1200),};
+		
+	protected int boxSize;
 	
 	protected int[] doughResArray = {
 		R.drawable.game4_dough1,
@@ -42,8 +59,6 @@ public class Game4Activity extends Activity {
 		R.id.Game4_cookie7,
 	};
 	
-	int  curCookieType;
-	View doughView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
@@ -53,10 +68,46 @@ public class Game4Activity extends Activity {
 		View homeBtn = findViewById(R.id.homeBtn);
 		setHomeListener(homeBtn);
 
-		doughView = findViewById(R.id.Game4_dough);
-		setDoughListener(doughView);
+		doughView = (ImageView)findViewById(R.id.Game4_dough);
 
-		doughProgress = 0;
+		game4RelativeLayout = (RelativeLayout) findViewById(R.id.Game4RelativeLayout);
+		
+		curProgress = 0;
+		boxSize = 100;
+		
+		PlayPalUtility.registerLineGesture(game4RelativeLayout, this, new Callable<Integer>() {
+			public Integer call() {
+				return handleLineAction(doughView);
+			}
+		});
+
+		PlayPalUtility.setLineGesture(true);
+		PlayPalUtility.initialLineGestureParams(boxSize, centerPoint, pointArray[0]);
+		
+		
+		game4RelativeLayout.setOnHoverListener(new View.OnHoverListener() {
+            @Override
+            public boolean onHover(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_HOVER_ENTER:
+                    	laddleView.setVisibility(ImageView.VISIBLE);
+                        break;
+                     
+                    case MotionEvent.ACTION_HOVER_MOVE:
+                    	RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                    	params.setMargins((int)event.getX() - 200, (int)event.getY() - 200 , 0, 0);
+                    	laddleView.setLayoutParams(params);
+                        break;
+
+                    case MotionEvent.ACTION_HOVER_EXIT:
+                    	laddleView.setVisibility(ImageView.INVISIBLE);
+                        break;
+                }
+                return true;
+            }
+        });	
+		
+		
 	}	
 
 	protected void setHomeListener(View targetView) {
@@ -71,7 +122,7 @@ public class Game4Activity extends Activity {
 		});
 	}
 
-
+/*
 	protected void setDoughListener(View targetView){		
 		targetView.setOnClickListener(new View.OnClickListener(){
 			@Override
@@ -115,13 +166,13 @@ public class Game4Activity extends Activity {
 					return;
 				}
 				
-				doughProgress++;
+				curProgress++;
 				((ImageView) view).setImageResource(doughResArray[doughProgress]);				
-				Log.d("PenPalGame",""+doughProgress);
+				Log.d("PenPalGame",""+curProgress);
 			}
 		});
 	}
-	
+*/	
 	
 	protected void setCookieListener(View targetView){
 		curCookieType = (Integer)targetView.getTag();
@@ -191,6 +242,27 @@ public class Game4Activity extends Activity {
 			curView.setBackgroundResource(cookieResArray[idx]);
 			curView.setTag(idx);
 		}
+	}
+	
+	protected Integer handleLineAction (View view){
+		curProgress++;
+		Log.d("PenPalGame","curProgress "+curProgress);
+		
+		if(curProgress < 4){
+			doughView.setImageResource(doughResArray[curProgress]);
+			doughView.invalidate();
+			
+			PlayPalUtility.changeGestureParams(false, 0, 
+					centerPoint, 
+					pointArray[4*curProgress],
+					pointArray[4*curProgress+1],
+					pointArray[4*curProgress+2],
+					pointArray[4*curProgress+3]);
+		}
+		
+		
+		
+		return 1;
 	}
 }
 
