@@ -17,29 +17,43 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Point;
 
+import com.samsung.spensdk.applistener.SPenHoverListener;
 
 public class Game4Activity extends Activity {
+	public class cookie{
+		int type;
+		Point center;
+		ImageView view;
+		
+		
+	}
 	
 	protected RelativeLayout game4RelativeLayout;
 	protected ImageView doughView;
 	protected ImageView laddleView;
 	
 	protected int curProgress;
-	protected int  curCookieType;
+	protected int curCookieType;
+	
+	 
 	
 	protected Point centerPoint = new Point(1280,800);
 	protected Point[] pointArray = {
 			new Point(1660,1200),
 			new Point(1660,400),
 			new Point(900,400),
-			new Point(900,1200),};
+			new Point(900,1200)};
 		
 	protected int boxSize;
 	
 	protected int[] doughResArray = {
 		R.drawable.game4_dough1,
 		R.drawable.game4_dough2,
-		R.drawable.game4_dough3};
+		R.drawable.game4_dough3,
+		R.drawable.game4_dough4,
+		R.drawable.game4_dough5	};
+	
+	protected cookie[] cookieArray = new cookie[8]; 
 	
 	protected int[] cookieResArray = {
 		R.drawable.game4_cookie1,
@@ -48,7 +62,7 @@ public class Game4Activity extends Activity {
 		R.drawable.game4_cookie4,
 		R.drawable.game4_cookie5,
 	};
-	protected int[] cookieArray = {
+	protected int[] cookieViewArray = {
 		R.id.Game4_cookie0,	
 		R.id.Game4_cookie1,
 		R.id.Game4_cookie2,
@@ -59,6 +73,7 @@ public class Game4Activity extends Activity {
 		R.id.Game4_cookie7,
 	};
 	
+		
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
@@ -237,10 +252,10 @@ public class Game4Activity extends Activity {
 	protected void initCookieView(){
 		Random ran = new Random();
 		for(int i=0; i<cookieArray.length; i++){
-			ImageView curView = (ImageView)findViewById(cookieArray[i]);
-			int idx = ran.nextInt(3);
-			curView.setBackgroundResource(cookieResArray[idx]);
-			curView.setTag(idx);
+			
+			cookieArray[i].view = (ImageView)findViewById(cookieViewArray[i]);
+			cookieArray[i].type = ran.nextInt(3);			
+			cookieArray[i].view.setBackgroundResource(cookieResArray[cookieArray[i].type]);
 		}
 	}
 	
@@ -254,13 +269,8 @@ public class Game4Activity extends Activity {
 			
 			PlayPalUtility.changeGestureParams(false, 0, 
 					centerPoint, 
-					pointArray[4*curProgress],
-					pointArray[4*curProgress+1],
-					pointArray[4*curProgress+2],
-					pointArray[4*curProgress+3]);
+					pointArray[curProgress]);
 		}
-		
-		
 		
 		return 1;
 	}
