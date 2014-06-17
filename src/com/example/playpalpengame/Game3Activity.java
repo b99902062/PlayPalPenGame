@@ -58,6 +58,7 @@ public class Game3Activity extends Activity {
 	protected int boxSize;
 	protected int curProgress;
 	protected boolean canTouchOven = false;
+	protected boolean butterSqueezing = false;
 	
 	
 	ImageView mixView;
@@ -126,31 +127,43 @@ public class Game3Activity extends Activity {
 		mSPenEventLibrary.setSPenHoverListener(cakeView, new SPenHoverListener(){
 			ImageView curButterView;
 			int ratio = 0;
-			int w = 100;
-			int h = 100;
+			int w = 200;
+			int h = 200;
 					
 			@Override
 			public boolean onHover(View arg0, MotionEvent event) {
-				if(curProgress<2){
-					//TODO
-					return false;
-				}
-					
-				// TODO Auto-generated method stub
 				//Log.d("Penpal","hovering"+ratio);
-				if(ratio < 1000)
+				if(!butterSqueezing)
+					return false;
+				
+				
+				if(curButterView == null){
+            		curButterView = new ImageView(gameContext);	
+    				curButterView.setImageResource(R.drawable.game3_butter);
+    				game3RelativeLayout.addView(curButterView);
+				
+				}
+				
+
+				if(ratio == 99 && curProgress < 7){
+					curProgress++;
+					currentFoodView.setImageResource(foodResArray[curProgress]);
+				}
+				
+				if(ratio < 100)
 					ratio++;
-				butterView.getLayoutParams().height = (int)(w*ratio/1000.0);
-				butterView.getLayoutParams().height = (int)(w*ratio/1000.0);
 				
-				RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-            	params.setMargins((int)event.getX() - 200, (int)event.getY() - 200 , 0, 0);
-            	
-            	if(curButterView == null)
-            		curButterView = new ImageView(gameContext);
-            	curButterView.setImageResource(R.drawable.game3_butter);
-            	curButterView.setLayoutParams(params);
+				RelativeLayout.LayoutParams params = (LayoutParams) curButterView.getLayoutParams();
+				params.height = (int)(w*ratio/100.0);
+				params.width  = (int)(h*ratio/100.0);
 				
+				params.setMargins(	cakeView.getLeft()+(int)event.getX()-params.height/2, 
+									cakeView.getTop()+(int)event.getY()-params.width/2, 
+									0, 0);
+				
+				
+				
+				curButterView.setLayoutParams(params);
 				
 				return false;
 			}
@@ -158,14 +171,19 @@ public class Game3Activity extends Activity {
 			@Override
 			public void onHoverButtonDown(View arg0, MotionEvent arg1) {
 				Log.d("Penpal","pressing");
+				butterSqueezing = true;
 				ratio = 0;
 				curButterView = new ImageView(gameContext);	
+				curButterView.setImageResource(R.drawable.game3_butter);
+				game3RelativeLayout.addView(curButterView);
 			}
 
 			@Override
 			public void onHoverButtonUp(View arg0, MotionEvent arg1) {
+				butterSqueezing = false;
 				Log.d("Penpal","releasing");
 				ratio = 0;
+				curButterView = null;
 			}
 			
 		});
