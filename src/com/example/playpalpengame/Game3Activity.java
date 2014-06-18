@@ -143,11 +143,24 @@ public class Game3Activity extends Activity {
     				game3RelativeLayout.addView(curButterView);
 				
 				}
-				
 
 				if(ratio == 99 && curProgress < 7){
 					curProgress++;
+					drawView.progress = curProgress;
+					drawView.invalidate();
+
+					Log.d("Penpal","oven curprogress"+curProgress);
 					currentFoodView.setImageResource(foodResArray[curProgress]);
+					
+					
+					if(curProgress == 7){
+						//bi-directional line gesture
+						PlayPalUtility.setLineGesture(true);
+						PlayPalUtility.initialLineGestureParams(boxSize, pointArray[0],pointArray[2]);
+						PlayPalUtility.initialLineGestureParams(boxSize, pointArray[2],pointArray[0]);
+						PlayPalUtility.initialLineGestureParams(boxSize, pointArray[1],pointArray[3]);
+						PlayPalUtility.initialLineGestureParams(boxSize, pointArray[3],pointArray[1]);
+					}
 				}
 				
 				if(ratio < 100)
@@ -160,8 +173,6 @@ public class Game3Activity extends Activity {
 				params.setMargins(	cakeView.getLeft()+(int)event.getX()-params.height/2, 
 									cakeView.getTop()+(int)event.getY()-params.width/2, 
 									0, 0);
-				
-				
 				
 				curButterView.setLayoutParams(params);
 				
@@ -187,44 +198,13 @@ public class Game3Activity extends Activity {
 			}
 			
 		});
-		
-		
-		
-		/*
-		game3RelativeLayout.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                    	eggbeatView.setVisibility(ImageView.VISIBLE);
-                        //Log.d("PlayPal", "Enter");
-                        break;
-                     
-                    case MotionEvent.ACTION_MOVE:
-                    	RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-                    	params.setMargins((int)event.getX() - 200, (int)event.getY() - 200 , 0, 0);
-                    	eggbeatView.setLayoutParams(params);
-                    	//Log.d("PlayPal", "Move");
-                        break;
-
-                    case MotionEvent.ACTION_UP:
-                    	eggbeatView.setVisibility(ImageView.INVISIBLE);
-                    	//Log.d("PlayPal", "Exit");
-                        break;
-                }
-                return true;
-            }
-        });
-        */	
 
 		drawView = new DrawView(this);
 		drawView.setMinimumHeight(2160);
 		drawView.setMinimumWidth(1600);
 		game3RelativeLayout.addView(drawView);
-				
 		
 		setFoodListener(mixView);
-
 		
 		PlayPalUtility.registerLineGesture(game3RelativeLayout, this, new Callable<Integer>() {
 			public Integer call() {
@@ -292,7 +272,7 @@ public class Game3Activity extends Activity {
 										centerPoint.x+radius, centerPoint.y+radius);
 				canvas.drawArc(oval2, 90, 270, false, paint);
 			}
-			else if (progress > 3 && progress<9){
+			else if (progress > 6 && progress<9){
 				
 				canvas.drawLine(pointArray[0].x, pointArray[0].y, 
 								pointArray[2].x, pointArray[2].y, paint);
@@ -326,18 +306,14 @@ public class Game3Activity extends Activity {
 		});
 	}
 	
-	protected void setOvenListener(View targetView){
-		canTouchOven = true;
-		curProgress++;
-		Log.d("Penpal","oven curprogress"+curProgress);
-		drawView.progress = curProgress;
-		drawView.invalidate();
-		
+	protected void setOvenListener(View targetView){	
 		targetView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				if(!canTouchOven)
+				if(!canTouchOven){
+					Log.d("Penpal_oven","can't be touched agian");
 					return;
+				}
 				
 				canTouchOven = false;
 				ovenAnimation.stop();
@@ -346,17 +322,13 @@ public class Game3Activity extends Activity {
 				ovenAnim.setAnimationListener(new AnimationListener() {
 					@Override
 					public void onAnimationEnd(Animation anim) {	
-						setFoodListener(cakeView);
-						
 						ovenView.setVisibility(ImageView.GONE);
 						ovenView.clearAnimation();
-						
 						
 						curProgress++;
 						Log.d("Penpal","oven curprogress"+curProgress);
 						drawView.progress = curProgress;
 						drawView.invalidate();
-						
 					}
 
 					@Override
@@ -370,19 +342,30 @@ public class Game3Activity extends Activity {
 				ovenView.setAnimation(ovenAnim);
 				ovenAnim.startNow();
 				
+				setFoodListener(cakeView);
+				Animation cakeAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_OUTLEFT_TO_CUR);
+				cakeAnim.setAnimationListener(new AnimationListener() {
+					@Override
+					public void onAnimationEnd(Animation anim) {	
+					}
+
+					@Override
+					public void onAnimationRepeat(Animation animation) {
+					}
+
+					@Override
+					public void onAnimationStart(Animation animation) {
+					}
+				});
+				cakeView.setAnimation(cakeAnim);
+				cakeAnim.startNow();
+				
 				
 				PlayPalUtility.registerLineGesture(game3RelativeLayout, gameContext, new Callable<Integer>() {
 					public Integer call() {
-						return handleLineAction2(ovenView);
+						return handleLineAction2(cakeView);
 					}
 				});
-				
-				//bi-directional line gesture
-				PlayPalUtility.setLineGesture(true);
-				PlayPalUtility.initialLineGestureParams(boxSize, pointArray[0],pointArray[2]);
-				PlayPalUtility.initialLineGestureParams(boxSize, pointArray[2],pointArray[0]);
-				PlayPalUtility.initialLineGestureParams(boxSize, pointArray[1],pointArray[3]);
-				PlayPalUtility.initialLineGestureParams(boxSize, pointArray[3],pointArray[1]);
 			}
 		});
 		
@@ -437,6 +420,10 @@ public class Game3Activity extends Activity {
 			ovenAnimation = (AnimationDrawable) ovenView.getBackground();
 			ovenAnimation.start();
 			
+			
+			canTouchOven = true;
+			curProgress++;
+			Log.d("Penpal","oven curprogress"+curProgress);
 			setOvenListener(ovenView);
 			
 			PlayPalUtility.setLineGesture(false);
