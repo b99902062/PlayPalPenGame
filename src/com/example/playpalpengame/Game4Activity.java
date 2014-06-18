@@ -24,8 +24,8 @@ public class Game4Activity extends Activity {
 	private final int CIRCLE_COOKIE		= 1;
 	private final int SQUARE_COOKIE 	= 2;
 	
-	public Point addPoint(Point p1, Point p2){
-		return new Point(p1.x+p2.x, p2.x+p2.y);
+	public Point pointAddition(Point p1, Point p2){
+		return new Point(p1.x+p2.x, p1.y+p2.y);
 	}
 	
 	
@@ -34,15 +34,16 @@ public class Game4Activity extends Activity {
 		protected Point center;
 		protected ImageView view;
 		protected Point[][] offsetArray = new Point[][]{
-				{new Point(50,0), new Point(-35,50),new Point(-35,-50),new Point(50,0),  new Point(50,0)},//TRIANGULAR_COOKIE
-				{new Point(50,0), new Point(-50,0), new Point(0,-50),  new Point(0,50),  new Point(50,0)},//CIRCLE_COOKIE
-				{new Point(35,35),new Point(-35,35),new Point(-35,-35),new Point(35,-35),new Point(35,35)}};//SQUARE_COOKIE
+				{new Point(100,0), new Point(-70,100),new Point(-70,-100),new Point(100,0),  new Point(100,0)},//TRIANGULAR_COOKIE
+				{new Point(100,0), new Point(-100,0), new Point(0,-100),  new Point(0,100),  new Point(100,0)},//CIRCLE_COOKIE
+				{new Point(70,-70), new Point(-70,-70), new Point(-70,70), new Point(70,70), new Point(70,-70)}};//SQUARE_COOKIE
 		
 		public Cookie(int _t, ImageView _v){
 			type = _t;
 			view = _v;
 			view.setVisibility(ImageView.VISIBLE);		
 			view.setImageResource(cookieResArray[type]);
+			Log.d("PenPal_game4"," "+view.getLeft()+"  "+view.getTop());
 			center = new Point(view.getLeft()+200, view.getTop()+200);
 			
 		}
@@ -50,11 +51,11 @@ public class Game4Activity extends Activity {
 		public void setGesturePoint(){
 			if(type==TRIANGULAR_COOKIE || type==CIRCLE_COOKIE || type==SQUARE_COOKIE)
 				PlayPalUtility.initialLineGestureParams(boxSize,
-					addPoint(this.center, offsetArray[this.type][0]), 
-					addPoint(this.center, offsetArray[this.type][1]),
-					addPoint(this.center, offsetArray[this.type][2]),
-					addPoint(this.center, offsetArray[this.type][3]),
-					addPoint(this.center, offsetArray[this.type][4]));
+					pointAddition(this.center, offsetArray[this.type][0]), 
+					pointAddition(this.center, offsetArray[this.type][1]),
+					pointAddition(this.center, offsetArray[this.type][2]),
+					pointAddition(this.center, offsetArray[this.type][3]),
+					pointAddition(this.center, offsetArray[this.type][4]));
 		}			
 	}
 	
@@ -67,12 +68,6 @@ public class Game4Activity extends Activity {
 	protected int curCookieType;
 	
 	protected Point centerPoint = new Point(1280,800);
-	protected Point[] pointArray = {
-			new Point(1660,1200),
-			new Point(1660,400),
-			new Point(900,400),
-			new Point(900,1200)};
-	
 	protected int[] doughResArray = {
 		R.drawable.game4_dough1,
 		R.drawable.game4_dough2,
@@ -80,7 +75,22 @@ public class Game4Activity extends Activity {
 		R.drawable.game4_dough4,
 		R.drawable.game4_dough5	};
 	
+	protected Point[] doughPosArray = {
+		new Point(1660,1200),
+		new Point(1660,400),
+		new Point(900,400),
+		new Point(900,1200)};
+	
 	protected Cookie[] cookieArray = new Cookie[8]; 
+	protected Point[] cookiePosArray = {
+		new Point(420,440),
+		new Point(420,920),
+		new Point(860,440),
+		new Point(860,920),
+		new Point(1300,440),
+		new Point(1300,920),
+		new Point(1760,440),
+		new Point(1760,920)};
 	
 	protected int[] cookieResArray = {
 		R.drawable.game4_cookie1,
@@ -126,7 +136,7 @@ public class Game4Activity extends Activity {
 		});
 
 		PlayPalUtility.setLineGesture(true);
-		PlayPalUtility.initialLineGestureParams(boxSize, centerPoint, pointArray[0]);
+		PlayPalUtility.initialLineGestureParams(boxSize, centerPoint, doughPosArray[0]);
 		
 		
 		game4RelativeLayout.setOnHoverListener(new View.OnHoverListener() {
@@ -149,9 +159,7 @@ public class Game4Activity extends Activity {
                 }
                 return true;
             }
-        });	
-		
-		
+        });		
 	}	
 
 	protected void setHomeListener(View targetView) {
@@ -162,118 +170,6 @@ public class Game4Activity extends Activity {
 				newAct.setClass(Game4Activity.this, MainActivity.class);
 				startActivityForResult(newAct, 0);
 				Game4Activity.this.finish();
-			}
-		});
-	}
-
-/*
-	protected void setDoughListener(View targetView){		
-		targetView.setOnClickListener(new View.OnClickListener(){
-			@Override
-			public void onClick(View view){
-				if(curProgress != 0)
-					return;
-				
-				if(doughProgress>=3){
-					Animation doughAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTRIGHT);
-					doughAnim.setAnimationListener(new AnimationListener() {
-						@Override
-						public void onAnimationEnd(Animation anim) {
-							doughView.setVisibility(ImageView.GONE);
-							doughView.clearAnimation();
-							doughView.setOnClickListener(null);
-						}
-
-						@Override
-						public void onAnimationRepeat(Animation animation) {
-						}
-
-						@Override
-						public void onAnimationStart(Animation animation) {
-						}
-					});
-					doughView.setAnimation(doughAnim);
-					doughAnim.startNow();
-					
-					curProgress++;//set to 1		
-					initCookieView();
-					for(int i=0; i<cookieArray.length; i++){
-						ImageView curCookie = (ImageView)findViewById(cookieArray[i]);
-						curCookie.setVisibility(ImageView.VISIBLE);
-						setCookieListener(curCookie);
-						
-						Animation cookieAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_OUTLEFT_TO_CUR);
-						curCookie.setAnimation(cookieAnim);
-						cookieAnim.startNow();
-					}
-					
-					return;
-				}
-				
-				curProgress++;
-				((ImageView) view).setImageResource(doughResArray[doughProgress]);				
-				Log.d("PenPalGame",""+curProgress);
-			}
-		});
-	}
-*/	
-	
-	protected void setCookieListener(View targetView){
-		curCookieType = (Integer)targetView.getTag();
-		targetView.setOnClickListener(new View.OnClickListener(){
-			@Override
-			public void onClick(View view){
-				if(curProgress != 1)
-					return;
-				
-				switch(curCookieType){
-					case 1:
-						Log.d("PenPal","cookie type 1");
-						break;
-						
-					case 2:
-						Log.d("PenPal","cookie type 2");
-						break;
-					
-					case 3:
-						Log.d("PenPal","cookie type 3");
-						break;
-						
-					default:
-						Log.d("PenPal","error cookie type");
-				}
-				view.setBackgroundResource(cookieResArray[curCookieType+3]);
-				curProgress++;//set to 2
-			}
-		});
-	}
-	
-	protected void setCookieListener2(View targetView){
-		curCookieType = (Integer)targetView.getTag();
-		targetView.setOnClickListener(new View.OnClickListener(){
-			@Override
-			public void onClick(View view){
-				if(curProgress != 2)
-					return;
-				switch(curCookieType){
-					case 0:
-						Log.d("PenPal","cookie type 1");
-						
-						break;
-						
-					case 1:
-						Log.d("PenPal","cookie type 2");
-						break;
-					
-					case 2:
-						Log.d("PenPal","cookie type 3");
-						break;
-						
-					default:
-						Log.d("PenPal","error cookie type");
-				}		
-				view.setVisibility(ImageView.GONE);
-				curProgress++;//set to 3
 			}
 		});
 	}
@@ -291,6 +187,12 @@ public class Game4Activity extends Activity {
 			cookieArray[i].view.setAnimation(cookieAnim);
 			cookieAnim.startNow();
 		}
+		
+		PlayPalUtility.registerLineGesture(game4RelativeLayout, this, new Callable<Integer>() {
+			public Integer call() {
+				return handleLineAction2(cookieArray[0].view);//don't need view info.
+			}
+		});
 	}
 	
 	protected Integer handleLineAction (View view){
@@ -299,20 +201,56 @@ public class Game4Activity extends Activity {
 		
 		if(curProgress < 4){
 			doughView.setImageResource(doughResArray[curProgress]);
-			doughView.invalidate();
-			
+			doughView.invalidate();	
 			PlayPalUtility.changeGestureParams(false, 0, 
 					centerPoint, 
-					pointArray[curProgress]);
+					doughPosArray[curProgress]);
 		}
 		else if(curProgress == 4){
-			doughView.setVisibility(ImageView.GONE);
+			Animation doughAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTRIGHT);
+			doughAnim.setAnimationListener(new AnimationListener() {
+				@Override
+				public void onAnimationEnd(Animation anim) {	
+					doughView.setVisibility(ImageView.GONE);
+					doughView.clearAnimation();
+				}
+
+				@Override
+				public void onAnimationRepeat(Animation animation) {
+				}
+
+				@Override
+				public void onAnimationStart(Animation animation) {
+				}
+			});
+			doughView.setAnimation(doughAnim);
+			doughAnim.startNow();
+		
 			PlayPalUtility.clearGestureSets();
 			initCookieView();
 		}
 		
 		return 1;
 	}
+	
+	protected Integer handleLineAction2 (View view){
+		curProgress++;
+		Log.d("PenPalGame","dirty"+PlayPalUtility.SETIDX);
+		Log.d("PenPalGame","curProgress "+curProgress);
+		
+		int idx = PlayPalUtility.SETIDX;
+		PlayPalUtility.cancelGestureSet(idx);
+		cookieArray[idx].view.setVisibility(ImageView.INVISIBLE);
+		
+		Random ran = new Random();
+		Point newPos = pointAddition(cookiePosArray[idx],new Point( ran.nextInt(200)-50,ran.nextInt(200)-50) );//random num in (-50,150)
+		cookieArray[idx].center = newPos;
+		
+		if(curProgress == 12){
+			//TODO
+			
+		}
+		
+		return 1;
+	}
 }
-//dough out anim
-
