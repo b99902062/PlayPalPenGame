@@ -20,9 +20,6 @@ public class PlayPalUtility {
 	protected final static int FROM_OUTRIGHT_TO_CUR = 3;
 	protected final static int FROM_CUR_TO_OUTLEFT = 4;
 	
-	//dirty code here
-	protected static int SETIDX = 0;
-	//
 	protected static boolean isLineGestureOn;
 	protected static int lastTriggerSetIndex = -1;
 	protected static View targetView;
