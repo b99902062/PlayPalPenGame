@@ -120,10 +120,10 @@ public class PlayPalUtility {
 							}
 							break;
 						case MotionEvent.ACTION_UP:
-							//Log.d("PlayPal", String.format("UP: (%d, %d)", (int)event.getX(), (int)event.getY()));
 							if(isPointPassedList.get(0) == Boolean.FALSE)
 								break;
-							Log.d("PlayPalTest", "Before check whole");
+							
+							checkIfDoneSet();
 							for(int i=1; i<isPointPassedList.size(); i++)
 								if(isPointPassedList.get(i) == Boolean.FALSE)
 									isPointPassedList.set(0, Boolean.valueOf(false));
@@ -131,7 +131,6 @@ public class PlayPalUtility {
 								break;
 							
 							lastTriggerSetIndex = setIndex;
-							Log.d("PlayPalTest", "Pass check whole");
 							
 							try {
 								SETIDX = lastTriggerSetIndex;
@@ -150,7 +149,15 @@ public class PlayPalUtility {
 				}
 				return true;
 			}
+			
+			private void checkIfDoneSet() {
+				
+			}
 		});
+	}
+	
+	protected static void checkIfDoneSet() {
+		
 	}
 	
 	protected static int initialLineGestureParams(int size, Point... points) {
@@ -169,7 +176,7 @@ public class PlayPalUtility {
 			if(isDebugMode) {
 				ImageView imgView = new ImageView(targetContext);
 				imgView.setAlpha(0.5f);
-				imgView.setImageDrawable(targetContext.getResources().getDrawable( R.drawable.game1_fire_2));
+				imgView.setImageDrawable(targetContext.getResources().getDrawable(R.drawable.utility_hint));
 				imgView.setScaleType(ImageView.ScaleType.FIT_XY);
 				LayoutParams params = new LayoutParams(size * 2, size * 2);
 				params.setMargins(p.x - size, p.y - size, 0, 0);
@@ -200,7 +207,7 @@ public class PlayPalUtility {
 		        if(isDebugMode) {
 			        ImageView imgView = gestureSetList.get(setIndex).hintViewList.get(counter);
 			        LayoutParams params = new LayoutParams(gestureSetList.get(setIndex).boxSize * 2, gestureSetList.get(setIndex).boxSize * 2);
-			        params.setMargins(targetPointList.get(counter).x + p.x + gestureSetList.get(setIndex).boxSize * 2, targetPointList.get(counter).y + p.y - gestureSetList.get(setIndex).boxSize, 0, 0);
+			        params.setMargins(targetPointList.get(counter).x + p.x - 7 * gestureSetList.get(setIndex).boxSize / 2, targetPointList.get(counter).y + p.y - gestureSetList.get(setIndex).boxSize, 0, 0);
 			        imgView.setLayoutParams(params);
 		        }
 		        

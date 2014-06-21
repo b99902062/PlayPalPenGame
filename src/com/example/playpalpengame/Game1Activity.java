@@ -5,12 +5,17 @@ import java.util.concurrent.Callable;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.DashPathEffect;
+import android.graphics.Paint;
+import android.graphics.Paint.Style;
 import android.graphics.Point;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
@@ -23,20 +28,27 @@ import android.widget.TextView;
 public class Game1Activity extends Activity {
 
 	protected final int step1MidProgressCount = 5;
-	protected final int step1TotalProgressCount = 11;
-	protected final int step2TotalProgressCount = 35;
-	protected final int step3TotalProgressCount = 45;
+	protected final int step1TotalProgressCount = 10;
+	protected final int step2TotalProgressCount = 25;
+	protected final int step3TotalProgressCount = 35;
 	
-	protected final int originBeginCenterX = 1800;
+	protected final int originBeginCenterX = 500;
 	protected final int originBeginCenterY = 500;
-	protected final int originEndCenterX = 1800;
+	protected final int originEndCenterX = 500;
 	protected final int originEndCenterY = 1200;
-	protected int boxSize = 100;
-	protected int lineInterval = 250;
-
+	protected final int boxSize = 100;
+	protected final int lineInterval = 250;
+	
+	protected final int potLeftTopX = 1100;
+	protected final int potLeftTopY = 700;
+	protected final int potBoxSize = 120;
+	protected final int potBoxInterval = 350;
+	
 	protected boolean isFoodCanTouch;
 	protected boolean isDoneDropFood;
 	protected int progressCount;
+	
+	protected Game1Activity self;
 	
 	protected ArrayList<View> foodInPot;
 
@@ -47,7 +59,6 @@ public class Game1Activity extends Activity {
 	protected ImageView potView;
 	protected ImageView fireView;
 	protected ImageView knifeView;
-	protected ImageView dottedLineView;
 	protected RelativeLayout board2Layout;
 	protected RelativeLayout game1RelativeLayout;
 	
@@ -59,7 +70,7 @@ public class Game1Activity extends Activity {
 	protected int[] foodResArray = { R.drawable.game1_carrot_1,
 			R.drawable.game1_carrot_2, R.drawable.game1_carrot_3,
 			R.drawable.game1_carrot_4, R.drawable.game1_carrot_5,
-			R.drawable.game1_carrot_6, R.drawable.game1_cucumber_1,
+			R.drawable.game1_carrot_6,
 			R.drawable.game1_cucumber_2, R.drawable.game1_cucumber_3,
 			R.drawable.game1_cucumber_4, R.drawable.game1_cucumber_5,
 			R.drawable.game1_cucumber_6 };
@@ -67,7 +78,13 @@ public class Game1Activity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		
 		setContentView(R.layout.activity_game1);
+
+		self = this;
 		
 		isFoodCanTouch = true;
 		isDoneDropFood = false;
@@ -86,9 +103,6 @@ public class Game1Activity extends Activity {
 		setFoodListener(carrotView);
 		
 		cucumberView = (ImageView) findViewById(R.id.cucumberView);
-		
-		dottedLineView = (ImageView) findViewById(R.id.dottedLineView);
-		dottedLineView.setVisibility(ImageView.VISIBLE);
 		
 		game1RelativeLayout = (RelativeLayout) findViewById(R.id.game1RelativeLayout);
 		game1RelativeLayout.setOnHoverListener(new View.OnHoverListener() {
@@ -123,16 +137,16 @@ public class Game1Activity extends Activity {
 		PlayPalUtility.setLineGesture(true);
 		PlayPalUtility.initialLineGestureParams(boxSize, new Point(originBeginCenterX, originBeginCenterY), new Point(originEndCenterX, originEndCenterY));
 		
-		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		params.setMargins(PlayPalUtility.getPoint(0, 0).x - boxSize, PlayPalUtility.getPoint(0, 0).y + boxSize, 0, 0);		
-		dottedLineView.setLayoutParams(params);
+		Paint fgPaintSel = new Paint();
+		fgPaintSel.setARGB(255, 0, 0,0);
+		fgPaintSel.setStyle(Style.STROKE);
+		fgPaintSel.setPathEffect(new DashPathEffect(new float[] {10,20}, 0));
 		
 		potView = (ImageView) findViewById(R.id.potView);
 		board2Layout = (RelativeLayout) findViewById(R.id.board2RelativeLayout);
 
 		potView.setBackgroundResource(R.anim.pot_drop_animation);
 		potDropAnim = (AnimationDrawable) potView.getBackground();
-		setPotListener(potView);
 
 		fireView = (ImageView) findViewById(R.id.fireView);
 		fireView.setBackgroundResource(R.anim.pot_fire_animation);
@@ -178,6 +192,14 @@ public class Game1Activity extends Activity {
 					fireView.setVisibility(ImageView.VISIBLE);
 					fireAnim.setVisible(true, true);
 					fireAnim.start();
+					
+					PlayPalUtility.registerLineGesture(game1RelativeLayout, self, new Callable<Integer>() {
+						public Integer call() {
+							return doPotStir();
+						}
+					});
+					PlayPalUtility.setLineGesture(true);
+					PlayPalUtility.initialLineGestureParams(potBoxSize, new Point(potLeftTopX, potLeftTopY), new Point(potLeftTopX + potBoxInterval, potLeftTopY), new Point(potLeftTopX + potBoxInterval, potLeftTopY + potBoxInterval), new Point(potLeftTopX, potLeftTopY + potBoxInterval));
 					
 					isDoneDropFood = true;
 				}
@@ -240,13 +262,29 @@ public class Game1Activity extends Activity {
 		});
 	}
 
-	protected void setPotListener(View targetView) {
+	protected Integer doPotStir() {
+		progressCount++;
+		progressCountText.setText("ProgressCount: " + new String("" + progressCount));
+		potDropAnim.start();
+
+		if (progressCount == step3TotalProgressCount) {
+			PlayPalUtility.setLineGesture(false);
+			PlayPalUtility.unregisterLineGesture(game1RelativeLayout);
+			PlayPalUtility.clearGestureSets();
+			Log.d("PenPalGame", "WIN Game 1");
+			Intent newAct = new Intent();
+			newAct.setClass(Game1Activity.this, MainActivity.class);
+			startActivityForResult(newAct, 0);
+			Game1Activity.this.finish();
+		}
+		
+		return 1;
+		/*
 		targetView.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View view, MotionEvent event) {
 				if(!isDoneDropFood || event.getAction() != MotionEvent.ACTION_DOWN)
 					return true;
-				/** Should be do circle */
 				progressCount++;
 				progressCountText.setText("ProgressCount: " + new String("" + progressCount));
 				potDropAnim.start();
@@ -261,14 +299,15 @@ public class Game1Activity extends Activity {
 				return true;
 			}
 		});
+		*/
 	}
 
 	protected void randomSetupFood() {
 		// for test
 		int[] foodResId = {R.drawable.game1_food_1, R.drawable.game1_food_2};
 		
-		for (int i=0; i<6; i++) {
-			for (int j=0; j<4; j++) {
+		for (int i=0; i<5; i++) {
+			for (int j=0; j<3; j++) {
 				ImageView tmpFood = new ImageView(this);
 				tmpFood.setImageResource(foodResId[(int)(Math.random()*2)]);
 				LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT,
@@ -288,12 +327,7 @@ public class Game1Activity extends Activity {
 		progressCount++;
 		progressCountText.setText("ProgressCount: " + new String("" + progressCount));
 		
-		PlayPalUtility.changeGestureParams(true, 0, new Point(-lineInterval, 0), new Point(-lineInterval, 0));
-
-		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		Log.d("PlayPalUtility", String.format("GetPoint(0, 0) = (%d, %d)", PlayPalUtility.getPoint(0, 0).x, PlayPalUtility.getPoint(0, 0).y));
-		params.setMargins(PlayPalUtility.getPoint(0, 0).x - boxSize, PlayPalUtility.getPoint(0, 0).y + boxSize, 0, 0);
-		dottedLineView.setLayoutParams(params);
+		PlayPalUtility.changeGestureParams(true, 0, new Point(lineInterval, 0), new Point(lineInterval, 0));
 		
 		((ImageView) currentFoodView)
 				.setImageResource(foodResArray[progressCount]);
@@ -303,7 +337,6 @@ public class Game1Activity extends Activity {
 			isFoodCanTouch = false;
 			PlayPalUtility.setLineGesture(false);
 			PlayPalUtility.clearGestureSets();
-			dottedLineView.setVisibility(ImageView.INVISIBLE);
 			Animation carrotAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTRIGHT);
 			carrotAnim.setAnimationListener(new AnimationListener() {
 				@Override
@@ -321,11 +354,7 @@ public class Game1Activity extends Activity {
 						@Override
 						public void onAnimationEnd(Animation anim) {
 							PlayPalUtility.setLineGesture(true);
-							dottedLineView.setVisibility(ImageView.VISIBLE);
 							PlayPalUtility.initialLineGestureParams(boxSize, new Point(originBeginCenterX, originBeginCenterY), new Point(originEndCenterX, originEndCenterY));
-							RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-							params.setMargins(PlayPalUtility.getPoint(0, 0).x - boxSize, PlayPalUtility.getPoint(0, 0).y + boxSize, 0, 0);
-							dottedLineView.setLayoutParams(params);
 						}
 
 						@Override
@@ -359,8 +388,7 @@ public class Game1Activity extends Activity {
 			ImageView boardView = (ImageView) findViewById(R.id.boardView);
 			boardView.setAnimation(boardAnim);
 			boardAnim.startNow();
-			
-			dottedLineView.setVisibility(ImageView.GONE);
+
 			PlayPalUtility.setLineGesture(false);
 			PlayPalUtility.clearGestureSets();
 			PlayPalUtility.unregisterLineGesture(game1RelativeLayout);

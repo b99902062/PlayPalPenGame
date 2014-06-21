@@ -16,6 +16,8 @@ import android.os.Message;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
@@ -38,8 +40,7 @@ public class Game2Activity extends Activity {
 	protected final int step1TotalProgressCount = 10;
 	protected final int step2TotalProgressCount = 26;
 	
-	protected ArrayList<Point> crossPosArray = new ArrayList<Point>();
-	protected ArrayList<ImageView> crossViewArray = new ArrayList<ImageView>(); 
+	protected ArrayList<Point> crossPosArray = new ArrayList<Point>(); 
 	
 	protected boolean canPutInBasket = false;
 	protected ImageView netView;
@@ -58,6 +59,10 @@ public class Game2Activity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		
 		setContentView(R.layout.activity_game2);
 		
 		crossPosArray.add(new Point(470, 600));
@@ -137,9 +142,11 @@ public class Game2Activity extends Activity {
 	protected void onPause() {
 	    super.onPause();
 	    for(int i=0; i<fishThreadList.size(); i++) {
-	    	if (fishThreadList.get(i) != null) 
+	    	if (fishThreadList.get(i) != null) {
+	    		fishThreadList.get(i).killThread();
 		        if (!fishThreadList.get(i).isInterrupted()) 
 		        	fishThreadList.get(i).interrupt();
+	    	}
 	    }
 	}
 	
@@ -148,8 +155,11 @@ public class Game2Activity extends Activity {
 			@Override
 			public void onClick(View view) {
 				for(int i=0; i<fishThreadList.size(); i++) {
-			    	if (fishThreadList.get(i) != null) 
-				        fishThreadList.get(i).killThread();
+			    	if (fishThreadList.get(i) != null) {
+			    		fishThreadList.get(i).killThread();
+			    		if (!fishThreadList.get(i).isInterrupted())  
+			    			fishThreadList.get(i).interrupt();
+			    	}
 			    }
 				
 				PlayPalUtility.setLineGesture(false);
@@ -210,23 +220,27 @@ public class Game2Activity extends Activity {
 		PlayPalUtility.setLineGesture(true);
 		
 		for(int i=0; i<crossPosArray.size(); i++) {
-			ImageView crossView = new ImageView(this);
-			crossView.setImageResource(R.drawable.dotted_cross);
-			
-			LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT,
-					LayoutParams.WRAP_CONTENT);
-			params.setMargins(crossPosArray.get(i).x, crossPosArray.get(i).y, 0, 0);
-			crossView.setLayoutParams(params);
-
-			game2RelativeLayout.addView(crossView);
-			crossViewArray.add(crossView);
-			
 			PlayPalUtility.initialLineGestureParams(GESTURE_BOX_SIZE, new Point(crossPosArray.get(i).x, crossPosArray.get(i).y), new Point(crossPosArray.get(i).x + 300, crossPosArray.get(i).y + 300));
 			PlayPalUtility.initialLineGestureParams(GESTURE_BOX_SIZE, new Point(crossPosArray.get(i).x + 300, crossPosArray.get(i).y), new Point(crossPosArray.get(i).x, crossPosArray.get(i).y + 300));
 		}
 	}
 	
 	protected Integer performCross() {
+		PlayPalUtility.cancelGestureSet(PlayPalUtility.getLastTriggerSetIndex());
+		
+		progressCount++;
+		testProgressCountText.setText(String.format("ProgressCount: %d", progressCount));
+		if(progressCount == step2TotalProgressCount) {
+			PlayPalUtility.setLineGesture(false);
+			PlayPalUtility.unregisterLineGesture(game2RelativeLayout);
+			PlayPalUtility.clearGestureSets();
+			Log.d("PenPalGame", "WIN Game 2");
+			Intent newAct = new Intent();
+			newAct.setClass(Game2Activity.this, MainActivity.class);
+			startActivityForResult(newAct, 0);
+			Game2Activity.this.finish();
+		}
+		
 		return 0;
 	}
 	
@@ -249,7 +263,8 @@ public class Game2Activity extends Activity {
             
             fishThreadList.get(msg.getData().getInt("index")).setMargins(curX, curY, 0, 0);
             Log.d("PlayPalTest", String.format("Fish[%d], Test: (%d, %d)", msg.getData().getInt("index"), curX, curY));
-            PlayPalUtility.changeGestureParams(false, msg.getData().getInt("index"), new Point(curX + GESTURE_FIRST_OFFSET_X, curY + GESTURE_FIRST_OFFSET_Y), new Point(curX + GESTURE_SECOND_OFFSET_X, curY + GESTURE_SECOND_OFFSET_Y), new Point(curX + GESTURE_THIRD_OFFSET_X, curY + GESTURE_THIRD_OFFSET_Y));
+            if(!fishThreadList.get(msg.getData().getInt("index")).isDead)
+            	PlayPalUtility.changeGestureParams(false, msg.getData().getInt("index"), new Point(curX + GESTURE_FIRST_OFFSET_X, curY + GESTURE_FIRST_OFFSET_Y), new Point(curX + GESTURE_SECOND_OFFSET_X, curY + GESTURE_SECOND_OFFSET_Y), new Point(curX + GESTURE_THIRD_OFFSET_X, curY + GESTURE_THIRD_OFFSET_Y));
         }
     };
     
