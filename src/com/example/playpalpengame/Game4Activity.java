@@ -235,10 +235,9 @@ public class Game4Activity extends Activity {
 	
 	protected Integer handleLineAction2 (View view){
 		curProgress++;
-		Log.d("PenPalGame","dirty"+PlayPalUtility.SETIDX);
 		Log.d("PenPalGame","curProgress "+curProgress);
 		
-		int idx = PlayPalUtility.SETIDX;
+		int idx = PlayPalUtility.getLastTriggerSetIndex();
 		PlayPalUtility.cancelGestureSet(idx);
 		cookieArray[idx].view.setVisibility(ImageView.INVISIBLE);
 		
