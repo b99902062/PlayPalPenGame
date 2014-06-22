@@ -9,9 +9,13 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.animation.DecelerateInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 
 public class PlayPalUtility {
@@ -20,11 +24,21 @@ public class PlayPalUtility {
 	protected final static int FROM_OUTRIGHT_TO_CUR = 3;
 	protected final static int FROM_CUR_TO_OUTLEFT = 4;
 	
+	private final static int beginProgressMarkX = 746;
+	private final static int endProgressMarkX = 1566;
+	private final static int progressMarkY = 122;
+	
 	protected static boolean isLineGestureOn;
 	protected static int lastTriggerSetIndex = -1;
 	protected static View targetView;
 	protected static Context targetContext;
 	protected static boolean isDebugMode = true;
+	
+	private static int totalProgress = 0;
+	private static int curProgress = 0;
+	private static ProgressBar progressBar;
+	private static ImageView progressMark;
+	private static ImageView progressBack;
 	
 	protected static ArrayList<GestureSet> gestureSetList = new ArrayList<GestureSet>();
 	
@@ -61,6 +75,13 @@ public class PlayPalUtility {
 		return newAnim;
 	}
 	
+	protected static void setAlphaAnimation(View view) {
+		Animation fadeIn = new AlphaAnimation(0, 1);
+		fadeIn.setInterpolator(new DecelerateInterpolator());
+		fadeIn.setDuration(2000);
+		view.setAnimation(fadeIn);
+	}
+	
 	protected static void clearGestureSets() {
 		for(int i=0; i<gestureSetList.size(); i++)
 			cancelGestureSet(i);
@@ -90,85 +111,100 @@ public class PlayPalUtility {
 				for(int setIndex=0; setIndex<gestureSetList.size(); setIndex++) {
 					if(!gestureSetList.get(setIndex).isValid)
 						continue;
-					ArrayList<Boolean> isPointPassedList = gestureSetList.get(setIndex).passedList;
+					GestureSet curSet = gestureSetList.get(setIndex);
+					ArrayList<Integer> pointPassedList = curSet.passedList;
 					
 					switch(event.getAction()) {
 						case MotionEvent.ACTION_DOWN:
-							//Log.d("PlayPal", String.format("DOWN: (%d, %d)", (int)event.getX(), (int)event.getY()));
-							if(isWithinBox(setIndex, 0, new Point((int)event.getX(), (int)event.getY()))) {
-								Log.d("PlayPalTest", String.format("Set: %d, Start 0", setIndex));
-								isPointPassedList.set(0, Boolean.valueOf(true));
+							if(curSet.isInOrder) {
+								if(isWithinBox(setIndex, 0, new Point((int)event.getX(), (int)event.getY())))
+									pointPassedList.add(0);
 							}
-							else
-								isPointPassedList.set(0, Boolean.valueOf(false));
+							else {
+								for(int pointIndex = 0; pointIndex < curSet.pointList.size(); pointIndex++) {
+									if(isWithinBox(setIndex, pointIndex, new Point((int)event.getX(), (int)event.getY()))) {
+										pointPassedList.add(pointIndex);
+										break;
+									}
+								}
+							}							
 							break;
 						case MotionEvent.ACTION_MOVE:
-							//Log.d("PlayPal", String.format("MOVE: (%d, %d)", (int)event.getX(), (int)event.getY()));
-							if(isPointPassedList.get(0) == Boolean.FALSE)
+							if (!curSet.isContinuous
+								&& pointPassedList.size() == 0)
 								break;
-							for(int i=1; i<isPointPassedList.size(); i++) {
-								if(isPointPassedList.get(i) == Boolean.TRUE)
-									continue;
-								if(isWithinBox(setIndex, i, new Point((int)event.getX(), (int)event.getY()))) {
-									Log.d("PlayPalTest", String.format("Set: %d, Start: %d", setIndex, i));
-									isPointPassedList.set(i, Boolean.valueOf(true));
+							if(curSet.isInOrder) {
+								if (pointPassedList.get(0) != 0) 
+									break;
+								int lastIndex = pointPassedList.get(pointPassedList.size() - 1);
+								if(isWithinBox(setIndex, lastIndex+1, new Point((int)event.getX(), (int)event.getY()))) {
+									pointPassedList.add(lastIndex+1);
+									if(curSet.isContinuous
+									&& pointPassedList.size() >= curSet.pointList.size()) {
+										try {
+											func.call();
+											pointPassedList.clear();
+										} catch(Exception ex) {
+											ex.printStackTrace();
+										}
+									}
 								}
-								break;
+							}
+							else {
+								for(int pointIndex = 0; pointIndex < curSet.pointList.size(); pointIndex++) {
+									if(!pointPassedList.contains(pointIndex)
+									&& isWithinBox(setIndex, pointIndex, new Point((int)event.getX(), (int)event.getY()))) {
+										pointPassedList.add(pointIndex);
+										if(curSet.isContinuous
+										&& pointPassedList.size() >= curSet.pointList.size()) {
+											try {
+												func.call();
+												pointPassedList.clear();
+											} catch(Exception ex) {
+												ex.printStackTrace();
+											}
+										}
+										break;
+									}
+								}
 							}
 							break;
 						case MotionEvent.ACTION_UP:
-							if(isPointPassedList.get(0) == Boolean.FALSE)
+							if(curSet.isContinuous) {
+								pointPassedList.clear();
 								break;
-							
-							checkIfDoneSet();
-							for(int i=1; i<isPointPassedList.size(); i++)
-								if(isPointPassedList.get(i) == Boolean.FALSE)
-									isPointPassedList.set(0, Boolean.valueOf(false));
-							if(isPointPassedList.get(0) == Boolean.FALSE) // Check again
-								break;
-							
-							lastTriggerSetIndex = setIndex;
-							
-							try {
-								SETIDX = lastTriggerSetIndex;
-								func.call();
-								for(int i=0; i<gestureSetList.size(); i++) {
-									isPointPassedList = gestureSetList.get(i).passedList;
-									for(int j=0; j<isPointPassedList.size(); j++)
-										isPointPassedList.set(j, Boolean.valueOf(false));
-								}
-								
-							} catch (Exception e) {
-								e.printStackTrace();
 							}
+							if(pointPassedList.size() >= curSet.pointList.size()) {
+								lastTriggerSetIndex = setIndex;
+								try {
+									func.call();
+								} catch(Exception ex) {
+									ex.printStackTrace();
+								}
+							}
+							pointPassedList.clear();
 							break;
 					}
 				}
 				return true;
 			}
-			
-			private void checkIfDoneSet() {
-				
-			}
 		});
 	}
 	
-	protected static void checkIfDoneSet() {
-		
-	}
 	
-	protected static int initialLineGestureParams(int size, Point... points) {
+	protected static int initialLineGestureParams(boolean isContinuous, boolean isInOrder, int size, Point... points) {
 		for (Point p : points) 
 			Log.d("PlayPalUtility", String.format("Point = (%d, %d)", p.x, p.y));
 		
 		GestureSet gestureSet = new GestureSet();
 		gestureSet.boxSize = size;
+		gestureSet.isContinuous = isContinuous;
+		gestureSet.isInOrder = isInOrder;
 		gestureSet.pointList = new ArrayList<Point>();
-		gestureSet.passedList = new ArrayList<Boolean>(); 
+		gestureSet.passedList = new ArrayList<Integer>(); 
 		gestureSet.hintViewList = new ArrayList<ImageView>(); 
 		for (Point p : points) {
 			gestureSet.pointList.add(p);
-			gestureSet.passedList.add(Boolean.valueOf(false));
 			
 			if(isDebugMode) {
 				ImageView imgView = new ImageView(targetContext);
@@ -249,6 +285,8 @@ public class PlayPalUtility {
 	
 	protected static boolean isWithinBox(int setIndex, int boxIndex, Point targetPoint) {
 		ArrayList<Point> targetPointList = gestureSetList.get(setIndex).pointList;
+		if(boxIndex >= targetPointList.size())
+			return false;
 		int boxSize = gestureSetList.get(setIndex).boxSize;
 		if(Math.abs(targetPoint.x - targetPointList.get(boxIndex).x) < boxSize && Math.abs(targetPoint.y - targetPointList.get(boxIndex).y) < boxSize)
 			return true;
@@ -259,6 +297,42 @@ public class PlayPalUtility {
 		isLineGestureOn = value;
 	}
 	
+	protected static void registerProgressBar(ProgressBar barView, ImageView markView, ImageView progressBackView) {
+		progressBar = barView;
+		progressMark = markView;
+		progressBack = progressBackView;
+	}
+	
+	protected static void initialProgressBar(int total) {
+		totalProgress = total;
+		progressBar.setMax(total);
+		curProgress = 0;
+		progressBar.setProgress(0);
+		progressBack.setImageResource(R.drawable.progress);
+		updateProgressBar();
+	}
+	
+	protected static boolean doProgress() {
+		curProgress++;
+		updateProgressBar();
+		if(curProgress >= totalProgress) {
+			progressBack.setImageResource(R.drawable.progress_finish);
+			return true;
+		}
+		return false;
+	}
+	
+	protected static void updateProgressBar() {
+		progressBar.setProgress(curProgress);
+		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		float leftMargin = (float) curProgress / totalProgress * (endProgressMarkX - beginProgressMarkX) + beginProgressMarkX;
+    	params.setMargins((int) leftMargin, progressMarkY, 0, 0);
+    	progressMark.setLayoutParams(params);
+		
+		Log.d("ProgressTest", String.format("curProgress: %d", progressBar.getProgress()));
+		Log.d("ProgressTest", String.format("TotalProgress: %d", progressBar.getMax()));
+	}
+	
 	protected static void setDebugMode(boolean value) {
 		isDebugMode = value;
 	}
@@ -266,8 +340,10 @@ public class PlayPalUtility {
 
 class GestureSet {
 	protected ArrayList<Point> pointList;
-	protected ArrayList<Boolean> passedList;
+	protected ArrayList<Integer> passedList;
 	protected ArrayList<ImageView> hintViewList;
 	protected int boxSize;
+	protected boolean isContinuous;
+	protected boolean isInOrder;
 	protected boolean isValid;
 };

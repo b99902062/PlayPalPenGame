@@ -18,8 +18,26 @@
     <RelativeLayout
         android:id="@+id/loadingRelativeLayout"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
-
+        android:layout_height="fill_parent"
+        android:background="@drawable/background" >
+        
+        <ImageView
+            android:id="@+id/stallView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="465dp"
+            android:layout_marginTop="250dp"
+            android:src="@drawable/main_stall_1"
+            android:visibility="visible" />
+        
+		<ImageView
+            android:id="@+id/monsterView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="615dp"
+            android:layout_marginTop="300dp"
+            android:src="@drawable/main_monster_1"
+            android:visibility="visible" />
     </RelativeLayout>
 
 </FrameLayout>

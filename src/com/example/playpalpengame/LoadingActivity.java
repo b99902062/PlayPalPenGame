@@ -6,6 +6,8 @@ import java.util.TimerTask;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -19,29 +21,21 @@ public class LoadingActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		
 		setContentView(R.layout.activity_loading);
 		
 		Bundle bundle = getIntent().getExtras();
 		gameIndex = bundle.getInt("GameIndex");
 				
-		ImageView stallView = new ImageView(this);
+		ImageView stallView = (ImageView)findViewById(R.id.stallView);
 		stallView.setImageResource(stallResIdArray[gameIndex]);
 		
-		ImageView monsterView = new ImageView(this);
+		ImageView monsterView = (ImageView)findViewById(R.id.monsterView);
 		monsterView.setImageResource(monsterResIdArray[gameIndex]);
-		
-		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-		float density = this.getResources().getDisplayMetrics().density;
-		params.setMargins((int)(465 * density), (int)( 250 * density), 0, 0);
-		stallView.setLayoutParams(params);
-		RelativeLayout.LayoutParams params2 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-		params2.setMargins((int)(615 * density), (int)(300 * density), 0, 0);
-		monsterView.setLayoutParams(params);
-		
-		RelativeLayout targetLayout = (RelativeLayout) findViewById(R.id.loadingRelativeLayout);
-		targetLayout.addView(stallView);
-		targetLayout.addView(monsterView);
-		
+	
 		timer.schedule(new timerTask(), 2000);	
 	}
 	

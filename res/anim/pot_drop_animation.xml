@@ -2,7 +2,7 @@
 <animation-list 
     xmlns:android="http://schemas.android.com/apk/res/android"    
     android:oneshot="true" android:visible="true">
-    <item android:drawable="@drawable/game1_pot_1"    android:duration="300"    />
-    <item android:drawable="@drawable/game1_pot_2"    android:duration="300"    />
+    <item android:drawable="@drawable/game1_pot_2"    android:duration="180"    />
+    <item android:drawable="@drawable/game1_pot_1"    android:duration="180"    />
     
 </animation-list>

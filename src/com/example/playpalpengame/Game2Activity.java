@@ -18,7 +18,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
@@ -40,7 +44,9 @@ public class Game2Activity extends Activity {
 	protected final int step1TotalProgressCount = 10;
 	protected final int step2TotalProgressCount = 26;
 	
-	protected ArrayList<Point> crossPosArray = new ArrayList<Point>(); 
+	private final Point[] fishOffset = {new Point(420, 430), new Point(860, 430), new Point(1300,430), new Point(1740, 430)};
+	private final Point[] cutBeginOffset = {new Point(124, 263), new Point(301, 262), new Point(134, 459), new Point(278, 457)};
+	private final Point[] cutEndOffset = {new Point(308, 438), new Point(123, 446), new Point(284, 600), new Point(134, 607)};
 	
 	protected boolean canPutInBasket = false;
 	protected ImageView netView;
@@ -56,6 +62,13 @@ public class Game2Activity extends Activity {
 	protected int progressCount;
 	protected LinkedList<FishHandlerThread> fishThreadList = new LinkedList<FishHandlerThread>();
 	
+	private int[] fishCutIdArray = {R.id.fishCut11, R.id.fishCut12, R.id.fishCut13, R.id.fishCut14, 
+			R.id.fishCut21, R.id.fishCut22, R.id.fishCut23, R.id.fishCut24,
+			R.id.fishCut31, R.id.fishCut32, R.id.fishCut33, R.id.fishCut34,
+			R.id.fishCut41, R.id.fishCut42, R.id.fishCut43, R.id.fishCut44};
+	private int[] fishIdArray = {R.id.fishView1, R.id.fishView2, R.id.fishView3, R.id.fishView4};
+	private boolean[] isFishCutArray = new boolean[16];
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -65,16 +78,9 @@ public class Game2Activity extends Activity {
 		
 		setContentView(R.layout.activity_game2);
 		
-		crossPosArray.add(new Point(470, 600));
-		crossPosArray.add(new Point(470, 1000));
-		crossPosArray.add(new Point(910, 600));
-		crossPosArray.add(new Point(910, 1000));
-		crossPosArray.add(new Point(1350, 600));
-		crossPosArray.add(new Point(1350, 1000));
-		crossPosArray.add(new Point(1790, 600));
-		crossPosArray.add(new Point(1790, 1000));
-		
 		progressCount = 0;
+		PlayPalUtility.registerProgressBar((ProgressBar)findViewById(R.id.progressBarRed), (ImageView)findViewById(R.id.progressMark), (ImageView)findViewById(R.id.progressBar));
+		PlayPalUtility.initialProgressBar(step1TotalProgressCount);
 		
 		View homeBtn = findViewById(R.id.homeBtn);
 		setHomeListener(homeBtn);
@@ -116,6 +122,7 @@ public class Game2Activity extends Activity {
                     			// Play the pu-ton animation
                     			progressCount++;
                     			testProgressCountText.setText(String.format("ProgressCount: %d", progressCount));
+                    			PlayPalUtility.doProgress();
                     			if(progressCount == step1TotalProgressCount) {
                     				PlayPalUtility.clearGestureSets();
                     				PlayPalUtility.setLineGesture(false);
@@ -192,6 +199,8 @@ public class Game2Activity extends Activity {
 		if(index < 0)
 			return -1;
 		
+		if(canPutInBasket) /** To avoid race condition */
+			return 0;
 		canPutInBasket = true;
 		PlayPalUtility.setLineGesture(false);
 		PlayPalUtility.cancelGestureSet(index);
@@ -211,6 +220,18 @@ public class Game2Activity extends Activity {
 		fishView3.setVisibility(ImageView.VISIBLE);
 		fishView4.setVisibility(ImageView.VISIBLE);
 		
+		PlayPalUtility.setAlphaAnimation(grillView);
+		PlayPalUtility.setAlphaAnimation(fishView1);
+		PlayPalUtility.setAlphaAnimation(fishView2);
+		PlayPalUtility.setAlphaAnimation(fishView3);
+		PlayPalUtility.setAlphaAnimation(fishView4);
+		
+		netView.setImageResource(R.drawable.game2_thin_knife);
+		
+		PlayPalUtility.initialProgressBar(step2TotalProgressCount - step1TotalProgressCount);
+		
+		java.util.Arrays.fill(isFishCutArray, false);
+		
 		PlayPalUtility.registerLineGesture(game2RelativeLayout, this, new Callable<Integer>() {
 			@Override
 			public Integer call() throws Exception {
@@ -219,17 +240,37 @@ public class Game2Activity extends Activity {
 		});
 		PlayPalUtility.setLineGesture(true);
 		
-		for(int i=0; i<crossPosArray.size(); i++) {
-			PlayPalUtility.initialLineGestureParams(GESTURE_BOX_SIZE, new Point(crossPosArray.get(i).x, crossPosArray.get(i).y), new Point(crossPosArray.get(i).x + 300, crossPosArray.get(i).y + 300));
-			PlayPalUtility.initialLineGestureParams(GESTURE_BOX_SIZE, new Point(crossPosArray.get(i).x + 300, crossPosArray.get(i).y), new Point(crossPosArray.get(i).x, crossPosArray.get(i).y + 300));
+		for(int fishIndex=0; fishIndex<4; fishIndex++) {
+			for(int cutIndex = 0; cutIndex<4; cutIndex++) {
+				PlayPalUtility.initialLineGestureParams(false, false, GESTURE_BOX_SIZE, 
+						new Point(fishOffset[fishIndex].x + cutBeginOffset[cutIndex].x, fishOffset[fishIndex].y + cutBeginOffset[cutIndex].y),
+						new Point(fishOffset[fishIndex].x + cutEndOffset[cutIndex].x, fishOffset[fishIndex].y + cutEndOffset[cutIndex].y));
+			}
 		}
 	}
 	
 	protected Integer performCross() {
-		PlayPalUtility.cancelGestureSet(PlayPalUtility.getLastTriggerSetIndex());
+		int lastTriggerIndex = PlayPalUtility.getLastTriggerSetIndex();
+		PlayPalUtility.cancelGestureSet(lastTriggerIndex);
+		Log.d("LastTrigger", String.format("LastTrigger: %d", lastTriggerIndex));
+		if(lastTriggerIndex < fishCutIdArray.length) {
+			ImageView cutView = (ImageView)findViewById(fishCutIdArray[lastTriggerIndex]);
+			cutView.setVisibility(ImageView.VISIBLE);
+			isFishCutArray[lastTriggerIndex] = true;
+			
+			int baseIndex = lastTriggerIndex/4;
+			if(isFishCutArray[baseIndex * 4]
+			&& isFishCutArray[baseIndex * 4 + 1]
+			&& isFishCutArray[baseIndex * 4 + 2]		
+			&& isFishCutArray[baseIndex * 4 + 3]) {
+				ImageView fishView = (ImageView)findViewById(fishIdArray[baseIndex]);
+				fishView.setImageResource(R.drawable.game2_fish_done);
+			}
+		}
 		
 		progressCount++;
 		testProgressCountText.setText(String.format("ProgressCount: %d", progressCount));
+		PlayPalUtility.doProgress();
 		if(progressCount == step2TotalProgressCount) {
 			PlayPalUtility.setLineGesture(false);
 			PlayPalUtility.unregisterLineGesture(game2RelativeLayout);
@@ -296,7 +337,7 @@ public class Game2Activity extends Activity {
 
 			game2RelativeLayout.addView(fishView);
 			
-			index = PlayPalUtility.initialLineGestureParams(GESTURE_BOX_SIZE, new Point(curX + GESTURE_FIRST_OFFSET_X, curY + GESTURE_FIRST_OFFSET_Y), new Point(curX + GESTURE_SECOND_OFFSET_X, curY + GESTURE_SECOND_OFFSET_Y), new Point(curX + GESTURE_THIRD_OFFSET_X, curY + GESTURE_THIRD_OFFSET_Y));
+			index = PlayPalUtility.initialLineGestureParams(false, false, GESTURE_BOX_SIZE, new Point(curX + GESTURE_FIRST_OFFSET_X, curY + GESTURE_FIRST_OFFSET_Y), new Point(curX + GESTURE_SECOND_OFFSET_X, curY + GESTURE_SECOND_OFFSET_Y), new Point(curX + GESTURE_THIRD_OFFSET_X, curY + GESTURE_THIRD_OFFSET_Y));
         }
         
         public void setMargins(int left, int top, int right, int down) {
@@ -315,7 +356,7 @@ public class Game2Activity extends Activity {
             while(!isDead) {
             	try {
             		doNextAction();
-					Thread.sleep(200);
+					Thread.sleep(400);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

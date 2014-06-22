@@ -36,6 +36,7 @@ public class MainActivity extends Activity {
 			public void onClick(View view) {
 				Intent newAct = new Intent();
 				newAct.setClass( MainActivity.this, LoadingActivity.class );
+				newAct.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				Bundle bundle = new Bundle();
 				bundle.putInt("GameIndex", gameIndex);
 	            newAct.putExtras(bundle);

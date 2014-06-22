@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.ImageView;
@@ -50,7 +52,7 @@ public class Game4Activity extends Activity {
 		
 		public void setGesturePoint(){
 			if(type==TRIANGULAR_COOKIE || type==CIRCLE_COOKIE || type==SQUARE_COOKIE)
-				PlayPalUtility.initialLineGestureParams(boxSize,
+				PlayPalUtility.initialLineGestureParams(false, true, boxSize,
 					pointAddition(this.center, offsetArray[this.type][0]), 
 					pointAddition(this.center, offsetArray[this.type][1]),
 					pointAddition(this.center, offsetArray[this.type][2]),
@@ -116,6 +118,10 @@ public class Game4Activity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
+		
+		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		
 		setContentView(R.layout.activity_game4);
 
 		View homeBtn = findViewById(R.id.homeBtn);
@@ -136,7 +142,7 @@ public class Game4Activity extends Activity {
 		});
 
 		PlayPalUtility.setLineGesture(true);
-		PlayPalUtility.initialLineGestureParams(boxSize, centerPoint, doughPosArray[0]);
+		PlayPalUtility.initialLineGestureParams(false, true, boxSize, centerPoint, doughPosArray[0]);
 		
 		
 		game4RelativeLayout.setOnHoverListener(new View.OnHoverListener() {

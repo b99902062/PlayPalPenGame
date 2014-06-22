@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.ImageView;
@@ -80,6 +82,10 @@ public class Game3Activity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
+		
+		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		
 		setContentView(R.layout.activity_game3);
 
 		View homeBtn = findViewById(R.id.homeBtn);
@@ -156,10 +162,10 @@ public class Game3Activity extends Activity {
 					if(curProgress == 7){
 						//bi-directional line gesture
 						PlayPalUtility.setLineGesture(true);
-						PlayPalUtility.initialLineGestureParams(boxSize, pointArray[0],pointArray[2]);
-						PlayPalUtility.initialLineGestureParams(boxSize, pointArray[2],pointArray[0]);
-						PlayPalUtility.initialLineGestureParams(boxSize, pointArray[1],pointArray[3]);
-						PlayPalUtility.initialLineGestureParams(boxSize, pointArray[3],pointArray[1]);
+						PlayPalUtility.initialLineGestureParams(false, true, boxSize, pointArray[0],pointArray[2]);
+						PlayPalUtility.initialLineGestureParams(false, true, boxSize, pointArray[2],pointArray[0]);
+						PlayPalUtility.initialLineGestureParams(false, true, boxSize, pointArray[1],pointArray[3]);
+						PlayPalUtility.initialLineGestureParams(false, true, boxSize, pointArray[3],pointArray[1]);
 					}
 				}
 				
@@ -213,7 +219,7 @@ public class Game3Activity extends Activity {
 		});
 
 		PlayPalUtility.setLineGesture(true);
-		PlayPalUtility.initialLineGestureParams(boxSize, centerPoint, 
+		PlayPalUtility.initialLineGestureParams(false, true, boxSize, centerPoint, 
 				pointArray[4*curProgress],
 				pointArray[4*curProgress+1],
 				pointArray[4*curProgress+2],

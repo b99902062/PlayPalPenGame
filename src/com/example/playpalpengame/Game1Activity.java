@@ -21,16 +21,19 @@ import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
 public class Game1Activity extends Activity {
-
 	protected final int step1MidProgressCount = 5;
 	protected final int step1TotalProgressCount = 10;
 	protected final int step2TotalProgressCount = 25;
 	protected final int step3TotalProgressCount = 35;
+	
+	private final int foodOffsetX = 380;
+	private final int foodOffsetY = 380;
 	
 	protected final int originBeginCenterX = 500;
 	protected final int originBeginCenterY = 500;
@@ -65,8 +68,14 @@ public class Game1Activity extends Activity {
 	protected TextView progressCountText;
 
 	protected AnimationDrawable potDropAnim;
+	protected AnimationDrawable potStirAnim;
 	protected AnimationDrawable fireAnim;
-
+	
+	protected Point[] carrotCutBeginPointArray = {new Point(231, 406), new Point(465, 340), new Point(740, 311), new Point(979, 300), new Point(1195, 318)};
+	protected Point[] carrotCutEndPointArray = {new Point(270, 715), new Point(650, 747), new Point(952, 759), new Point(1175, 736), new Point(1354, 677)};
+	protected Point[] cucumberCutBeginPointArray = {new Point(347, 309), new Point(561, 334), new Point(795, 386), new Point(1077, 404), new Point(1429, 288)};
+	protected Point[] cucumberCutEndPointArray = {new Point(154, 615), new Point(350, 700), new Point(581, 781), new Point(886, 831), new Point(1204, 845)};
+	
 	protected int[] foodResArray = { R.drawable.game1_carrot_1,
 			R.drawable.game1_carrot_2, R.drawable.game1_carrot_3,
 			R.drawable.game1_carrot_4, R.drawable.game1_carrot_5,
@@ -93,6 +102,9 @@ public class Game1Activity extends Activity {
 
 		progressCountText = (TextView) findViewById(R.id.testProgressCount);
 		progressCountText.setText("ProgressCount: " + new String("" + progressCount));
+		
+		PlayPalUtility.registerProgressBar((ProgressBar)findViewById(R.id.progressBarRed), (ImageView)findViewById(R.id.progressMark), (ImageView)findViewById(R.id.progressBar));
+		PlayPalUtility.initialProgressBar(step1TotalProgressCount);
 		
 		View homeBtn = findViewById(R.id.homeBtn);
 		setHomeListener(homeBtn);
@@ -128,14 +140,16 @@ public class Game1Activity extends Activity {
             }
         });
 
-		//Test
 		PlayPalUtility.registerLineGesture(game1RelativeLayout, this, new Callable<Integer>() {
 			public Integer call() {
 				return handleLineAction();
 			}
 		});
 		PlayPalUtility.setLineGesture(true);
-		PlayPalUtility.initialLineGestureParams(boxSize, new Point(originBeginCenterX, originBeginCenterY), new Point(originEndCenterX, originEndCenterY));
+		Point beginPnt = new Point(foodOffsetX + carrotCutBeginPointArray[progressCount].x, foodOffsetY + carrotCutBeginPointArray[progressCount].y);
+		Point endPnt = new Point(foodOffsetX + carrotCutEndPointArray[progressCount].x, foodOffsetY + carrotCutEndPointArray[progressCount].y);
+		PlayPalUtility.initialLineGestureParams(false, false, boxSize, beginPnt, endPnt);
+		
 		
 		Paint fgPaintSel = new Paint();
 		fgPaintSel.setARGB(255, 0, 0,0);
@@ -178,7 +192,10 @@ public class Game1Activity extends Activity {
 
 		progressCount++;
 		progressCountText.setText("ProgressCount: " + new String("" + progressCount));
+		PlayPalUtility.doProgress();
+		
 		view.setVisibility(ImageView.GONE);
+		potDropAnim.setVisible(true, true);
 		potDropAnim.start();
 
 		if (progressCount == step2TotalProgressCount) {
@@ -189,9 +206,14 @@ public class Game1Activity extends Activity {
 					board2Layout.clearAnimation();
 					board2Layout.setVisibility(ImageView.GONE);
 
+					PlayPalUtility.initialProgressBar(step3TotalProgressCount - step2TotalProgressCount);
+					
 					fireView.setVisibility(ImageView.VISIBLE);
 					fireAnim.setVisible(true, true);
 					fireAnim.start();
+					
+					potView.setBackgroundResource(R.anim.pot_stir_animation);
+					potStirAnim = (AnimationDrawable) potView.getBackground();
 					
 					PlayPalUtility.registerLineGesture(game1RelativeLayout, self, new Callable<Integer>() {
 						public Integer call() {
@@ -199,7 +221,7 @@ public class Game1Activity extends Activity {
 						}
 					});
 					PlayPalUtility.setLineGesture(true);
-					PlayPalUtility.initialLineGestureParams(potBoxSize, new Point(potLeftTopX, potLeftTopY), new Point(potLeftTopX + potBoxInterval, potLeftTopY), new Point(potLeftTopX + potBoxInterval, potLeftTopY + potBoxInterval), new Point(potLeftTopX, potLeftTopY + potBoxInterval));
+					PlayPalUtility.initialLineGestureParams(true, false, potBoxSize, new Point(potLeftTopX, potLeftTopY), new Point(potLeftTopX + potBoxInterval, potLeftTopY), new Point(potLeftTopX + potBoxInterval, potLeftTopY + potBoxInterval), new Point(potLeftTopX, potLeftTopY + potBoxInterval));
 					
 					isDoneDropFood = true;
 				}
@@ -265,7 +287,10 @@ public class Game1Activity extends Activity {
 	protected Integer doPotStir() {
 		progressCount++;
 		progressCountText.setText("ProgressCount: " + new String("" + progressCount));
-		potDropAnim.start();
+		PlayPalUtility.doProgress();
+		
+		potStirAnim.setVisible(true, true);
+		potStirAnim.start();
 
 		if (progressCount == step3TotalProgressCount) {
 			PlayPalUtility.setLineGesture(false);
@@ -326,8 +351,20 @@ public class Game1Activity extends Activity {
 			return 0;
 		progressCount++;
 		progressCountText.setText("ProgressCount: " + new String("" + progressCount));
+		PlayPalUtility.doProgress();
 		
-		PlayPalUtility.changeGestureParams(true, 0, new Point(lineInterval, 0), new Point(lineInterval, 0));
+		Point beginPnt = new Point(0, 0);
+		Point endPnt = new Point(0, 0);
+		if(progressCount < step1MidProgressCount) {
+			beginPnt = new Point(foodOffsetX + carrotCutBeginPointArray[progressCount].x, foodOffsetY + carrotCutBeginPointArray[progressCount].y);
+			endPnt = new Point(foodOffsetX + carrotCutEndPointArray[progressCount].x, foodOffsetY + carrotCutEndPointArray[progressCount].y);
+		}
+		else if(progressCount < step1TotalProgressCount){
+			beginPnt = new Point(foodOffsetX + cucumberCutBeginPointArray[progressCount - step1MidProgressCount].x, foodOffsetY + cucumberCutBeginPointArray[progressCount - step1MidProgressCount].y);
+			endPnt = new Point(foodOffsetX + cucumberCutEndPointArray[progressCount - step1MidProgressCount].x, foodOffsetY + cucumberCutEndPointArray[progressCount - step1MidProgressCount].y);
+		}
+			
+		PlayPalUtility.changeGestureParams(false, 0, beginPnt, endPnt);
 		
 		((ImageView) currentFoodView)
 				.setImageResource(foodResArray[progressCount]);
@@ -354,7 +391,9 @@ public class Game1Activity extends Activity {
 						@Override
 						public void onAnimationEnd(Animation anim) {
 							PlayPalUtility.setLineGesture(true);
-							PlayPalUtility.initialLineGestureParams(boxSize, new Point(originBeginCenterX, originBeginCenterY), new Point(originEndCenterX, originEndCenterY));
+							Point beginPnt = new Point(foodOffsetX + cucumberCutBeginPointArray[0].x, foodOffsetY + cucumberCutBeginPointArray[0].y);
+							Point endPnt = new Point(foodOffsetX + cucumberCutEndPointArray[0].x, foodOffsetY + cucumberCutEndPointArray[0].y);
+							PlayPalUtility.initialLineGestureParams(false, false, boxSize, beginPnt, endPnt);
 						}
 
 						@Override
@@ -413,6 +452,8 @@ public class Game1Activity extends Activity {
 					Animation board2Anim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_OUTLEFT_TO_CUR);
 					board2Layout.setAnimation(board2Anim);
 
+					PlayPalUtility.initialProgressBar(step2TotalProgressCount - step1TotalProgressCount);
+					
 					randomSetupFood();
 
 					board2Anim.startNow();
