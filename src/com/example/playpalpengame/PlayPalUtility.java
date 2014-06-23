@@ -4,6 +4,13 @@ import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.DashPathEffect;
+import android.graphics.Paint;
+import android.graphics.Paint.Style;
+import android.graphics.Path;
+import android.graphics.PathEffect;
 import android.graphics.Point;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -33,6 +40,9 @@ public class PlayPalUtility {
 	protected static View targetView;
 	protected static Context targetContext;
 	protected static boolean isDebugMode = true;
+	
+	protected static DrawView drawview;
+	
 	
 	private static int totalProgress = 0;
 	private static int curProgress = 0;
@@ -336,6 +346,37 @@ public class PlayPalUtility {
 	protected static void setDebugMode(boolean value) {
 		isDebugMode = value;
 	}
+	
+	
+	
+	
+	/*DrawView utility*/
+	protected static void initDrawView(RelativeLayout layout, Context context, boolean straight){
+		initDrawView(layout, context, straight, new Point(0,0), 0);
+	}
+	
+	
+	protected static void initDrawView(RelativeLayout layout, Context context, boolean straight, Point orig, int r){
+		drawview = new DrawView(context, straight, orig, r);
+		drawview.setMinimumHeight(2160);
+		drawview.setMinimumWidth(1600);
+		
+		layout.addView(drawview);
+	}
+	
+	protected static void setArcStroke(Point orig, int radius){
+		drawview.isStraight = false;
+		drawview.orig= orig;
+		drawview.radius = radius;
+	}
+	
+	protected static void setStraightStroke(Point... points){
+		drawview.isStraight = true;
+		
+		for(Point p:points){
+			drawview.pointList.add (p);			
+		}
+	}
 }
 
 class GestureSet {
@@ -346,4 +387,63 @@ class GestureSet {
 	protected boolean isContinuous;
 	protected boolean isInOrder;
 	protected boolean isValid;
+};
+
+
+
+class DrawView extends View{
+	protected Paint paint;
+	protected Point orig;
+	protected Point centralPoint = new Point(1280,800);
+	protected int radius;
+	protected boolean isStraight;
+	
+	ArrayList<Point> pointList;
+	Canvas canvas;
+	
+	public DrawView(Context context, boolean straight, Point orig, int r) {
+		super(context);
+		canvas= new Canvas();
+		pointList = new ArrayList<Point>();
+		isStraight = straight;
+		radius = r;
+        
+		paint = new Paint();
+        initPenEffect(paint);
+	}
+
+	
+	private void initPenEffect(Paint paint){
+        paint.setAntiAlias(true);    
+        paint.setStyle(Style.STROKE);  
+        paint.setStrokeWidth(10);        
+        paint.setColor(Color.RED);
+        
+        PathEffect effects = new DashPathEffect(new float[]{5,5,5,5},1);  
+        paint.setPathEffect(effects); 
+	}
+	
+	public void addLinePair(Point p1, Point p2){
+		pointList.add(p1);
+		pointList.add(p2);		
+	}
+	
+	@Override  
+    protected void onDraw(Canvas canvas) {  
+        super.onDraw(canvas);
+        if(isStraight){
+        	for(int i=0; i<pointList.size(); i+=2){
+        		Path path=new Path();
+                path.moveTo(pointList.get(i).x, pointList.get(i).y );
+                path.lineTo(pointList.get(i+1).x, pointList.get(i+1).y );
+
+                canvas.drawPath(path, paint);
+        	}	
+        }
+        else{
+        	canvas.drawCircle(centralPoint.x, centralPoint.y, radius, paint);
+        }
+        
+        
+	}
 };

@@ -144,6 +144,9 @@ public class Game4Activity extends Activity {
 		PlayPalUtility.setLineGesture(true);
 		PlayPalUtility.initialLineGestureParams(false, true, boxSize, centerPoint, doughPosArray[0]);
 		
+		PlayPalUtility.initDrawView(game4RelativeLayout, this, true);
+		PlayPalUtility.setStraightStroke(new Point(0,0),new Point(10,1000));
+		
 		
 		game4RelativeLayout.setOnHoverListener(new View.OnHoverListener() {
             @Override

@@ -62,7 +62,7 @@ public class Game3Activity extends Activity {
 	protected boolean canTouchOven = false;
 	protected boolean butterSqueezing = false;
 	
-	
+	ImageView bowlView;
 	ImageView mixView;
 	ImageView ovenView;
 	ImageView cakeView;
@@ -95,7 +95,7 @@ public class Game3Activity extends Activity {
 		boxSize = 100;
 		gameContext = this;
 		
-		
+		bowlView = (ImageView)findViewById(R.id.Game3_bowl);
 		mixView =  (ImageView)findViewById(R.id.Game3_mix);
 		ovenView = (ImageView)findViewById(R.id.Game3_oven);
 		cakeView = (ImageView)findViewById(R.id.Game3_cake);

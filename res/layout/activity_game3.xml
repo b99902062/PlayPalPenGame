@@ -33,6 +33,14 @@
             android:src="@drawable/game3_eggbeat"
             android:visibility="invisible"/>
         
+         <ImageView
+            android:id="@+id/Game3_bowl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="190dp"
+            android:src="@drawable/game3_mixbowl" />
+         
         <ImageView
             android:id="@+id/Game3_mix"
             android:layout_width="wrap_content"
