@@ -352,23 +352,17 @@ public class PlayPalUtility {
 	
 	
 	/*DrawView utility*/
-	protected static void initDrawView(RelativeLayout layout, Context context, boolean straight){
-		initDrawView(layout, context, straight, new Point(0,0), 0);
+	protected static void initDrawView(RelativeLayout layout, Context context){
+		initDrawView(layout, context, new Point(0,0), 0);
 	}
 	
 	
-	protected static void initDrawView(RelativeLayout layout, Context context, boolean straight, Point orig, int r){
-		drawview = new DrawView(context, straight, orig, r);
+	protected static void initDrawView(RelativeLayout layout, Context context, Point orig, int r){
+		drawview = new DrawView(context, orig, r);
 		drawview.setMinimumHeight(2160);
 		drawview.setMinimumWidth(1600);
 		
 		layout.addView(drawview);
-	}
-	
-	protected static void setArcStroke(Point orig, int radius){
-		drawview.isStraight = false;
-		drawview.orig= orig;
-		drawview.radius = radius;
 	}
 	
 	protected static void setStraightStroke(Point... points){
@@ -376,6 +370,20 @@ public class PlayPalUtility {
 		for(Point p:points){
 			drawview.pointList.add (p);			
 		}
+		drawview.invalidate();
+	}
+	
+	protected static void setCircleStroke(Point o, int r){
+		drawview.isStraight = false;
+		drawview.orig = o;
+		drawview.radius = r;
+		
+		drawview.invalidate();
+	}
+	
+	protected static void clearDrawView(){
+		drawview.reset();
+		drawview.invalidate();
 	}
 }
 
@@ -401,15 +409,19 @@ class DrawView extends View{
 	ArrayList<Point> pointList;
 	Canvas canvas;
 	
-	public DrawView(Context context, boolean straight, Point orig, int r) {
+	public DrawView(Context context, Point orig, int r) {
 		super(context);
 		canvas= new Canvas();
 		pointList = new ArrayList<Point>();
-		isStraight = straight;
+		
 		radius = r;
         
 		paint = new Paint();
         initPenEffect(paint);
+	}
+	
+	public void setStraight(boolean straight){
+		isStraight = straight;
 	}
 
 	
@@ -417,7 +429,7 @@ class DrawView extends View{
         paint.setAntiAlias(true);    
         paint.setStyle(Style.STROKE);  
         paint.setStrokeWidth(10);        
-        paint.setColor(Color.RED);
+        paint.setColor(Color.BLACK);
         
         PathEffect effects = new DashPathEffect(new float[]{5,5,5,5},1);  
         paint.setPathEffect(effects); 
@@ -428,11 +440,11 @@ class DrawView extends View{
 		pointList.add(p2);		
 	}
 	
-	public void resetDrawView(){
-		
+	public void reset(){
 		orig = new Point(0,0);
 		radius = 0;
-		pointList = new ArrayList<Point>();
+		pointList = new ArrayList<Point>(); 
+				
 	}
 	
 	@Override  
@@ -465,13 +477,13 @@ class DrawView extends View{
     	 	canvas.drawArc(rect, startAngle, sweepAngle, false, paint);
     	 	
     	 	
-    	 	fRectLen -= intvl;
-    	 	fRectLeft+= 2*intvl;
-            fRectTop += 2*intvl;
+    	 	fRectLen -= 2*intvl;
+    	 	fRectLeft+= intvl;
+            fRectTop += intvl;
             fRectRight = fRectLeft+fRectLen;
             
             startAngle = 90;
-            sweepAngle = 225;
+            sweepAngle = 180+45;
     	 	rect = new RectF(fRectLeft, fRectTop, fRectRight, fRectBottom);
     	 	canvas.drawArc(rect, startAngle, sweepAngle, false, paint);
         }
