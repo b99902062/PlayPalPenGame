@@ -12,6 +12,7 @@ import android.graphics.Paint.Style;
 import android.graphics.Path;
 import android.graphics.PathEffect;
 import android.graphics.Point;
+import android.graphics.RectF;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -372,7 +373,6 @@ public class PlayPalUtility {
 	
 	protected static void setStraightStroke(Point... points){
 		drawview.isStraight = true;
-		
 		for(Point p:points){
 			drawview.pointList.add (p);			
 		}
@@ -428,6 +428,13 @@ class DrawView extends View{
 		pointList.add(p2);		
 	}
 	
+	public void resetDrawView(){
+		
+		orig = new Point(0,0);
+		radius = 0;
+		pointList = new ArrayList<Point>();
+	}
+	
 	@Override  
     protected void onDraw(Canvas canvas) {  
         super.onDraw(canvas);
@@ -441,9 +448,32 @@ class DrawView extends View{
         	}	
         }
         else{
-        	canvas.drawCircle(centralPoint.x, centralPoint.y, radius, paint);
+        	
+        	RectF rect;
+      
+    		float startAngle = 270;
+            float sweepAngle = 180;
+    		
+    	 	int fRectLen	= 2 * radius;
+    	 	int fRectLeft   = centralPoint.x - radius;
+    	 	int fRectTop 	= centralPoint.y - radius;
+    	 	int fRectRight  = fRectLeft+fRectLen;
+    	 	int fRectBottom = fRectTop+fRectLen;
+    	 	int intvl = radius/10;
+    	  
+    	 	rect = new RectF(fRectLeft, fRectTop, fRectRight, fRectBottom);
+    	 	canvas.drawArc(rect, startAngle, sweepAngle, false, paint);
+    	 	
+    	 	
+    	 	fRectLen -= intvl;
+    	 	fRectLeft+= 2*intvl;
+            fRectTop += 2*intvl;
+            fRectRight = fRectLeft+fRectLen;
+            
+            startAngle = 90;
+            sweepAngle = 225;
+    	 	rect = new RectF(fRectLeft, fRectTop, fRectRight, fRectBottom);
+    	 	canvas.drawArc(rect, startAngle, sweepAngle, false, paint);
         }
-        
-        
 	}
 };

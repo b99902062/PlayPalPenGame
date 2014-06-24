@@ -146,7 +146,8 @@ public class Game4Activity extends Activity {
 		
 		PlayPalUtility.initDrawView(game4RelativeLayout, this, true);
 		PlayPalUtility.setStraightStroke(new Point(0,0),new Point(10,1000));
-		
+		PlayPalUtility.setStraightStroke(new Point(1000,0),new Point(1000,1000));
+		//PlayPalUtility.setArcStroke(new Point(0,0), 100);
 		
 		game4RelativeLayout.setOnHoverListener(new View.OnHoverListener() {
             @Override
