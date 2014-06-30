@@ -128,6 +128,48 @@
             android:visibility="invisible" />
 
         <ImageView
+            android:id="@+id/fishViewDone1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="210dp"
+            android:layout_marginTop="215dp"
+            android:src="@drawable/game2_fish_done"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/fishViewDone2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="430dp"
+            android:layout_marginTop="215dp"
+            android:src="@drawable/game2_fish_done"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/fishViewDone3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="650dp"
+            android:layout_marginTop="215dp"
+            android:src="@drawable/game2_fish_done"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/fishViewDone4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="870dp"
+            android:layout_marginTop="215dp"
+            android:src="@drawable/game2_fish_done"
+            android:visibility="invisible" />
+        
+        <ImageView
             android:id="@+id/fishCut11"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -1,9 +1,12 @@
 package com.example.playpalpengame;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Callable;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
@@ -13,12 +16,15 @@ import android.graphics.Path;
 import android.graphics.PathEffect;
 import android.graphics.Point;
 import android.graphics.RectF;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
@@ -32,6 +38,9 @@ public class PlayPalUtility {
 	protected final static int FROM_OUTRIGHT_TO_CUR = 3;
 	protected final static int FROM_CUR_TO_OUTLEFT = 4;
 	
+	protected final static int TIME_MODE = 1;
+	protected final static int PROGRESS_MODE = 2;
+	
 	private final static int beginProgressMarkX = 746;
 	private final static int endProgressMarkX = 1566;
 	private final static int progressMarkY = 122;
@@ -41,10 +50,12 @@ public class PlayPalUtility {
 	protected static View targetView;
 	protected static Context targetContext;
 	protected static boolean isDebugMode = true;
+	protected static int barMode;
 	
 	protected static DrawView drawview;
-	
-	
+	protected static Timer timer;
+	protected static TimeBarTask timerTask;
+
 	private static int totalProgress = 0;
 	private static int curProgress = 0;
 	private static ProgressBar progressBar;
@@ -86,11 +97,39 @@ public class PlayPalUtility {
 		return newAnim;
 	}
 	
-	protected static void setAlphaAnimation(View view) {
-		Animation fadeIn = new AlphaAnimation(0, 1);
-		fadeIn.setInterpolator(new DecelerateInterpolator());
-		fadeIn.setDuration(2000);
-		view.setAnimation(fadeIn);
+	protected static void setAlphaAnimation(View view, boolean isIn) {
+		setAlphaAnimation(view, isIn, null);
+	}
+	
+	protected static void setAlphaAnimation(View view, boolean isIn, final Callable<Integer> func) {
+		Animation fade;
+		if(isIn) 
+			fade = new AlphaAnimation(0, 1);
+		else
+			fade = new AlphaAnimation(1, 0);
+		fade.setInterpolator(new DecelerateInterpolator());
+		fade.setDuration(2000);
+		if(func != null) {
+			fade.setAnimationListener(new AnimationListener() {
+				@Override
+				public void onAnimationEnd(Animation arg0) {
+					try {
+						func.call();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+
+				@Override
+				public void onAnimationRepeat(Animation animation) {
+				}
+
+				@Override
+				public void onAnimationStart(Animation animation) {
+				}
+			});
+		}
+		view.setAnimation(fade);
 	}
 	
 	protected static void clearGestureSets() {
@@ -201,8 +240,7 @@ public class PlayPalUtility {
 			}
 		});
 	}
-	
-	
+		
 	protected static int initialLineGestureParams(boolean isContinuous, boolean isInOrder, int size, Point... points) {
 		for (Point p : points) 
 			Log.d("PlayPalUtility", String.format("Point = (%d, %d)", p.x, p.y));
@@ -314,23 +352,60 @@ public class PlayPalUtility {
 		progressBack = progressBackView;
 	}
 	
-	protected static void initialProgressBar(int total) {
+	protected static void initialProgressBar(int total, int mode) {
 		totalProgress = total;
 		progressBar.setMax(total);
-		curProgress = 0;
-		progressBar.setProgress(0);
 		progressBack.setImageResource(R.drawable.progress);
+		barMode = mode;
+		if(barMode == PROGRESS_MODE) {
+			curProgress = 0;
+			progressBar.setProgress(0);
+			
+		}
+		else if(barMode == TIME_MODE){
+			curProgress = total;
+			progressBar.setProgress(total);
+			timer = new Timer(true);
+			timerTask = new TimeBarTask();
+			timer.schedule(timerTask, 0, 33);
+		}
 		updateProgressBar();
 	}
 	
+	public static Handler timeBarHandler = new Handler() {
+        public void handleMessage(Message msg) {
+        	doProgress();
+        }
+    };
+    
 	protected static boolean doProgress() {
-		curProgress++;
-		updateProgressBar();
-		if(curProgress >= totalProgress) {
+		boolean isReachGoal = false;
+		if(barMode == PROGRESS_MODE) {
+			curProgress++;
+			if(curProgress >= totalProgress) {
+				isReachGoal = true;
+				curProgress = totalProgress;
+			}
+			updateProgressBar();
+			
+		}
+		else if(barMode == TIME_MODE) {
+			curProgress--;
+			if(curProgress <= 0) {
+				isReachGoal = true;
+				curProgress = 0;
+			}
+			updateProgressBar();
+		}
+		if(isReachGoal) {
 			progressBack.setImageResource(R.drawable.progress_finish);
 			return true;
 		}
 		return false;
+	}
+	
+	protected static void pauseProgress() {
+		timerTask.cancel();
 	}
 	
 	protected static void updateProgressBar() {
@@ -339,9 +414,10 @@ public class PlayPalUtility {
 		float leftMargin = (float) curProgress / totalProgress * (endProgressMarkX - beginProgressMarkX) + beginProgressMarkX;
     	params.setMargins((int) leftMargin, progressMarkY, 0, 0);
     	progressMark.setLayoutParams(params);
-		
-		Log.d("ProgressTest", String.format("curProgress: %d", progressBar.getProgress()));
-		Log.d("ProgressTest", String.format("TotalProgress: %d", progressBar.getMax()));
+    	if(curProgress == 0)
+    		progressMark.setVisibility(ImageView.INVISIBLE);
+    	else
+    		progressMark.setVisibility(ImageView.VISIBLE);
 	}
 	
 	protected static void setDebugMode(boolean value) {
@@ -489,3 +565,14 @@ class DrawView extends View{
         }
 	}
 };
+
+class TimeBarTask extends TimerTask {
+	private boolean isPause = false;
+	
+    public void run() {
+    	if(!isPause) {
+    		Message msg = new Message();
+            PlayPalUtility.timeBarHandler.sendMessage(msg);
+    	}
+    }
+  };
