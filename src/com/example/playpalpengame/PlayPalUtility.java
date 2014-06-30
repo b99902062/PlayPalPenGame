@@ -429,9 +429,9 @@ class DrawView extends View{
         paint.setAntiAlias(true);    
         paint.setStyle(Style.STROKE);  
         paint.setStrokeWidth(10);        
-        paint.setColor(Color.BLACK);
+        paint.setColor(Color.BLACK);//DARK GRAY
         
-        PathEffect effects = new DashPathEffect(new float[]{5,5,5,5},1);  
+        PathEffect effects = new DashPathEffect(new float[]{15,15,15,15},1);  
         paint.setPathEffect(effects); 
 	}
 	
@@ -475,7 +475,6 @@ class DrawView extends View{
     	  
     	 	rect = new RectF(fRectLeft, fRectTop, fRectRight, fRectBottom);
     	 	canvas.drawArc(rect, startAngle, sweepAngle, false, paint);
-    	 	
     	 	
     	 	fRectLen -= 2*intvl;
     	 	fRectLeft+= intvl;

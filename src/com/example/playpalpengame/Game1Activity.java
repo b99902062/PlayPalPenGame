@@ -117,6 +117,13 @@ public class Game1Activity extends Activity {
 		cucumberView = (ImageView) findViewById(R.id.cucumberView);
 		
 		game1RelativeLayout = (RelativeLayout) findViewById(R.id.game1RelativeLayout);
+		
+		
+		PlayPalUtility.initDrawView(game1RelativeLayout, this);
+		PlayPalUtility.setStraightStroke(new Point(carrotCutBeginPointArray[0].x+380,carrotCutBeginPointArray[0].y+380),
+										 new Point(carrotCutEndPointArray[0].x+380,carrotCutEndPointArray[0].y+380));
+		
+		
 		game1RelativeLayout.setOnHoverListener(new View.OnHoverListener() {
             @Override
             public boolean onHover(View v, MotionEvent event) {

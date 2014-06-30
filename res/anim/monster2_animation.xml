@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list 
+    xmlns:android="http://schemas.android.com/apk/res/android"    
+    android:oneshot="true" android:visible="true">
+    <item android:drawable="@drawable/monster2_ani_1"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_2"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_3"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_4"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_5"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_6"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_7"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_8"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_9"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_10"    android:duration="100"/>
+    
+    <item android:drawable="@drawable/monster2_ani_11"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_12"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_13"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_14"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_15"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_16"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_17"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_18"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_19"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_20"    android:duration="100"/>
+    
+    <item android:drawable="@drawable/monster2_ani_21"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_22"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_23"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_24"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_25"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_26"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_27"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_28"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_29"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_30"    android:duration="100"/>
+    
+    <item android:drawable="@drawable/monster2_ani_31"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_32"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_33"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_34"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_35"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_36"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_37"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_38"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_39"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_40"    android:duration="100"/>
+   
+    <item android:drawable="@drawable/monster2_ani_41"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_42"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_43"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_44"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_45"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_46"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_47"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_48"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_49"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_50"    android:duration="100"/>
+    
+    <item android:drawable="@drawable/monster2_ani_51"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_52"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_53"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_54"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_55"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_56"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_57"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_58"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_59"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_60"    android:duration="100"/>
+    
+    
+    <item android:drawable="@drawable/monster2_ani_61"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_62"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_63"    android:duration="100"/>
+    <item android:drawable="@drawable/monster2_ani_64"    android:duration="100"/>
+    
+</animation-list>
+   

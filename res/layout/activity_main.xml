@@ -32,21 +32,6 @@
                 android:layout_marginLeft="50dp" >
 
                 <ImageView
-                    android:id="@+id/mainPracticeBtn1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="185dp"
-                    android:src="@drawable/main_practice" />
-
-                <ImageView
-                    android:id="@+id/mainPlayBtn1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="250dp"
-                    android:layout_marginTop="185dp"
-                    android:src="@drawable/main_play" />
-
-                <ImageView
                     android:id="@+id/mainStall1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -118,6 +103,25 @@
                     android:layout_marginTop="590dp"
                     android:src="@drawable/main_badges_6" />
 
+                <ImageView
+                    android:id="@+id/mainPlayBtn1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@+id/mainPracticeBtn1"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="50dp"
+                    android:src="@drawable/main_play" />
+
+                <ImageView
+                    android:id="@+id/mainPracticeBtn1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginTop="185dp"
+                    android:src="@drawable/main_practice" />
+
             </RelativeLayout>
 
             <RelativeLayout
@@ -130,14 +134,23 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="185dp"
+                    
+                    
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="25dp"
+                    
                     android:src="@drawable/main_practice" />
 
                 <ImageView
                     android:id="@+id/mainPlayBtn2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="250dp"
+            
                     android:layout_marginTop="185dp"
+                    
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="50dp"
+                    
                     android:src="@drawable/main_play" />
 
                 <ImageView
@@ -224,14 +237,15 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentTop="true"
                     android:layout_marginTop="185dp"
+                    android:layout_marginLeft="25dp"
                     android:src="@drawable/main_practice" />
 
                 <ImageView
                     android:id="@+id/mainPlayBtn3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_marginLeft="250dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="50dp"
                     android:layout_marginTop="185dp"
                     android:src="@drawable/main_play" />
 
@@ -319,14 +333,15 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_marginTop="185dp"
+                    android:layout_marginLeft="25dp"
                     android:src="@drawable/main_practice" />
 
                 <ImageView
                     android:id="@+id/mainPlayBtn4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_marginLeft="250dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="50dp"
                     android:layout_marginTop="185dp"
                     android:src="@drawable/main_play" />
 

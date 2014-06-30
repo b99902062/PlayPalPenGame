@@ -50,7 +50,43 @@
           	android:src="@drawable/game4_ladle" 
           	android:visibility="invisible"/>
          
-         
+<!-- dough -->
+		<ImageView
+          android:id="@+id/Game4_dough1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="590dp"
+            android:layout_marginTop="190dp"
+          	android:src="@drawable/game4_dough2"
+          	android:visibility="invisible"/>
+		
+		<ImageView
+          android:id="@+id/Game4_dough2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="590dp"
+            android:layout_marginTop="390dp"
+          	android:src="@drawable/game4_dough3"
+          	android:visibility="invisible"/>
+		
+		<ImageView
+          android:id="@+id/Game4_dough3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="190dp"
+            android:layout_marginTop="390dp"
+          	android:src="@drawable/game4_dough4"
+          	android:visibility="invisible"/>
+		
+		<ImageView
+          android:id="@+id/Game4_dough4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="190dp"
+            android:layout_marginTop="190dp"
+          	android:src="@drawable/game4_dough5"
+          	android:visibility="invisible"/>
+		 
          
 <!-- cookies -->
          <ImageView
@@ -109,6 +145,14 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="870dp"
             android:layout_marginTop="460dp" />
+         
+         <TextView
+            android:id="@+id/testProgressCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/boardView"
+            android:layout_marginLeft="89dp"
+            android:text="TextView" />
                       
 	</RelativeLayout>
 </FrameLayout>

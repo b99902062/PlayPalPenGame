@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <animation-list 
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:oneshot="false"
-    android:visible="false">
-    
+    android:oneshot="false" android:visible="false">
+   
     <item android:drawable="@drawable/game3_oven2" android:duration="500" />
     <item android:drawable="@drawable/game3_oven3" android:duration="500" />
 </animation-list>
