@@ -30,23 +30,28 @@ public class Game2Activity extends Activity {
 	protected final int FISH_BOUND_RIGHT = 1600;
 	protected final int FISH_BOUND_UP = 250;
 	protected final int FISH_BOUND_DOWN = 1300;
-	protected final int GESTURE_BOX_SIZE = 60;
+	protected final int GESTURE_BOX_SIZE = 75;
 	protected final int GESTURE_FIRST_OFFSET_X = 0;
 	protected final int GESTURE_FIRST_OFFSET_Y = 0;
 	protected final int GESTURE_SECOND_OFFSET_X = 100;
 	protected final int GESTURE_SECOND_OFFSET_Y = 80;
 	protected final int GESTURE_THIRD_OFFSET_X = 200;
 	protected final int GESTURE_THIRD_OFFSET_Y = 0;
+	protected final int CUT_BOX_SIZE = 50;
 	
 	protected final int step1TotalProgressCount = 10;
 	protected final int step2TotalProgressCount = 14;
 	
-	protected final int testTotalTime = 300;
+	protected final int testTotalTime = 500;
+	
+	private final int fishW =  140;
+	private final int fishH = 80;
 	
 	private final Point[] fishOffset = {new Point(420, 430), new Point(860, 430), new Point(1300,430), new Point(1740, 430)};
 	private final Point[] cutBeginOffset = {new Point(124, 263), new Point(301, 262), new Point(134, 459), new Point(278, 457)};
 	private final Point[] cutEndOffset = {new Point(308, 438), new Point(123, 446), new Point(284, 600), new Point(134, 607)};
-	
+
+	private int curFishIndex;
 	protected boolean canPutInBasket = false;
 	protected ImageView netView;
 	protected ImageView basketView;
@@ -123,9 +128,11 @@ public class Game2Activity extends Activity {
                     			canPutInBasket = false;
                     			PlayPalUtility.setLineGesture(true);
                     			// Play the pu-ton animation
+                    			PlayPalUtility.cancelGestureSet(curFishIndex);
+                    			fishThreadList.get(curFishIndex).killThread();
+                    			
                     			progressCount++;
                     			testProgressCountText.setText(String.format("ProgressCount: %d", progressCount));
-                    			PlayPalUtility.doProgress();
                     			if(progressCount == step1TotalProgressCount) {
                     				PlayPalUtility.clearGestureSets();
                     				PlayPalUtility.setLineGesture(false);
@@ -139,6 +146,14 @@ public class Game2Activity extends Activity {
                         break;
                     case MotionEvent.ACTION_HOVER_EXIT:
                     	netView.setVisibility(ImageView.INVISIBLE);
+                    	if(canPutInBasket) {
+                    		PlayPalUtility.setLineGesture(true);
+                    		fishThreadList.get(curFishIndex).moveTo((int)event.getX() - fishW, (int)event.getY() - fishH);
+                    		fishThreadList.get(curFishIndex).doResume();
+                    		fishThreadList.get(curFishIndex).fishView.setVisibility(ImageView.VISIBLE);
+                    		netView.setImageResource(R.drawable.game2_net);
+                    		canPutInBasket = false;
+                    	}
                         break;
                 }
                 return true;
@@ -188,7 +203,6 @@ public class Game2Activity extends Activity {
 		for(int i=0; i<FISH_NUM; i++) {
 			FishHandlerThread fht = new FishHandlerThread(this);
 			fishThreadList.add(fht);
-			
 			fht.start();
 		}
 	}
@@ -204,14 +218,15 @@ public class Game2Activity extends Activity {
 		
 		if(canPutInBasket) /** To avoid race condition */
 			return 0;
+		curFishIndex = index;
 		canPutInBasket = true;
 		PlayPalUtility.setLineGesture(false);
-		PlayPalUtility.cancelGestureSet(index);
-		fishThreadList.get(index).killThread();
-		fishThreadList.get(index).fishView.setVisibility(ImageView.GONE);
+		fishThreadList.get(index).doPause();
+		//PlayPalUtility.cancelGestureSet(index);
+		//fishThreadList.get(index).killThread();
+		fishThreadList.get(index).fishView.setVisibility(ImageView.INVISIBLE);
 		netView.setImageResource(R.drawable.game2_net2);
-		
-		
+
 		return 0;
 	}
 	
@@ -248,7 +263,7 @@ public class Game2Activity extends Activity {
 			for(int cutIndex = 0; cutIndex<4; cutIndex++) {
 				Point pnt1 = new Point(fishOffset[fishIndex].x + cutBeginOffset[cutIndex].x, fishOffset[fishIndex].y + cutBeginOffset[cutIndex].y);
 				Point pnt2 = new Point(fishOffset[fishIndex].x + cutEndOffset[cutIndex].x, fishOffset[fishIndex].y + cutEndOffset[cutIndex].y);
-				PlayPalUtility.initialLineGestureParams(false, false, GESTURE_BOX_SIZE, pnt1, pnt2);
+				PlayPalUtility.initialLineGestureParams(false, false, CUT_BOX_SIZE, pnt1, pnt2);
 				PlayPalUtility.setStraightStroke(pnt1, pnt2);
 				fishCutPointPairArray[fishIndex*4 + cutIndex] = new PointPair(pnt1, pnt2);
 			}
@@ -303,7 +318,6 @@ public class Game2Activity extends Activity {
 
 		progressCount++;
 		testProgressCountText.setText(String.format("ProgressCount: %d", progressCount));
-		PlayPalUtility.doProgress();
 		if(progressCount == step2TotalProgressCount) {
 			PlayPalUtility.setLineGesture(false);
 			PlayPalUtility.unregisterLineGesture(game2RelativeLayout);
@@ -338,14 +352,14 @@ public class Game2Activity extends Activity {
             fishThreadList.get(msg.getData().getInt("index")).setMargins(curX, curY, 0, 0);
             Log.d("PlayPalTest", String.format("Fish[%d], Test: (%d, %d)", msg.getData().getInt("index"), curX, curY));
             if(!fishThreadList.get(msg.getData().getInt("index")).isDead)
-            	PlayPalUtility.changeGestureParams(false, msg.getData().getInt("index"), new Point(curX + GESTURE_FIRST_OFFSET_X, curY + GESTURE_FIRST_OFFSET_Y), new Point(curX + GESTURE_SECOND_OFFSET_X, curY + GESTURE_SECOND_OFFSET_Y), new Point(curX + GESTURE_THIRD_OFFSET_X, curY + GESTURE_THIRD_OFFSET_Y));
+            	PlayPalUtility.changeGestureParams(false, msg.getData().getInt("index"), new Point(curX + fishW, curY + fishH));
         }
     };
     
 	
 	class FishHandlerThread extends Thread {	 
 		public static final float ROTATE_PROB = 0.13f;
-		public static final float MOVE_PROB = 0.75f;
+		public static final float MOVE_PROB = 0.55f;
 		public static final int MAX_SPEED = 100;
 		public static final int MIN_SPEED = 20;
 		protected ImageView fishView;
@@ -357,6 +371,7 @@ public class Game2Activity extends Activity {
 		protected PointF orientation = new PointF(1f, 0f);
 		
 		protected boolean isDead = false;
+		protected boolean isPause = false;
 		
         FishHandlerThread(Game2Activity context) {
         	fishView = new ImageView(context);
@@ -370,7 +385,7 @@ public class Game2Activity extends Activity {
 
 			game2RelativeLayout.addView(fishView);
 			
-			index = PlayPalUtility.initialLineGestureParams(false, false, GESTURE_BOX_SIZE, new Point(curX + GESTURE_FIRST_OFFSET_X, curY + GESTURE_FIRST_OFFSET_Y), new Point(curX + GESTURE_SECOND_OFFSET_X, curY + GESTURE_SECOND_OFFSET_Y), new Point(curX + GESTURE_THIRD_OFFSET_X, curY + GESTURE_THIRD_OFFSET_Y));
+			index = PlayPalUtility.initialLineGestureParams(false, false, GESTURE_BOX_SIZE, new Point(curX + fishW, curY + fishH));
         }
         
         public void setMargins(int left, int top, int right, int down) {
@@ -388,7 +403,8 @@ public class Game2Activity extends Activity {
         public void run() {
             while(!isDead) {
             	try {
-            		doNextAction();
+            		if(!isPause)
+            			doNextAction();
 					Thread.sleep(400);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -437,6 +453,31 @@ public class Game2Activity extends Activity {
     		}
 
             Message msg = new Message();
+            msg.setData(dataBundle);
+
+            fishLocationHandler.sendMessage(msg);
+        }
+        
+        protected void doPause() {
+        	isPause = true;
+        }
+        
+        protected void doResume() {
+        	isPause = false;
+        }
+        
+        protected void moveTo(int newX, int newY) {
+        	curX = newX;
+        	curY = newY;
+        	
+        	Bundle dataBundle = new Bundle();
+        	dataBundle.putInt("index", index);
+            dataBundle.putInt("nextX", newX);
+            dataBundle.putInt("nextY", newY);
+            dataBundle.putInt("fishType", 1);
+            isFish1 = true;
+            
+        	Message msg = new Message();
             msg.setData(dataBundle);
 
             fishLocationHandler.sendMessage(msg);

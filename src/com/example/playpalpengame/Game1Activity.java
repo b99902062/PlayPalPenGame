@@ -221,7 +221,8 @@ public class Game1Activity extends Activity {
 					PlayPalUtility.setLineGesture(true);
 					PlayPalUtility.initialLineGestureParams(true, false, potBoxSize, new Point(potLeftTopX, potLeftTopY), new Point(potLeftTopX + potBoxInterval, potLeftTopY), new Point(potLeftTopX + potBoxInterval, potLeftTopY + potBoxInterval), new Point(potLeftTopX, potLeftTopY + potBoxInterval));
 					
-					PlayPalUtility.setCircleStroke(new Point(potLeftTopX + potBoxInterval/2, potLeftTopY + potBoxInterval/2), potBoxInterval/2);
+					ImageView helicalView = (ImageView)findViewById(R.id.helicalView);
+					helicalView.setVisibility(ImageView.VISIBLE);
 					
 					isDoneDropFood = true;
 				}
