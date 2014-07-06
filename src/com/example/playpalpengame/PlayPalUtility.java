@@ -365,6 +365,8 @@ public class PlayPalUtility {
 		else if(barMode == TIME_MODE){
 			curProgress = total;
 			progressBar.setProgress(total);
+			if(timer != null)
+				timer.cancel();
 			timer = new Timer(true);
 			timerTask = new TimeBarTask();
 			timer.schedule(timerTask, 0, 33);

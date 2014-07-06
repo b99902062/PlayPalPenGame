@@ -91,39 +91,12 @@ public class Game1Activity extends Activity {
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
 		setContentView(R.layout.activity_game1);
-
 		PlayPalUtility.setDebugMode(false);
 		
-		self = this;
-		
-		isFoodCanTouch = true;
-		isDoneDropFood = false;
-		progressCount = 0;
-		foodInPot = new ArrayList<View>();
+		doInitial();
 
-		progressCountText = (TextView) findViewById(R.id.testProgressCount);
-		progressCountText.setText("ProgressCount: " + new String("" + progressCount));
-		
 		PlayPalUtility.registerProgressBar((ProgressBar)findViewById(R.id.progressBarRed), (ImageView)findViewById(R.id.progressMark), (ImageView)findViewById(R.id.progressBar));
 		PlayPalUtility.initialProgressBar(testTotalTime, PlayPalUtility.TIME_MODE);
-		
-		View homeBtn = findViewById(R.id.homeBtn);
-		setHomeListener(homeBtn);
-
-		knifeView = (ImageView) findViewById(R.id.knifeView);
-		
-		carrotView = (ImageView) findViewById(R.id.carrotView);
-		setFoodListener(carrotView);
-		
-		cucumberView = (ImageView) findViewById(R.id.cucumberView);
-		
-		game1RelativeLayout = (RelativeLayout) findViewById(R.id.game1RelativeLayout);
-		
-		
-		PlayPalUtility.initDrawView(game1RelativeLayout, this);
-		PlayPalUtility.setStraightStroke(new Point(carrotCutBeginPointArray[0].x+380,carrotCutBeginPointArray[0].y+380),
-										 new Point(carrotCutEndPointArray[0].x+380,carrotCutEndPointArray[0].y+380));
-		
 		
 		game1RelativeLayout.setOnHoverListener(new View.OnHoverListener() {
             @Override
@@ -157,9 +130,21 @@ public class Game1Activity extends Activity {
 		Point beginPnt = new Point(foodOffsetX + carrotCutBeginPointArray[progressCount].x, foodOffsetY + carrotCutBeginPointArray[progressCount].y);
 		Point endPnt = new Point(foodOffsetX + carrotCutEndPointArray[progressCount].x, foodOffsetY + carrotCutEndPointArray[progressCount].y);
 		PlayPalUtility.initialLineGestureParams(false, false, boxSize, beginPnt, endPnt);
-		
+
 		PlayPalUtility.initDrawView(game1RelativeLayout, this);
 		DrawGestureLine();
+	}
+	
+	private void doInitial() {
+		self = this;
+		
+		isFoodCanTouch = true;
+		isDoneDropFood = false;
+		progressCount = 0;
+		foodInPot = new ArrayList<View>();
+
+		progressCountText = (TextView) findViewById(R.id.testProgressCount);
+		progressCountText.setText("ProgressCount: " + new String("" + progressCount));
 		
 		potView = (ImageView) findViewById(R.id.potView);
 		board2Layout = (RelativeLayout) findViewById(R.id.board2RelativeLayout);
@@ -170,6 +155,17 @@ public class Game1Activity extends Activity {
 		fireView = (ImageView) findViewById(R.id.fireView);
 		fireView.setBackgroundResource(R.anim.pot_fire_animation);
 		fireAnim = (AnimationDrawable) fireView.getBackground();
+
+		setHomeListener(findViewById(R.id.homeBtn));
+
+		knifeView = (ImageView) findViewById(R.id.knifeView);
+		
+		carrotView = (ImageView) findViewById(R.id.carrotView);
+		setFoodListener(carrotView);
+		
+		cucumberView = (ImageView) findViewById(R.id.cucumberView);
+		
+		game1RelativeLayout = (RelativeLayout) findViewById(R.id.game1RelativeLayout);
 	}
 
 	protected void setHomeListener(View targetView) {
@@ -305,9 +301,12 @@ public class Game1Activity extends Activity {
 			PlayPalUtility.setLineGesture(false);
 			PlayPalUtility.unregisterLineGesture(game1RelativeLayout);
 			PlayPalUtility.clearGestureSets();
-			Log.d("PenPalGame", "WIN Game 1");
+			
 			Intent newAct = new Intent();
-			newAct.setClass(Game1Activity.this, MainActivity.class);
+			newAct.setClass(Game1Activity.this, AnimationActivity.class);
+			Bundle bundle = new Bundle();
+			bundle.putInt("GameIndex", 1);
+            newAct.putExtras(bundle);
 			startActivityForResult(newAct, 0);
 			Game1Activity.this.finish();
 		}
@@ -482,6 +481,7 @@ public class Game1Activity extends Activity {
 	}
 	
 	private void DrawGestureLine() {
+		Log.d("Draw", "Call DrawGestureLine()");
 		PlayPalUtility.clearDrawView();
 		Point pnt1 = PlayPalUtility.getPoint(0, 0);
 		Point pnt2 = PlayPalUtility.getPoint(0, 1);

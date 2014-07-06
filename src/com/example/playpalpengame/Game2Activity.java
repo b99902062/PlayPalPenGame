@@ -322,9 +322,11 @@ public class Game2Activity extends Activity {
 			PlayPalUtility.setLineGesture(false);
 			PlayPalUtility.unregisterLineGesture(game2RelativeLayout);
 			PlayPalUtility.clearGestureSets();
-			Log.d("PenPalGame", "WIN Game 2");
 			Intent newAct = new Intent();
-			newAct.setClass(Game2Activity.this, MainActivity.class);
+			newAct.setClass(Game2Activity.this, AnimationActivity.class);
+			Bundle bundle = new Bundle();
+			bundle.putInt("GameIndex", 2);
+            newAct.putExtras(bundle);
 			startActivityForResult(newAct, 0);
 			Game2Activity.this.finish();
 		}
