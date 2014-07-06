@@ -36,7 +36,7 @@ public class LoadingActivity extends Activity {
 		ImageView monsterView = (ImageView)findViewById(R.id.monsterView);
 		monsterView.setImageResource(monsterResIdArray[gameIndex]);
 	
-		timer.schedule(new timerTask(), 2000);	
+		timer.schedule(new timerTask(), 2000);
 	}
 	
 	public class timerTask extends TimerTask {
