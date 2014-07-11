@@ -55,17 +55,27 @@ public class Game3Activity extends Activity {
 		new Point(1280,1080)};
 		
 	protected Point[] dottedLineArray = {
-		new Point(780+319, 380+234),
-		new Point(780+247, 380+319),
-		new Point(780+150, 380+437),
-		new Point(780+235, 380+528),
-		new Point(780+277, 380+640),
-		new Point(780+383, 380+580),
-		new Point(780+517, 380+582),
-		new Point(780+550, 380+522),
-		new Point(780+510, 380+438),
-		new Point(780+535, 380+334),
-		new Point(780+436, 380+301)};
+		new Point(780+444, 380+216),
+		new Point(780+374, 380+260),
+		new Point(780+324, 380+370),
+		new Point(780+260, 380+420),
+		new Point(780+214, 380+500),
+		new Point(780+266, 380+588),
+		new Point(780+324, 380+620),
+		new Point(780+332, 380+698),
+		new Point(780+382, 380+786),
+		new Point(780+490, 380+748),
+		new Point(780+548, 380+690),
+		new Point(780+638, 380+704),
+		new Point(780+756, 380+682),
+		new Point(780+764, 380+614),
+		new Point(780+710, 380+512),
+		new Point(780+752, 380+412),
+		new Point(780+710, 380+316),
+		new Point(780+588, 380+310)};
+	
+	
+	protected final int MIX_PROGRESS_END = 10;
 	
 	protected int boxSize;
 	protected int curProgress;
@@ -82,6 +92,7 @@ public class Game3Activity extends Activity {
 	ImageView cakeStrawberryView;
 	ImageView butterView;
 	ImageView eggbeatView;
+	ImageView helicalView;
 	
 	//ImageView dottedLineView;
 	ImageView currentFoodView;
@@ -121,6 +132,7 @@ public class Game3Activity extends Activity {
 		eggbeatView = (ImageView)findViewById(R.id.Game3_beat);
 		cakeCreamView = (ImageView)findViewById(R.id.Game3_cakeCream);
 		cakeStrawberryView = (ImageView)findViewById(R.id.Game3_cakeStrawberry);
+		helicalView = (ImageView)findViewById(R.id.Game3_helicalView);
 		
 		mixView.setBackgroundResource(R.anim.game3_mix_stir_animation);
 		mixStirAnim = (AnimationDrawable) mixView.getBackground();
@@ -163,39 +175,34 @@ public class Game3Activity extends Activity {
 			Point startPoint;
 			ImageView curButterView;
 			int ratio = 0;
-			int w = 200;
-			int h = 200;
+			int w = 50;
+			int h = 50;
 					
 			@Override
 			public boolean onHover(View arg0, MotionEvent event) {
-				if(!butterSqueezing)
-					startPoint = new Point((int)event.getX(),(int)event.getY());
+				//in the beginning	
+				if(curButterView == null || !butterSqueezing){
+					return false;
+				}
+				
 				Point curPoint = new Point((int)event.getX(),(int)event.getY());
 				float dist = calcDistance(startPoint, curPoint);
-				if(dist > 10)
-					Log.d("Game3","out");
-				else
-					Log.d("Game3","in");
-				
-						
-				//Log.d("Penpal","hovering"+ratio);
-				
-				//	return false;
+				//Log.d("Game3","dist="+dist);
 				
 				
-				if(curButterView == null){
-            		curButterView = new ImageView(gameContext);	
-    				curButterView.setImageResource(R.drawable.game3_butter);
-    				game3RelativeLayout.addView(curButterView);
-				
+				if(dist>=25){
+					curButterView = new ImageView(gameContext);	
+					curButterView.setImageResource(R.drawable.game3_butter);
+					game3RelativeLayout.addView(curButterView);
+					ratio = 0;
+					
+					startPoint = new Point((int)event.getX(),(int)event.getY());
 				}
-
-				if(ratio == 99 && curProgress < 15){
-					curProgress++;
+				
+				else if(ratio == 19 && curProgress < 15){
+					//curProgress++;
 					Log.d("Game3","butter finished");
 					progressCountText.setText("ProgressCount: " + new String("" + curProgress));
-					drawView.invalidate();
-
 					
 					
 					
@@ -210,12 +217,12 @@ public class Game3Activity extends Activity {
 					}
 				}
 				
-				if(ratio < 100)
+				if(ratio < 20)
 					ratio++;
 				
 				RelativeLayout.LayoutParams params = (LayoutParams) curButterView.getLayoutParams();
-				params.height = (int)(w*ratio/100.0);
-				params.width  = (int)(h*ratio/100.0);
+				params.height = (int)(w*ratio/20.0);
+				params.width  = (int)(h*ratio/20.0);
 				
 				params.setMargins(	cakeView.getLeft()+(int)event.getX()-params.height/2, 
 									cakeView.getTop()+(int)event.getY()-params.width/2, 
@@ -229,21 +236,21 @@ public class Game3Activity extends Activity {
 			@Override
 			public void onHoverButtonDown(View arg0, MotionEvent event) {
 				Log.d("Penpal","pressing");
-				butterSqueezing = true;
-				PlayPalUtility.setLineGesture(true);
-				ratio = 0;
+				butterSqueezing = true;				
+				
 				curButterView = new ImageView(gameContext);	
 				curButterView.setImageResource(R.drawable.game3_butter);
 				game3RelativeLayout.addView(curButterView);
+				ratio = 0;
 				
 				startPoint = new Point((int)event.getX(),(int)event.getY());
 			}
 
 			@Override
 			public void onHoverButtonUp(View arg0, MotionEvent event) {
-				butterSqueezing = false;
-				PlayPalUtility.setLineGesture(false);
 				Log.d("Penpal","releasing");
+				butterSqueezing = false;
+				
 				ratio = 0;
 				curButterView = null;
 			}
@@ -252,8 +259,6 @@ public class Game3Activity extends Activity {
 
 		
 		PlayPalUtility.initDrawView(game3RelativeLayout, this);
-		PlayPalUtility.setCircleStroke(centralPoint, 200);
-		
 		setFoodListener(mixView);
 		
 		PlayPalUtility.registerLineGesture(game3RelativeLayout, this, new Callable<Integer>() {
@@ -306,7 +311,7 @@ public class Game3Activity extends Activity {
 				canTouchOven = false;
 				ovenAnimation.stop();
 				
-				Animation ovenAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTRIGHT);
+				Animation ovenAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTLEFT);
 				ovenAnim.setAnimationListener(new AnimationListener() {
 					@Override
 					public void onAnimationEnd(Animation anim) {	
@@ -345,17 +350,17 @@ public class Game3Activity extends Activity {
 					public void onAnimationStart(Animation animation) {
 					}
 				});
+				
 				cakeView.setAnimation(cakeAnim);
 				cakeAnim.startNow();
 				
-				
-				PlayPalUtility.registerLineGesture(game3RelativeLayout, gameContext, new Callable<Integer>() {
+				PlayPalUtility.registerHoverLineGesture(game3RelativeLayout, gameContext, new Callable<Integer>() {
 					public Integer call() {
-						return handleLineAction2(cakeView);
+						return handleCakeAction(cakeView);
 					}
 				});
 				
-				PlayPalUtility.initialLineGestureParams(true, true, boxSize/2, 
+				PlayPalUtility.initialLineGestureParams(false, false, boxSize/2, 
 						dottedLineArray[0],
 						dottedLineArray[1],
 						dottedLineArray[2],
@@ -366,7 +371,16 @@ public class Game3Activity extends Activity {
 						dottedLineArray[7],
 						dottedLineArray[8],
 						dottedLineArray[9],
-						dottedLineArray[10]);
+						dottedLineArray[10],
+						dottedLineArray[11],
+						dottedLineArray[12],
+						dottedLineArray[13],
+						dottedLineArray[14],
+						dottedLineArray[15],
+						dottedLineArray[16],
+						dottedLineArray[17]);
+
+				PlayPalUtility.setLineGesture(true);
 			}
 		});
 		
@@ -381,11 +395,11 @@ public class Game3Activity extends Activity {
 		mixStirAnim.setVisible(true,true);
 		mixStirAnim.start();
 		
-		if( curProgress == 10){
+		if( curProgress == MIX_PROGRESS_END){
 			currentFoodView.setImageResource(R.drawable.game3_mix6);
-			
-			
-			Animation mixAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTRIGHT);
+			helicalView.setVisibility(ImageView.GONE);
+						
+			Animation mixAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTLEFT);
 			mixAnim.setAnimationListener(new AnimationListener() {
 				@Override
 				public void onAnimationEnd(Animation anim) {	
@@ -409,14 +423,36 @@ public class Game3Activity extends Activity {
 			mixView.setAnimation(mixAnim);
 			mixAnim.startNow();
 			
+			Animation bowlAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTLEFT);
+			bowlAnim.setAnimationListener(new AnimationListener() {
+				@Override
+				public void onAnimationEnd(Animation anim) {	
+					bowlView.setVisibility(ImageView.GONE);
+					bowlView.clearAnimation();
+					
+					PlayPalUtility.setLineGesture(false);
+					PlayPalUtility.clearGestureSets();
+					
+					setFoodListener(ovenView);
+				}
+
+				@Override
+				public void onAnimationRepeat(Animation animation) {
+				}
+
+				@Override
+				public void onAnimationStart(Animation animation) {
+				}
+			});
+			bowlView.setAnimation(mixAnim);
+			bowlAnim.startNow();
+			
 			ovenView.setBackgroundResource(R.anim.game3_oven_animation);
 			ovenAnimation = (AnimationDrawable) ovenView.getBackground();
 			ovenAnimation.start();
 			
 			canTouchOven = true;
-			curProgress++;
-			progressCountText.setText("ProgressCount: " + new String("" + curProgress));
-			Log.d("Penpal","oven curprogress"+curProgress);
+			
 			setOvenListener(ovenView);
 			
 			PlayPalUtility.clearDrawView();
@@ -428,24 +464,16 @@ public class Game3Activity extends Activity {
 		return 1;	
 	}
 	
-	protected Integer handleLineAction2(View view){
+	protected Integer handleCakeAction(View view){
 		curProgress++;
 		progressCountText.setText("ProgressCount: " + new String("" + curProgress));
-		Log.d("Penpal","curProgress"+curProgress);
 		
-		if(curProgress==15){
-			PlayPalUtility.setLineGesture(false);
-            PlayPalUtility.clearGestureSets();
-			PlayPalUtility.unregisterLineGesture(game3RelativeLayout);
+		cakeCreamView.setVisibility(ImageView.VISIBLE);
+		
 			
-			Intent newAct = new Intent();
-			newAct.setClass(Game3Activity.this, MainActivity.class);
-			startActivityForResult(newAct, 0);
-			Game3Activity.this.finish();
-			
-		}
 		return 1;
 	}
+	
 	
 	@SuppressLint("FloatMath")
 	static float calcDistance(Point p1, Point p2){
@@ -455,3 +483,17 @@ public class Game3Activity extends Activity {
 		return FloatMath.sqrt(dx*dx + dy*dy);
 	}
 }
+
+
+/*
+	
+		PlayPalUtility.setLineGesture(false);
+        PlayPalUtility.clearGestureSets();
+		PlayPalUtility.unregisterLineGesture(game3RelativeLayout);
+			
+		Intent newAct = new Intent();
+		newAct.setClass(Game3Activity.this, MainActivity.class);
+		startActivityForResult(newAct, 0);
+		Game3Activity.this.finish();
+	
+*/

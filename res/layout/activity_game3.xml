@@ -113,6 +113,13 @@
             android:src="@drawable/game3_butter"
             android:visibility="invisible"/>
          
+         <ImageView 
+            android:id="@+id/Game3_helicalView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="190dp"
+            android:src="@drawable/helical"/>
         
         <TextView
             android:id="@+id/testProgressCount"

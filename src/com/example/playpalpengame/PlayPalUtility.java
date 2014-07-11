@@ -5,6 +5,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Callable;
 
+import com.samsung.spen.lib.input.SPenEventLibrary;
+import com.samsung.spensdk.applistener.SPenHoverListener;
+
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
@@ -18,6 +21,7 @@ import android.graphics.Point;
 import android.graphics.RectF;
 import android.os.Handler;
 import android.os.Message;
+import android.util.FloatMath;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -62,7 +66,20 @@ public class PlayPalUtility {
 	private static ImageView progressMark;
 	private static ImageView progressBack;
 	
+	private static boolean isPressing;
+	
 	protected static ArrayList<GestureSet> gestureSetList = new ArrayList<GestureSet>();
+	protected static ArrayList<StrokeSet> strokeSetList = new ArrayList<StrokeSet>();
+	
+	protected static boolean butterSqueezing = false;
+	protected static SPenEventLibrary mSPenEventLibrary = new SPenEventLibrary();
+	
+	protected static float calcDistance(Point p1, Point p2){
+		float dx = p1.x - p2.x;
+		float dy = p1.y - p2.y;
+		
+		return FloatMath.sqrt(dx*dx + dy*dy);
+	}
 	
 	protected static TranslateAnimation CreateTranslateAnimation(int translateType) {
 		TranslateAnimation newAnim;
@@ -149,6 +166,132 @@ public class PlayPalUtility {
 		view.setOnTouchListener(null);
 		targetView = null;
 	}
+	
+	
+	//hover Gesture
+	protected static void registerHoverLineGesture(View view, Context context, final Callable<Integer> func) {
+		targetView = view;
+		targetContext = context;
+		
+		mSPenEventLibrary.setSPenHoverListener(targetView, new SPenHoverListener(){
+			Point startPoint;
+			ImageView curButterView;
+			
+			
+			GestureSet curSet;
+			ArrayList<Integer> pointPassedList;
+			
+			@Override
+			public boolean onHover(View arg0, MotionEvent event) {
+				if(!isLineGestureOn || !isPressing)
+					return false;
+
+				for(int setIndex=0; setIndex<gestureSetList.size(); setIndex++) {
+					if(!gestureSetList.get(setIndex).isValid)
+						continue;
+					curSet = gestureSetList.get(setIndex);
+					pointPassedList = curSet.passedList;
+						
+					if (!curSet.isContinuous
+							&& pointPassedList.size() == 0)
+							break;
+						if(curSet.isInOrder) {
+							if (pointPassedList.get(0) != 0) 
+								break;
+							int lastIndex = pointPassedList.get(pointPassedList.size() - 1);
+							if(isWithinBox(setIndex, lastIndex+1, new Point((int)event.getX(), (int)event.getY()))) {
+								pointPassedList.add(lastIndex+1);
+								if(curSet.isContinuous
+								&& pointPassedList.size() >= curSet.pointList.size()) {
+									try {
+										func.call();
+										pointPassedList.clear();
+									} catch(Exception ex) {
+										ex.printStackTrace();
+									}
+								}
+							}
+						}
+						else {
+							for(int pointIndex = 0; pointIndex < curSet.pointList.size(); pointIndex++) {
+								if(!pointPassedList.contains(pointIndex)
+								&& isWithinBox(setIndex, pointIndex, new Point((int)event.getX(), (int)event.getY()))) {
+									//Log.d("Utility","Passed"+setIndex+","+pointIndex+1);
+									pointPassedList.add(pointIndex);
+									if(curSet.isContinuous
+									&& pointPassedList.size() >= curSet.pointList.size()) {
+										try {
+											func.call();
+											pointPassedList.clear();
+										} catch(Exception ex) {
+											ex.printStackTrace();
+										}
+									}
+									break;
+								}
+							}
+						}
+				}
+				return false;
+			}
+			@Override
+			public void onHoverButtonDown(View v, MotionEvent event) {
+				if(!isLineGestureOn)
+					return;
+				
+				for(int setIndex=0; setIndex<gestureSetList.size(); setIndex++) {
+					if(!gestureSetList.get(setIndex).isValid)
+						continue;
+					GestureSet curSet = gestureSetList.get(setIndex);
+					ArrayList<Integer> pointPassedList = curSet.passedList;
+					if(curSet.isInOrder) {
+						if(isWithinBox(setIndex, 0, new Point((int)event.getX(), (int)event.getY())))
+							pointPassedList.add(0);
+					}
+					else {
+						for(int pointIndex = 0; pointIndex < curSet.pointList.size(); pointIndex++) {
+							if(isWithinBox(setIndex, pointIndex, new Point((int)event.getX(), (int)event.getY()))) {
+								pointPassedList.add(pointIndex);
+								break;
+							}
+						}
+					}
+				}
+				isPressing = true;
+			}
+				
+			@Override
+			public void onHoverButtonUp(View v, MotionEvent event) {
+				if(!isLineGestureOn)
+					return;
+				
+				for(int setIndex=0; setIndex<gestureSetList.size(); setIndex++) {
+					if(!gestureSetList.get(setIndex).isValid)
+						continue;
+					GestureSet curSet = gestureSetList.get(setIndex);
+					ArrayList<Integer> pointPassedList = curSet.passedList;
+					
+					if(curSet.isContinuous) {
+						pointPassedList.clear();
+						break;
+					}
+					if(pointPassedList.size() >= curSet.pointList.size()) {
+						lastTriggerSetIndex = setIndex;
+						try {
+							func.call();
+						} catch(Exception ex) {
+							ex.printStackTrace();
+						}
+					}
+					pointPassedList.clear();
+					break;	
+				}
+				isPressing = false;
+			}
+		});
+		
+	}
+	
 	
 	protected static void registerLineGesture(View view, Context context, final Callable<Integer> func) {
 		targetView = view;
@@ -426,9 +569,6 @@ public class PlayPalUtility {
 		isDebugMode = value;
 	}
 	
-	
-	
-	
 	/*DrawView utility*/
 	protected static void initDrawView(RelativeLayout layout, Context context){
 		initDrawView(layout, context, new Point(0,0), 0);
@@ -443,10 +583,21 @@ public class PlayPalUtility {
 		layout.addView(drawview);
 	}
 	
+	protected static void initialStroke(){
+		StrokeSet curSet = new StrokeSet();
+		strokeSetList.add(curSet);
+		curSet.isValid = true;
+	}
+	
 	protected static void setStraightStroke(Point... points){
-		drawview.isStraight = true;
+		setStraightStroke(0, points);
+	}
+	
+	protected static void setStraightStroke(int setIndex, Point... points){
+		initialStroke();
+		
 		for(Point p:points){
-			drawview.pointList.add (p);			
+			strokeSetList.get(setIndex).pointList.add (p);			
 		}
 		drawview.invalidate();
 	}
@@ -475,7 +626,15 @@ class GestureSet {
 	protected boolean isValid;
 };
 
-
+class StrokeSet{
+	protected ArrayList<Point> pointList;
+	protected boolean isValid;
+	
+	public StrokeSet(){
+		pointList = new ArrayList<Point>();
+		isValid = true;
+	}
+}
 
 class DrawView extends View{
 	protected Paint paint;
@@ -484,14 +643,11 @@ class DrawView extends View{
 	protected int radius;
 	protected boolean isStraight;
 	
-	ArrayList<Point> pointList;
 	Canvas canvas;
 	
 	public DrawView(Context context, Point orig, int r) {
 		super(context);
 		canvas= new Canvas();
-		pointList = new ArrayList<Point>();
-		
 		radius = r;
         
 		paint = new Paint();
@@ -513,30 +669,30 @@ class DrawView extends View{
         paint.setPathEffect(effects); 
 	}
 	
-	public void addLinePair(Point p1, Point p2){
-		pointList.add(p1);
-		pointList.add(p2);		
-	}
-	
 	public void reset(){
 		orig = new Point(0,0);
 		radius = 0;
-		pointList = new ArrayList<Point>(); 
-				
+		PlayPalUtility.strokeSetList = new ArrayList<StrokeSet>();			
 	}
 	
 	@Override  
     protected void onDraw(Canvas canvas) {  
         super.onDraw(canvas);
-        if(isStraight){
-        	for(int i=0; i<pointList.size(); i+=2){
-        		Path path=new Path();
-                path.moveTo(pointList.get(i).x, pointList.get(i).y );
-                path.lineTo(pointList.get(i+1).x, pointList.get(i+1).y );
-
-                canvas.drawPath(path, paint);
-        	}	
-        }
+        
+        for(int setIndex=0; setIndex<PlayPalUtility.strokeSetList.size(); setIndex++)
+        {
+        	StrokeSet curSet = PlayPalUtility.strokeSetList.get(setIndex);
+        	if(!curSet.isValid)
+        		continue;
+        	
+        	for(int i=0; i<curSet.pointList.size()-1; i++){
+        		Path path = new Path();
+        		path.moveTo(curSet.pointList.get(i).x,   curSet.pointList.get(i).y );
+        		path.lineTo(curSet.pointList.get(i+1).x, curSet.pointList.get(i+1).y );
+        		canvas.drawPath(path, paint);
+        	}
+        }	
+        /*
         else{
         	
         	RectF rect;
@@ -564,6 +720,7 @@ class DrawView extends View{
     	 	rect = new RectF(fRectLeft, fRectTop, fRectRight, fRectBottom);
     	 	canvas.drawArc(rect, startAngle, sweepAngle, false, paint);
         }
+        */
 	}
 };
 

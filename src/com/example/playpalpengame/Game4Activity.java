@@ -23,6 +23,7 @@ import android.graphics.Point;
 import com.samsung.spensdk.applistener.SPenHoverListener;
 
 public class Game4Activity extends Activity {
+	private final int COOKIE_NUM        = 8;
 	private final int TRIANGULAR_COOKIE = 0;
 	private final int CIRCLE_COOKIE		= 1;
 	private final int SQUARE_COOKIE 	= 2;
@@ -33,40 +34,55 @@ public class Game4Activity extends Activity {
 	
 	
 	public class Cookie{
+		protected int id;
 		protected int type;
 		protected Point center;
 		protected ImageView view;
 		protected Point[][] offsetArray = new Point[][]{
-				{new Point(100,0), new Point(-70,100),new Point(-70,-100),new Point(100,0),  new Point(100,0)},//TRIANGULAR_COOKIE
-				{new Point(100,0), new Point(-100,0), new Point(0,-100),  new Point(0,100),  new Point(100,0)},//CIRCLE_COOKIE
-				{new Point(70,-70), new Point(-70,-70), new Point(-70,70), new Point(70,70), new Point(70,-70)}};//SQUARE_COOKIE
+				{new Point(0,-100), new Point(-100,70), new Point(100,70), new Point(0,-100)},//TRIANGULAR_COOKIE
+				{new Point(70,-70), new Point(-70,-70), new Point(-70,70), new Point(70,70) },//CIRCLE_COOKIE
+				{new Point(100,0),  new Point(0,-100),  new Point(-100,0), new Point(0,100)}};//SQUARE_COOKIE
 		
-		public Cookie(int _t, ImageView _v){
+		public Cookie(int _id, int _t, ImageView _v){
+			id   = _id;
 			type = _t;
 			view = _v;
 			view.setVisibility(ImageView.VISIBLE);		
 			view.setImageResource(cookieResArray[type]);
-			Log.d("PenPal_game4"," "+view.getLeft()+"  "+view.getTop());
 			center = new Point(view.getLeft()+200, view.getTop()+200);
 			
 		}
 		
+		public void beCutted(){
+			view.setImageResource(cookieResArray2[type]);
+		}
+		
+		public void beBaked(){
+			view.setImageResource(cookieResArray3[type]);
+		}
+		
 		public void setGesturePoint(){
-			if(type==TRIANGULAR_COOKIE || type==CIRCLE_COOKIE || type==SQUARE_COOKIE)
-				PlayPalUtility.initialLineGestureParams(false, true, boxSize,
-					pointAddition(this.center, offsetArray[this.type][0]), 
-					pointAddition(this.center, offsetArray[this.type][1]),
-					pointAddition(this.center, offsetArray[this.type][2]),
-					pointAddition(this.center, offsetArray[this.type][3]),
-					pointAddition(this.center, offsetArray[this.type][4]));
+			PlayPalUtility.initialLineGestureParams(false, false, boxSize,
+				pointAddition(this.center, offsetArray[this.type][0]), 
+				pointAddition(this.center, offsetArray[this.type][1]),
+				pointAddition(this.center, offsetArray[this.type][2]),
+				pointAddition(this.center, offsetArray[this.type][3]));
 		}			
+		
+		public void setGestureDottedLine(){
+			PlayPalUtility.setStraightStroke(this.id,
+											 pointAddition(this.center, offsetArray[this.type][0]),
+											 pointAddition(this.center, offsetArray[this.type][1]),
+											 pointAddition(this.center, offsetArray[this.type][2]),
+											 pointAddition(this.center, offsetArray[this.type][3]),
+											 pointAddition(this.center, offsetArray[this.type][0]));
+		}
 	}
 	
 	protected TextView  progressCountText;
 	protected RelativeLayout game4RelativeLayout;
 	protected ImageView doughView;
 	protected ImageView laddleView;
-	
 	
 	protected int boxSize;
 	protected int curProgress;
@@ -75,12 +91,13 @@ public class Game4Activity extends Activity {
 	protected Point centerPoint = new Point(1280,800);
 	
 	protected Point[] doughPosArray = {
-		new Point(1660,1200),
-		new Point(900,1200),
-		new Point(900,400),
-		new Point(1660,400)};
+			new Point(1660,400),
+			new Point(1660,1200),
+			new Point(900,1200),
+			new Point(900,400)};
 	
 	protected int[] doughViewArray = {
+		R.id.Game4_dough,
 		R.id.Game4_dough1,
 		R.id.Game4_dough2,
 		R.id.Game4_dough3,
@@ -108,13 +125,22 @@ public class Game4Activity extends Activity {
 		new Point(1760,920)};
 	
 	protected int[] cookieResArray = {
-		R.drawable.game4_cookie1,
-		R.drawable.game4_cookie1_cutted,	
+		R.drawable.game4_cookie1,	
 		R.drawable.game4_cookie2,
+		R.drawable.game4_cookie3
+	};
+	
+	protected int[] cookieResArray2 = {
+		R.drawable.game4_cookie1_cutted,	
 		R.drawable.game4_cookie2_cutted,
-		R.drawable.game4_cookie3,
 		R.drawable.game4_cookie3_cutted
 	};
+	
+	protected int[] cookieResArray3 = {
+			R.drawable.game4_cookie1_baked,	
+			R.drawable.game4_cookie2_baked,
+			R.drawable.game4_cookie3_baked
+		}; 
 	
 	protected int[] cookieViewArray = {
 		R.id.Game4_cookie0,	
@@ -143,7 +169,7 @@ public class Game4Activity extends Activity {
 		
 		
 		progressCountText = (TextView)findViewById(R.id.testProgressCount);
-		doughView = (ImageView)findViewById(R.id.Game4_dough);
+		doughView = (ImageView)findViewById(doughViewArray[0]);
 		laddleView = (ImageView)findViewById(R.id.Game4_ladle);		
 		game4RelativeLayout = (RelativeLayout) findViewById(R.id.Game4RelativeLayout);
 		
@@ -158,8 +184,10 @@ public class Game4Activity extends Activity {
 
 		PlayPalUtility.setLineGesture(true);
 		PlayPalUtility.initialLineGestureParams(false, true, boxSize, centerPoint, doughPosArray[0]);
-		
+
 		PlayPalUtility.initDrawView(game4RelativeLayout, this);
+		PlayPalUtility.setStraightStroke(centerPoint,doughPosArray[0]);
+		
 		
 		game4RelativeLayout.setOnHoverListener(new View.OnHoverListener() {
             @Override
@@ -199,17 +227,10 @@ public class Game4Activity extends Activity {
 	protected void initCookieView(){
 		Random ran = new Random();
 		for(int i=0; i<cookieArray.length; i++){
-			cookieArray[i] = new Cookie(
-				ran.nextInt(3),
-				(ImageView)findViewById(cookieViewArray[i]));
-			
+			cookieArray[i] = new Cookie(i, ran.nextInt(3), (ImageView)findViewById(cookieViewArray[i]));
 			cookieArray[i].setGesturePoint();
-			
-			/*
-			Animation cookieAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_OUTLEFT_TO_CUR);
-			cookieArray[i].view.setAnimation(cookieAnim);
-			cookieAnim.startNow();
-			*/
+			cookieArray[i].setGestureDottedLine();
+			cookieArray[i].view.setVisibility(ImageView.INVISIBLE);
 		}
 		
 		PlayPalUtility.registerLineGesture(game4RelativeLayout, this, new Callable<Integer>() {
@@ -223,63 +244,22 @@ public class Game4Activity extends Activity {
 		curProgress++;
 		progressCountText.setText("ProgressCount: " + new String("" + curProgress));
 		
-		
-		if(curProgress < 8){
+		if(curProgress < 4){
 			ImageView curDough = (ImageView)findViewById(doughViewArray[curProgress]);
 			curDough.setVisibility(ImageView.VISIBLE);
-			curDough.setImageResource(doughResArray[curProgress]);
-			
 			PlayPalUtility.changeGestureParams(false, 0, 
 					centerPoint, 
 					doughPosArray[curProgress]);
+			
+			PlayPalUtility.clearDrawView();
+			PlayPalUtility.setStraightStroke(centerPoint,doughPosArray[curProgress]);
 		}
-		else if(curProgress == 4){
-			
-			Animation doughAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTLEFT);
-			doughAnim.setAnimationListener(new AnimationListener() {
-				@Override
-				public void onAnimationEnd(Animation anim) {	
-					doughView.setVisibility(ImageView.GONE);
-					doughView.clearAnimation();
-				}
+		else if(curProgress == 4){			
+			ImageView curDough = (ImageView)findViewById(doughViewArray[curProgress]);
+			curDough.setVisibility(ImageView.VISIBLE);
 
-				@Override
-				public void onAnimationRepeat(Animation animation) {
-				}
-
-				@Override
-				public void onAnimationStart(Animation animation) {
-				}
-			});
-			doughView.setAnimation(doughAnim);
-			doughAnim.startNow();
-			
-			/*
-			for(int i=0; i<4; i++){
-				Animation doughAnim2 = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTLEFT);
-				final ImageView curDough = (ImageView)findViewById(doughViewArray[i]);
-				
-				doughAnim2.setAnimationListener(new AnimationListener() {
-					@Override
-					public void onAnimationEnd(Animation anim) {	
-						curDough.setVisibility(ImageView.GONE);
-						curDough.clearAnimation();
-					}
-
-					@Override
-					public void onAnimationRepeat(Animation animation) {
-					}
-
-					@Override
-					public void onAnimationStart(Animation animation) {
-					}
-				});
-				curDough.setAnimation(doughAnim2);
-				doughAnim2.startNow();	
-			}
-			*/
-		
 			PlayPalUtility.clearGestureSets();
+			PlayPalUtility.clearDrawView();
 			initCookieView();
 		}
 		
@@ -292,14 +272,63 @@ public class Game4Activity extends Activity {
 		
 		int idx = PlayPalUtility.getLastTriggerSetIndex();
 		PlayPalUtility.cancelGestureSet(idx);
-		cookieArray[idx].view.setVisibility(ImageView.INVISIBLE);
+		cookieArray[idx].view.setVisibility(ImageView.VISIBLE);
+		
+		
+		cookieArray[idx].beCutted();
 		
 		Random ran = new Random();
 		Point newPos = pointAddition(cookiePosArray[idx],new Point( ran.nextInt(200)-50,ran.nextInt(200)-50) );//random num in (-50,150)
 		cookieArray[idx].center = newPos;
 		
 		if(curProgress == 12){
-			//TODO
+			for(int i=0; i<5; i++){
+				final ImageView curDoughView = (ImageView)findViewById(doughViewArray[i]);
+				
+				Animation doughAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTLEFT);
+				doughAnim.setAnimationListener(new AnimationListener() {
+					@Override
+					public void onAnimationEnd(Animation anim) {	
+						curDoughView.setVisibility(ImageView.GONE);
+						curDoughView.clearAnimation();
+					
+						
+					}
+
+					@Override
+					public void onAnimationRepeat(Animation animation) {
+					}
+
+					@Override
+					public void onAnimationStart(Animation animation) {
+					}
+				});
+				curDoughView.setAnimation(doughAnim);
+				doughAnim.startNow();
+			}
+			
+			for(int i=0; i<COOKIE_NUM; i++){
+				final Cookie curCookie = cookieArray[i];
+				curCookie.beBaked();
+				Animation cookieAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_OUTLEFT_TO_CUR);
+				cookieAnim.setAnimationListener(new AnimationListener() {
+					@Override
+					public void onAnimationEnd(Animation anim) {	
+						curCookie.view.clearAnimation();
+					}
+
+					@Override
+					public void onAnimationRepeat(Animation animation) {
+					}
+
+					@Override
+					public void onAnimationStart(Animation animation) {
+					}
+				});
+				curCookie.view.setAnimation(cookieAnim);
+				cookieAnim.startNow();
+				PlayPalUtility.clearDrawView();
+			}
 			
 		}
 		
