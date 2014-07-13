@@ -167,6 +167,11 @@ public class PlayPalUtility {
 		targetView = null;
 	}
 	
+	protected static void unregisterHoverLineGesture(View view){
+		mSPenEventLibrary.setSPenHoverListener(null, null);
+		targetView = null;
+	}
+	
 	
 	//hover Gesture
 	protected static void registerHoverLineGesture(View view, Context context, final Callable<Integer> func) {
@@ -177,7 +182,6 @@ public class PlayPalUtility {
 			Point startPoint;
 			ImageView curButterView;
 			
-			
 			GestureSet curSet;
 			ArrayList<Integer> pointPassedList;
 			
@@ -185,24 +189,40 @@ public class PlayPalUtility {
 			public boolean onHover(View arg0, MotionEvent event) {
 				if(!isLineGestureOn || !isPressing)
 					return false;
-
+				
 				for(int setIndex=0; setIndex<gestureSetList.size(); setIndex++) {
-					if(!gestureSetList.get(setIndex).isValid)
-						continue;
 					curSet = gestureSetList.get(setIndex);
 					pointPassedList = curSet.passedList;
-						
-					if (!curSet.isContinuous
-							&& pointPassedList.size() == 0)
-							break;
-						if(curSet.isInOrder) {
-							if (pointPassedList.get(0) != 0) 
-								break;
-							int lastIndex = pointPassedList.get(pointPassedList.size() - 1);
-							if(isWithinBox(setIndex, lastIndex+1, new Point((int)event.getX(), (int)event.getY()))) {
-								pointPassedList.add(lastIndex+1);
-								if(curSet.isContinuous
-								&& pointPassedList.size() >= curSet.pointList.size()) {
+					
+					if(!curSet.isValid)
+						continue;
+					
+					if (!curSet.isContinuous && pointPassedList.size() == 0)
+						continue;
+					
+					if(curSet.isInOrder) {
+						if (pointPassedList.get(0) != 0) 
+							continue;
+						int lastIndex = pointPassedList.get(pointPassedList.size() - 1);
+						if(isWithinBox(setIndex, lastIndex+1, new Point((int)event.getX(), (int)event.getY()))) {
+							pointPassedList.add(lastIndex+1);
+							if(curSet.isContinuous && pointPassedList.size() >= curSet.pointList.size()) {
+								try {
+									func.call();
+									pointPassedList.clear();
+								} catch(Exception ex) {
+									ex.printStackTrace();
+								}
+							}
+						}
+					}
+					else {
+						for(int pointIndex = 0; pointIndex < curSet.pointList.size(); pointIndex++) {
+							if(!pointPassedList.contains(pointIndex) && isWithinBox(setIndex, pointIndex, new Point((int)event.getX(), (int)event.getY()))) {
+								Log.d("Utility","Passed"+setIndex+","+(pointIndex+1));
+								pointPassedList.add(pointIndex);
+								
+								if(curSet.isContinuous && pointPassedList.size() >= curSet.pointList.size()) {
 									try {
 										func.call();
 										pointPassedList.clear();
@@ -210,27 +230,10 @@ public class PlayPalUtility {
 										ex.printStackTrace();
 									}
 								}
+								continue;
 							}
 						}
-						else {
-							for(int pointIndex = 0; pointIndex < curSet.pointList.size(); pointIndex++) {
-								if(!pointPassedList.contains(pointIndex)
-								&& isWithinBox(setIndex, pointIndex, new Point((int)event.getX(), (int)event.getY()))) {
-									//Log.d("Utility","Passed"+setIndex+","+pointIndex+1);
-									pointPassedList.add(pointIndex);
-									if(curSet.isContinuous
-									&& pointPassedList.size() >= curSet.pointList.size()) {
-										try {
-											func.call();
-											pointPassedList.clear();
-										} catch(Exception ex) {
-											ex.printStackTrace();
-										}
-									}
-									break;
-								}
-							}
-						}
+					}
 				}
 				return false;
 			}
@@ -273,7 +276,7 @@ public class PlayPalUtility {
 					
 					if(curSet.isContinuous) {
 						pointPassedList.clear();
-						break;
+						continue;
 					}
 					if(pointPassedList.size() >= curSet.pointList.size()) {
 						lastTriggerSetIndex = setIndex;

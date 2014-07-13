@@ -18,7 +18,9 @@ import android.widget.TextView;
 import android.widget.RelativeLayout.LayoutParams;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.drawable.AnimationDrawable;
 
 import com.samsung.spensdk.applistener.SPenHoverListener;
 
@@ -54,11 +56,18 @@ public class Game4Activity extends Activity {
 		}
 		
 		public void beCutted(){
-			view.setImageResource(cookieResArray2[type]);
+			view.setBackgroundResource(cookieAnimArray[type]);
+			AnimationDrawable cutAnim = (AnimationDrawable) view.getBackground();
+			cutAnim.start();
 		}
 		
 		public void beBaked(){
+			view.setBackgroundResource(Color.TRANSPARENT);
 			view.setImageResource(cookieResArray3[type]);
+			
+			Random ran = new Random();
+			Point newPos = pointAddition(center, new Point( ran.nextInt(200)-100, ran.nextInt(200)-100) );
+			center = newPos;
 		}
 		
 		public void setGesturePoint(){
@@ -151,6 +160,12 @@ public class Game4Activity extends Activity {
 		R.id.Game4_cookie5,
 		R.id.Game4_cookie6,
 		R.id.Game4_cookie7,
+	};
+	
+	protected int[] cookieAnimArray = {
+		R.anim.game4_cookie1_animation,
+		R.anim.game4_cookie2_animation,
+		R.anim.game4_cookie3_animation
 	};
 	
 
@@ -274,12 +289,7 @@ public class Game4Activity extends Activity {
 		PlayPalUtility.cancelGestureSet(idx);
 		cookieArray[idx].view.setVisibility(ImageView.VISIBLE);
 		
-		
 		cookieArray[idx].beCutted();
-		
-		Random ran = new Random();
-		Point newPos = pointAddition(cookiePosArray[idx],new Point( ran.nextInt(200)-50,ran.nextInt(200)-50) );//random num in (-50,150)
-		cookieArray[idx].center = newPos;
 		
 		if(curProgress == 12){
 			for(int i=0; i<5; i++){
@@ -291,8 +301,6 @@ public class Game4Activity extends Activity {
 					public void onAnimationEnd(Animation anim) {	
 						curDoughView.setVisibility(ImageView.GONE);
 						curDoughView.clearAnimation();
-					
-						
 					}
 
 					@Override
@@ -329,7 +337,6 @@ public class Game4Activity extends Activity {
 				cookieAnim.startNow();
 				PlayPalUtility.clearDrawView();
 			}
-			
 		}
 		
 		return 1;

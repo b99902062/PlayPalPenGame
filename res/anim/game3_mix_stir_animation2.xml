@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list 
+    xmlns:android="http://schemas.android.com/apk/res/android"    
+    android:oneshot="true" android:visible="true">
+    <item android:drawable="@drawable/game3_mix6"    android:duration="200"    />
+    <item android:drawable="@drawable/game3_mix7"    android:duration="200"    />
+    <item android:drawable="@drawable/game3_mix8"    android:duration="200"    />
+    <item android:drawable="@drawable/game3_mix9"    android:duration="200"    />
+</animation-list>

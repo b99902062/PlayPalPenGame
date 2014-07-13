@@ -32,6 +32,13 @@
             android:layout_height="wrap_content"
             android:src="@drawable/game3_eggbeat"
             android:visibility="invisible"/>
+         
+          <ImageView 
+            android:id="@+id/Game3_squeezer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/game3_squeezer"
+            android:visibility="invisible"/>
         
          <ImageView
             android:id="@+id/Game3_bowl"
@@ -48,8 +55,15 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="190dp"
             android:background="@drawable/game3_mix1"
-            android:visibility="visible"
-            />
+            android:visibility="visible"/>
+        
+        <ImageView
+            android:id="@+id/Game3_mix2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="190dp"
+            android:visibility="visible"/>
         
         <ImageView
             android:id="@+id/Game3_oven"
@@ -59,6 +73,17 @@
             android:layout_marginTop="190dp"
             android:background="@drawable/game3_oven1"
             android:visibility="invisible"/>
+        
+        <ImageView
+            android:id="@+id/Game3_oven2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="190dp"
+            android:background="@drawable/game3_oven2"
+            android:visibility="invisible"/>
+        
+        
         
         <ImageView
             android:id="@+id/Game3_dough"
@@ -107,10 +132,10 @@
          
 		
          <ImageView
-            android:id="@+id/Game3_butter"
+            android:id="@+id/Game3_cream"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/game3_butter"
+            android:src="@drawable/game3_cream"
             android:visibility="invisible"/>
          
          <ImageView 
