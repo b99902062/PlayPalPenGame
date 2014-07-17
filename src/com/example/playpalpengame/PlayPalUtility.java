@@ -49,6 +49,9 @@ public class PlayPalUtility {
 	private final static int endProgressMarkX = 1566;
 	private final static int progressMarkY = 122;
 	
+	private static boolean isNeedHover = false;
+	private static ImageView hoverTarget = null;
+	
 	protected static boolean isLineGestureOn;
 	protected static int lastTriggerSetIndex = -1;
 	protected static View targetView;
@@ -172,49 +175,8 @@ public class PlayPalUtility {
 		targetView = null;
 	}
 	
-	protected static void registerSingleHoverPoint(View view, Context context, final Callable<Integer> func) {
-		targetView = view;
-		targetContext = context;
-		
-		mSPenEventLibrary.setSPenHoverListener(targetView, new SPenHoverListener(){
-			Point startPoint;
-			ImageView curButterView;
-			
-			
-			@Override
-			public void onHoverButtonUp(View v, MotionEvent event) {
-				for(int setIndex=0; setIndex<gestureSetList.size(); setIndex++) {
-					GestureSet curSet = gestureSetList.get(setIndex);
-					ArrayList<Integer> pointPassedList = curSet.passedList;
-
-					//testing the first point 
-					if(isWithinBox(setIndex, 0, new Point((int)event.getX(), (int)event.getY()))){
-						lastTriggerSetIndex = setIndex;
-						try {
-							func.call();
-							pointPassedList.clear();
-						} catch(Exception ex) {
-							ex.printStackTrace();
-						}
-					}
-				}
-			}
-
-			@Override
-			public boolean onHover(View arg0, MotionEvent arg1) {
-				// TODO Auto-generated method stub
-				return false;
-			}
-
-			@Override
-			public void onHoverButtonDown(View arg0, MotionEvent arg1) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
-	}
 	
-	
+	//hover Gesture
 	protected static void registerHoverLineGesture(View view, Context context, final Callable<Integer> func) {
 		targetView = view;
 		targetContext = context;
@@ -288,7 +250,6 @@ public class PlayPalUtility {
 						continue;
 					GestureSet curSet = gestureSetList.get(setIndex);
 					ArrayList<Integer> pointPassedList = curSet.passedList;
-					
 					if(curSet.isInOrder) {
 						if(isWithinBox(setIndex, 0, new Point((int)event.getX(), (int)event.getY())))
 							pointPassedList.add(0);
@@ -302,7 +263,6 @@ public class PlayPalUtility {
 						}
 					}
 				}
-				
 				isPressing = true;
 			}
 				
@@ -369,6 +329,12 @@ public class PlayPalUtility {
 							}							
 							break;
 						case MotionEvent.ACTION_MOVE:
+							if(isNeedHover) {
+								RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		                    	params.setMargins((int)event.getX(), (int)event.getY() , 0, 0);
+		                    	hoverTarget.setLayoutParams(params);
+		                    	hoverTarget.setVisibility(ImageView.VISIBLE);
+							}
 							if (!curSet.isContinuous
 								&& pointPassedList.size() == 0)
 								break;
@@ -429,7 +395,12 @@ public class PlayPalUtility {
 			}
 		});
 	}
-		
+
+	protected static void setHoverTarget(boolean value, ImageView view) {
+		isNeedHover = value;
+		hoverTarget = view;
+	}
+	
 	protected static int initialLineGestureParams(boolean isContinuous, boolean isInOrder, int size, Point... points) {
 		for (Point p : points) 
 			Log.d("PlayPalUtility", String.format("Point = (%d, %d)", p.x, p.y));
@@ -636,8 +607,8 @@ public class PlayPalUtility {
 	}
 	
 	protected static void setStraightStroke(Point... points){
-		initialStroke();
-		int idx = strokeSetList.size()-1;
+		initialStroke(); 
+		int idx = strokeSetList.size()-1; 
 		setStraightStroke(idx, points);
 	}
 	
@@ -740,6 +711,35 @@ class DrawView extends View{
         		canvas.drawPath(path, paint);
         	}
         }	
+        /*
+        else{
+        	
+        	RectF rect;
+      
+    		float startAngle = 270;
+            float sweepAngle = 180;
+    		
+    	 	int fRectLen	= 2 * radius;
+    	 	int fRectLeft   = centralPoint.x - radius;
+    	 	int fRectTop 	= centralPoint.y - radius;
+    	 	int fRectRight  = fRectLeft+fRectLen;
+    	 	int fRectBottom = fRectTop+fRectLen;
+    	 	int intvl = radius/10;
+    	  
+    	 	rect = new RectF(fRectLeft, fRectTop, fRectRight, fRectBottom);
+    	 	canvas.drawArc(rect, startAngle, sweepAngle, false, paint);
+    	 	
+    	 	fRectLen -= 2*intvl;
+    	 	fRectLeft+= intvl;
+            fRectTop += intvl;
+            fRectRight = fRectLeft+fRectLen;
+            
+            startAngle = 90;
+            sweepAngle = 180+45;
+    	 	rect = new RectF(fRectLeft, fRectTop, fRectRight, fRectBottom);
+    	 	canvas.drawArc(rect, startAngle, sweepAngle, false, paint);
+        }
+        */
 	}
 };
 

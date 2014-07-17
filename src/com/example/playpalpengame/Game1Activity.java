@@ -108,7 +108,7 @@ public class Game1Activity extends Activity {
                         break;
                     case MotionEvent.ACTION_HOVER_MOVE:
                     	RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-                    	params.setMargins((int)event.getX() - 200, (int)event.getY() - 200 , 0, 0);
+                    	params.setMargins((int)event.getX(), (int)event.getY() , 0, 0);
                     	knifeView.setLayoutParams(params);
                     	Log.d("PlayPal", "Move");
                         break;
@@ -126,6 +126,7 @@ public class Game1Activity extends Activity {
 				return handleLineAction();
 			}
 		});
+		PlayPalUtility.setHoverTarget(true, knifeView);
 		PlayPalUtility.setLineGesture(true);
 		Point beginPnt = new Point(foodOffsetX + carrotCutBeginPointArray[progressCount].x, foodOffsetY + carrotCutBeginPointArray[progressCount].y);
 		Point endPnt = new Point(foodOffsetX + carrotCutEndPointArray[progressCount].x, foodOffsetY + carrotCutEndPointArray[progressCount].y);
@@ -133,6 +134,12 @@ public class Game1Activity extends Activity {
 
 		PlayPalUtility.initDrawView(game1RelativeLayout, this);
 		DrawGestureLine();
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		PlayPalUtility.pauseProgress();
 	}
 	
 	private void doInitial() {
@@ -206,6 +213,8 @@ public class Game1Activity extends Activity {
 				public void onAnimationEnd(Animation anim) {
 					board2Layout.clearAnimation();
 					board2Layout.setVisibility(ImageView.GONE);
+					
+					knifeView.setImageResource(R.drawable.game1_ladle);
 
 					PlayPalUtility.initialProgressBar(testTotalTime, PlayPalUtility.TIME_MODE);
 					
