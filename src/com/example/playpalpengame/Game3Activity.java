@@ -37,17 +37,6 @@ import com.samsung.spensdk.applistener.SPenHoverListener;
 
 public class Game3Activity extends Activity {
 	
-	/*
-	protected int[] foodResArray = {
-		R.drawable.game3_mix1,
-		R.drawable.game3_mix2,
-		R.drawable.game3_mix3,
-		R.drawable.game3_cake1,
-		R.drawable.game3_cake1,	
-		R.drawable.game3_cake2,
-		R.drawable.game3_cake3 };
-*/	
-	
 	protected Point centralPoint = new Point(1280,880);
 	protected Point[] pointArray = {
 		new Point(1480,880),
@@ -108,10 +97,7 @@ public class Game3Activity extends Activity {
 	ImageView eggbeatView;
 	ImageView squeezerView;
 	ImageView helicalView;
-	
-	//ImageView dottedLineView;
 	ImageView currentFoodView;
-	DrawView drawView;
 
 	AnimationDrawable mixStirAnim;
 	AnimationDrawable ovenAnimation;
@@ -498,7 +484,7 @@ public class Game3Activity extends Activity {
 		PlayPalUtility.unregisterHoverLineGesture(game3RelativeLayout);
 		
 		
-		PlayPalUtility.registerHoverLineGesture(game3RelativeLayout, this, new Callable<Integer>() {
+		PlayPalUtility.registerSingleHoverPoint(game3RelativeLayout, this, new Callable<Integer>() {
 			@Override
 			public Integer call() throws Exception {
 				return handleCream(cakeCreamView);
@@ -507,7 +493,7 @@ public class Game3Activity extends Activity {
 		
 		PlayPalUtility.setLineGesture(true);
 		for(int i=0; i<5; i++)
-			PlayPalUtility.initialLineGestureParams(false, false, boxSize/2, creamPosArray[i], creamPosArray[i]);
+			PlayPalUtility.initialLineGestureParams(false, false, boxSize/2, creamPosArray[i]);
 			
 		
 		return 1;
@@ -550,7 +536,7 @@ public class Game3Activity extends Activity {
 		Intent newAct = new Intent();
 		newAct.setClass(Game3Activity.this, AnimationActivity.class);
 		Bundle bundle = new Bundle();
-		bundle.putInt("GameIndex", 3);//TODO
+		bundle.putInt("GameIndex", 3);
         newAct.putExtras(bundle);
 		startActivityForResult(newAct, 0);
 		Game3Activity.this.finish();
