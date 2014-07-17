@@ -49,6 +49,9 @@ public class PlayPalUtility {
 	private final static int endProgressMarkX = 1566;
 	private final static int progressMarkY = 122;
 	
+	private static boolean isNeedHover = false;
+	private static ImageView hoverTarget = null;
+	
 	protected static boolean isLineGestureOn;
 	protected static int lastTriggerSetIndex = -1;
 	protected static View targetView;
@@ -326,6 +329,12 @@ public class PlayPalUtility {
 							}							
 							break;
 						case MotionEvent.ACTION_MOVE:
+							if(isNeedHover) {
+								RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		                    	params.setMargins((int)event.getX(), (int)event.getY() , 0, 0);
+		                    	hoverTarget.setLayoutParams(params);
+		                    	hoverTarget.setVisibility(ImageView.VISIBLE);
+							}
 							if (!curSet.isContinuous
 								&& pointPassedList.size() == 0)
 								break;
@@ -386,7 +395,12 @@ public class PlayPalUtility {
 			}
 		});
 	}
-		
+
+	protected static void setHoverTarget(boolean value, ImageView view) {
+		isNeedHover = value;
+		hoverTarget = view;
+	}
+	
 	protected static int initialLineGestureParams(boolean isContinuous, boolean isInOrder, int size, Point... points) {
 		for (Point p : points) 
 			Log.d("PlayPalUtility", String.format("Point = (%d, %d)", p.x, p.y));
@@ -593,7 +607,9 @@ public class PlayPalUtility {
 	}
 	
 	protected static void setStraightStroke(Point... points){
-		setStraightStroke(0, points);
+		initialStroke(); 
+		int idx = strokeSetList.size()-1; 
+		setStraightStroke(idx, points);
 	}
 	
 	protected static void setStraightStroke(int setIndex, Point... points){

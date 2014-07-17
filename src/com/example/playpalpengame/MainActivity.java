@@ -28,6 +28,10 @@ public class MainActivity extends Activity {
 	private int[] highScores = new int[4];
 	
 	@Override
+	public void onBackPressed() {
+	}
+	
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);

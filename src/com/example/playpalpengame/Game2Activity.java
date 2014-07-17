@@ -173,6 +173,7 @@ public class Game2Activity extends Activity {
 		        	fishThreadList.get(i).interrupt();
 	    	}
 	    }
+	    PlayPalUtility.pauseProgress();
 	}
 	
 	protected void setHomeListener(View targetView) {
