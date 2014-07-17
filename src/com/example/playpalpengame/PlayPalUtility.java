@@ -176,7 +176,49 @@ public class PlayPalUtility {
 	}
 	
 	
-	//hover Gesture
+	protected static void registerSingleHoverPoint(View view, Context context, final Callable<Integer> func) {
+		targetView = view;
+		targetContext = context;
+		
+		mSPenEventLibrary.setSPenHoverListener(targetView, new SPenHoverListener(){
+			Point startPoint;
+			ImageView curButterView;
+			
+			
+			@Override
+			public void onHoverButtonUp(View v, MotionEvent event) {
+				for(int setIndex=0; setIndex<gestureSetList.size(); setIndex++) {
+					GestureSet curSet = gestureSetList.get(setIndex);
+					ArrayList<Integer> pointPassedList = curSet.passedList;
+
+					//testing the first point 
+					if(isWithinBox(setIndex, 0, new Point((int)event.getX(), (int)event.getY()))){
+						lastTriggerSetIndex = setIndex;
+						try {
+							func.call();
+							pointPassedList.clear();
+						} catch(Exception ex) {
+							ex.printStackTrace();
+						}
+					}
+				}
+			}
+
+			@Override
+			public boolean onHover(View arg0, MotionEvent arg1) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+			@Override
+			public void onHoverButtonDown(View arg0, MotionEvent arg1) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+	}
+	
+
 	protected static void registerHoverLineGesture(View view, Context context, final Callable<Integer> func) {
 		targetView = view;
 		targetContext = context;
@@ -711,35 +753,6 @@ class DrawView extends View{
         		canvas.drawPath(path, paint);
         	}
         }	
-        /*
-        else{
-        	
-        	RectF rect;
-      
-    		float startAngle = 270;
-            float sweepAngle = 180;
-    		
-    	 	int fRectLen	= 2 * radius;
-    	 	int fRectLeft   = centralPoint.x - radius;
-    	 	int fRectTop 	= centralPoint.y - radius;
-    	 	int fRectRight  = fRectLeft+fRectLen;
-    	 	int fRectBottom = fRectTop+fRectLen;
-    	 	int intvl = radius/10;
-    	  
-    	 	rect = new RectF(fRectLeft, fRectTop, fRectRight, fRectBottom);
-    	 	canvas.drawArc(rect, startAngle, sweepAngle, false, paint);
-    	 	
-    	 	fRectLen -= 2*intvl;
-    	 	fRectLeft+= intvl;
-            fRectTop += intvl;
-            fRectRight = fRectLeft+fRectLen;
-            
-            startAngle = 90;
-            sweepAngle = 180+45;
-    	 	rect = new RectF(fRectLeft, fRectTop, fRectRight, fRectBottom);
-    	 	canvas.drawArc(rect, startAngle, sweepAngle, false, paint);
-        }
-        */
 	}
 };
 
