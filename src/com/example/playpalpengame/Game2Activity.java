@@ -51,6 +51,7 @@ public class Game2Activity extends Activity {
 	private final Point[] cutBeginOffset = {new Point(124, 263), new Point(301, 262), new Point(134, 459), new Point(278, 457)};
 	private final Point[] cutEndOffset = {new Point(308, 438), new Point(123, 446), new Point(284, 600), new Point(134, 607)};
 
+	private String mUserName = null;
 	private int curFishIndex;
 	protected boolean canPutInBasket = false;
 	protected ImageView netView;
@@ -85,6 +86,9 @@ public class Game2Activity extends Activity {
 		setContentView(R.layout.activity_game2);
 		
 		PlayPalUtility.setDebugMode(false);
+		
+		Bundle bundle = getIntent().getExtras();
+		mUserName = bundle.getString("userName");
 		
 		progressCount = 0;
 		PlayPalUtility.registerProgressBar((ProgressBar)findViewById(R.id.progressBarRed), (ImageView)findViewById(R.id.progressMark), (ImageView)findViewById(R.id.progressBar));
@@ -134,6 +138,8 @@ public class Game2Activity extends Activity {
                     			progressCount++;
                     			testProgressCountText.setText(String.format("ProgressCount: %d", progressCount));
                     			if(progressCount == step1TotalProgressCount) {
+                    				PlayPalUtility.killTimeBar();
+                    				
                     				PlayPalUtility.clearGestureSets();
                     				PlayPalUtility.setLineGesture(false);
                     				PlayPalUtility.unregisterLineGesture(game2RelativeLayout);
@@ -173,7 +179,8 @@ public class Game2Activity extends Activity {
 		        	fishThreadList.get(i).interrupt();
 	    	}
 	    }
-	    PlayPalUtility.pauseProgress();
+	    PlayPalUtility.killTimeBar();
+	    PlayPalUtility.clearDrawView();
 	}
 	
 	protected void setHomeListener(View targetView) {
@@ -194,6 +201,9 @@ public class Game2Activity extends Activity {
 				
 				Intent newAct = new Intent();
 				newAct.setClass( Game2Activity.this, MainActivity.class );
+				Bundle bundle = new Bundle();
+				bundle.putString("userName", mUserName);
+	            newAct.putExtras(bundle);
 	            startActivityForResult(newAct ,0);
 	            Game2Activity.this.finish();
 			}
@@ -232,6 +242,8 @@ public class Game2Activity extends Activity {
 	}
 	
 	protected void LoadStep2() {
+		netView.setImageResource(R.drawable.game2_thin_knife);
+		
 		basketView.setVisibility(ImageView.GONE);
 		grillView.setVisibility(ImageView.VISIBLE);
 		fishView1.setVisibility(ImageView.VISIBLE);
@@ -239,17 +251,7 @@ public class Game2Activity extends Activity {
 		fishView3.setVisibility(ImageView.VISIBLE);
 		fishView4.setVisibility(ImageView.VISIBLE);
 		
-		PlayPalUtility.setAlphaAnimation(grillView, true);
-		PlayPalUtility.setAlphaAnimation(fishView1, true);
-		PlayPalUtility.setAlphaAnimation(fishView2, true);
-		PlayPalUtility.setAlphaAnimation(fishView3, true);
-		PlayPalUtility.setAlphaAnimation(fishView4, true);
-		
-		netView.setImageResource(R.drawable.game2_thin_knife);
-		
-		PlayPalUtility.initialProgressBar(testTotalTime, PlayPalUtility.TIME_MODE);
 		PlayPalUtility.initDrawView(game2RelativeLayout, this);
-		
 		java.util.Arrays.fill(isFishCutArray, false);
 		
 		PlayPalUtility.registerLineGesture(game2RelativeLayout, this, new Callable<Integer>() {
@@ -258,8 +260,6 @@ public class Game2Activity extends Activity {
 				return performCross();
 			}
 		});
-		PlayPalUtility.setLineGesture(true);
-		
 		for(int fishIndex=0; fishIndex<4; fishIndex++) {
 			for(int cutIndex = 0; cutIndex<4; cutIndex++) {
 				Point pnt1 = new Point(fishOffset[fishIndex].x + cutBeginOffset[cutIndex].x, fishOffset[fishIndex].y + cutBeginOffset[cutIndex].y);
@@ -269,6 +269,25 @@ public class Game2Activity extends Activity {
 				fishCutPointPairArray[fishIndex*4 + cutIndex] = new PointPair(pnt1, pnt2);
 			}
 		}
+		
+		PlayPalUtility.setAlphaAnimation(grillView, true);
+		PlayPalUtility.setAlphaAnimation(fishView1, true);
+		PlayPalUtility.setAlphaAnimation(fishView2, true);
+		PlayPalUtility.setAlphaAnimation(fishView3, true);
+		PlayPalUtility.setAlphaAnimation(fishView4, true, new Callable<Integer>() {
+			@Override
+			public Integer call() throws Exception {
+				return prepareCutting();
+			}
+		});
+	}
+	
+	protected Integer prepareCutting() {
+		PlayPalUtility.initialProgressBar(testTotalTime, PlayPalUtility.TIME_MODE);
+		
+		PlayPalUtility.setLineGesture(true);
+		
+		return 0;
 	}
 	
 	protected Integer performCross() {
@@ -327,6 +346,7 @@ public class Game2Activity extends Activity {
 			newAct.setClass(Game2Activity.this, AnimationActivity.class);
 			Bundle bundle = new Bundle();
 			bundle.putInt("GameIndex", 2);
+			bundle.putString("userName", mUserName);
             newAct.putExtras(bundle);
 			startActivityForResult(newAct, 0);
 			Game2Activity.this.finish();

@@ -27,6 +27,8 @@ public class MainActivity extends Activity {
 	private int[] badges = new int[4];
 	private int[] highScores = new int[4];
 	
+	private String mUserName = null;
+	
 	@Override
 	public void onBackPressed() {
 	}
@@ -38,6 +40,9 @@ public class MainActivity extends Activity {
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
 		setContentView(R.layout.activity_main);
+		
+		Bundle bundle = getIntent().getExtras();
+		mUserName = bundle.getString("userName");
 		
 		java.util.Arrays.fill(badges, 0);
 		loadRecord();
@@ -62,6 +67,7 @@ public class MainActivity extends Activity {
 				newAct.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				Bundle bundle = new Bundle();
 				bundle.putInt("GameIndex", gameIndex);
+				bundle.putString("userName", mUserName);
 	            newAct.putExtras(bundle);
 	            startActivityForResult(newAct ,0);
 	            MainActivity.this.finish();
@@ -85,7 +91,7 @@ public class MainActivity extends Activity {
 					Log.d("jsonTest", String.format("GameHS_%d: %d", i+1, msg.highScores[i]));
 				}
 				
-				if(msg.userName.equals("William")) {
+				if(msg.userName.equals(mUserName)) {
 					badges = msg.badges;
 					highScores = msg.highScores;
 				}

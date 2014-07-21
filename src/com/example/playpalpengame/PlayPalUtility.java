@@ -609,6 +609,14 @@ public class PlayPalUtility {
 	}
 	
 	protected static void pauseProgress() {
+		timerTask.pause();
+	}
+	
+	protected static void resumeProgress() {
+		timerTask.resume();
+	}
+	
+	protected static void killTimeBar() {
 		timerTask.cancel();
 	}
 	
@@ -764,5 +772,13 @@ class TimeBarTask extends TimerTask {
     		Message msg = new Message();
             PlayPalUtility.timeBarHandler.sendMessage(msg);
     	}
+    }
+    
+    public void pause() {
+    	isPause = true;
+    }
+    
+    public void resume() {
+    	isPause = false;
     }
   };
