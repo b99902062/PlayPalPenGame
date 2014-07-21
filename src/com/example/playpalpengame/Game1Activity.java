@@ -99,7 +99,20 @@ public class Game1Activity extends Activity {
 		
 		doInitial();
 
-		PlayPalUtility.registerProgressBar((ProgressBar)findViewById(R.id.progressBarRed), (ImageView)findViewById(R.id.progressMark), (ImageView)findViewById(R.id.progressBar));
+		PlayPalUtility.registerProgressBar((ProgressBar)findViewById(R.id.progressBarRed), (ImageView)findViewById(R.id.progressMark), (ImageView)findViewById(R.id.progressBar), new Callable<Integer>() {
+			public Integer call() {
+				Intent newAct = new Intent();
+				newAct.setClass(Game1Activity.this, AnimationActivity.class);
+				Bundle bundle = new Bundle();
+				bundle.putInt("GameIndex", 1);
+				bundle.putBoolean("isWin", false);
+				bundle.putString("userName", mUserName);
+	            newAct.putExtras(bundle);
+				startActivityForResult(newAct, 0);
+				Game1Activity.this.finish();
+				return 0;
+			}
+		});
 		PlayPalUtility.initialProgressBar(testTotalTime, PlayPalUtility.TIME_MODE);
 		
 		game1RelativeLayout.setOnHoverListener(new View.OnHoverListener() {
@@ -323,6 +336,7 @@ public class Game1Activity extends Activity {
 			newAct.setClass(Game1Activity.this, AnimationActivity.class);
 			Bundle bundle = new Bundle();
 			bundle.putInt("GameIndex", 1);
+			bundle.putBoolean("isWin", true);
 			bundle.putString("userName", mUserName);
             newAct.putExtras(bundle);
 			startActivityForResult(newAct, 0);

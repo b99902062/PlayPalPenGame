@@ -63,6 +63,7 @@ public class PlayPalUtility {
 	protected static Timer timer;
 	protected static TimeBarTask timerTask;
 
+	private static Callable<Integer> failFunc;
 	private static int totalProgress = 0;
 	private static int curProgress = 0;
 	private static ProgressBar progressBar;
@@ -549,9 +550,14 @@ public class PlayPalUtility {
 	}
 	
 	protected static void registerProgressBar(ProgressBar barView, ImageView markView, ImageView progressBackView) {
+		registerProgressBar(barView, markView, progressBackView, null);
+	}
+	
+	protected static void registerProgressBar(ProgressBar barView, ImageView markView, ImageView progressBackView, final Callable<Integer> func) {
 		progressBar = barView;
 		progressMark = markView;
 		progressBack = progressBackView;
+		failFunc = func;
 	}
 	
 	protected static void initialProgressBar(int total, int mode) {
@@ -591,7 +597,6 @@ public class PlayPalUtility {
 				curProgress = totalProgress;
 			}
 			updateProgressBar();
-			
 		}
 		else if(barMode == TIME_MODE) {
 			curProgress--;
@@ -603,6 +608,11 @@ public class PlayPalUtility {
 		}
 		if(isReachGoal) {
 			progressBack.setImageResource(R.drawable.progress_finish);
+			try {
+				failFunc.call();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			return true;
 		}
 		return false;

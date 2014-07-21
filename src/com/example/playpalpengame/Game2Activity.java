@@ -84,14 +84,27 @@ public class Game2Activity extends Activity {
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
 		setContentView(R.layout.activity_game2);
-		
 		PlayPalUtility.setDebugMode(false);
-		
+
 		Bundle bundle = getIntent().getExtras();
 		mUserName = bundle.getString("userName");
 		
 		progressCount = 0;
-		PlayPalUtility.registerProgressBar((ProgressBar)findViewById(R.id.progressBarRed), (ImageView)findViewById(R.id.progressMark), (ImageView)findViewById(R.id.progressBar));
+		PlayPalUtility.registerProgressBar((ProgressBar)findViewById(R.id.progressBarRed), (ImageView)findViewById(R.id.progressMark), (ImageView)findViewById(R.id.progressBar), new Callable<Integer>() {
+			public Integer call() {
+				Intent newAct = new Intent();
+				newAct.setClass(Game2Activity.this, AnimationActivity.class);
+				Bundle bundle = new Bundle();
+				bundle.putInt("GameIndex", 2);
+				bundle.putBoolean("isWin", false);
+				bundle.putString("userName", mUserName);
+	            newAct.putExtras(bundle);
+	            
+				startActivityForResult(newAct, 0);
+				Game2Activity.this.finish();
+				return 0;
+			}
+		});
 		PlayPalUtility.initialProgressBar(testTotalTime, PlayPalUtility.TIME_MODE);
 		
 		View homeBtn = findViewById(R.id.homeBtn);
@@ -115,6 +128,8 @@ public class Game2Activity extends Activity {
 			}
 		});
 		PlayPalUtility.setLineGesture(true);
+		
+		PlayPalUtility.initDrawView(game2RelativeLayout, this);
 		
 		game2RelativeLayout.setOnHoverListener(new View.OnHoverListener() {
             @Override
@@ -251,7 +266,6 @@ public class Game2Activity extends Activity {
 		fishView3.setVisibility(ImageView.VISIBLE);
 		fishView4.setVisibility(ImageView.VISIBLE);
 		
-		PlayPalUtility.initDrawView(game2RelativeLayout, this);
 		java.util.Arrays.fill(isFishCutArray, false);
 		
 		PlayPalUtility.registerLineGesture(game2RelativeLayout, this, new Callable<Integer>() {
@@ -346,6 +360,7 @@ public class Game2Activity extends Activity {
 			newAct.setClass(Game2Activity.this, AnimationActivity.class);
 			Bundle bundle = new Bundle();
 			bundle.putInt("GameIndex", 2);
+			bundle.putBoolean("isWin", true);
 			bundle.putString("userName", mUserName);
             newAct.putExtras(bundle);
 			startActivityForResult(newAct, 0);

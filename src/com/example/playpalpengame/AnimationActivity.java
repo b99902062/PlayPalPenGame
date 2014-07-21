@@ -23,6 +23,7 @@ public class AnimationActivity extends Activity {
 	ImageView monsterView;
 	private String mUserName = null;
 	private int gameIndex;
+	private boolean isWin;
 	private int[] monsterAnimArray = {0, R.anim.monster1_animation, R.anim.monster2_animation, R.anim.monster3_animation, R.anim.monster4_animation};
 	protected AnimationDrawable monsterAnim;
 	
@@ -38,20 +39,20 @@ public class AnimationActivity extends Activity {
 		Bundle bundle = getIntent().getExtras();
 		gameIndex = bundle.getInt("GameIndex");
 		mUserName = bundle.getString("userName");
-		
+		isWin = bundle.getBoolean("isWin");
 		monsterView = (ImageView)findViewById(R.id.monsterView);
 		ImageView replayBtn = (ImageView)findViewById(R.id.replayBtn);
 		
 		setHomeListener(findViewById(R.id.homeBtn));
 		
-		anim = AnimationsContainer.getInstance().createGameAnim(monsterView, gameIndex);
+		anim = AnimationsContainer.getInstance().createGameAnim(monsterView, gameIndex, isWin);
 		
 		replayBtn.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				if(anim != null)
 					anim.stop();
-				anim = AnimationsContainer.getInstance().createGameAnim(monsterView, gameIndex);
+				anim = AnimationsContainer.getInstance().createGameAnim(monsterView, gameIndex, isWin);
 				anim.start();
 				return true;
 			}
@@ -79,6 +80,8 @@ public class AnimationActivity extends Activity {
 }
 
 class FramesSequenceAnimation {
+	private boolean mIsRepeat = false;
+	
     private int[] mFrames; // animation frames
     private int mIndex; // current frame
     private boolean mShouldRun; // true if the animation should continue running. Used to stop the animation
@@ -117,10 +120,19 @@ class FramesSequenceAnimation {
         }
     }
 
+    public FramesSequenceAnimation(ImageView imageView, int[] frames, int fps, boolean isRepeat) {
+    	this(imageView, frames, fps);
+    	mIsRepeat = isRepeat;
+    }
+    
     private int getNext() {
         mIndex++;
-        if (mIndex >= mFrames.length)
-            return -1;
+        if (mIndex >= mFrames.length) {
+        	if(mIsRepeat)
+        		mIndex = 0;
+        	else
+        		return -1;
+        }
         
         return mFrames[mIndex];
     }
@@ -196,6 +208,7 @@ class FramesSequenceAnimation {
 
 class AnimationsContainer {
     public int FPS = 10;  // animation FPS
+    public int LOSE_FPS = 2;  // animation FPS
 
     // single instance procedures
     private static AnimationsContainer mInstance;
@@ -237,26 +250,37 @@ class AnimationsContainer {
     		R.drawable.monster4_ani_31, R.drawable.monster4_ani_32, R.drawable.monster4_ani_33, R.drawable.monster4_ani_34, R.drawable.monster4_ani_35, R.drawable.monster4_ani_36, R.drawable.monster4_ani_37, R.drawable.monster4_ani_38, R.drawable.monster4_ani_39, R.drawable.monster4_ani_40, 
     		R.drawable.monster4_ani_41, R.drawable.monster4_ani_42, R.drawable.monster4_ani_43, R.drawable.monster4_ani_44, R.drawable.monster4_ani_45, R.drawable.monster4_ani_46, R.drawable.monster4_ani_47, R.drawable.monster4_ani_48, R.drawable.monster4_ani_49, R.drawable.monster4_ani_50, 
     		R.drawable.monster4_ani_51};
+    private int[] mGame1LoseFrames = {R.drawable.lose_1_1, R.drawable.lose_1_2, R.drawable.lose_1_3};
+    private int[] mGame2LoseFrames = {R.drawable.lose_2_1, R.drawable.lose_2_2};
+    private int[] mGame3LoseFrames = {R.drawable.lose_3_1, R.drawable.lose_3_2};
+    private int[] mGame4LoseFrames = {R.drawable.lose_4_1, R.drawable.lose_4_2};
     /**
      * @param imageView
      * @return splash screen animation
      */
-    public FramesSequenceAnimation createGameAnim(ImageView imageView, int gameIndex) {
-    	if(gameIndex == 1)
-    		return new FramesSequenceAnimation(imageView, mGame1AnimFrames, FPS);
-    	else if(gameIndex == 2)
-    		return new FramesSequenceAnimation(imageView, mGame2AnimFrames, FPS);
-    	else if(gameIndex == 3)
-    		return new FramesSequenceAnimation(imageView, mGame3AnimFrames, FPS);
-    	else if(gameIndex == 4)
-    		return new FramesSequenceAnimation(imageView, mGame4AnimFrames, FPS);
-    	else
-    		return null;
+    public FramesSequenceAnimation createGameAnim(ImageView imageView, int gameIndex, boolean isWin) {
+    	if(isWin) {
+	    	if(gameIndex == 1)
+	    		return new FramesSequenceAnimation(imageView, mGame1AnimFrames, FPS);
+	    	else if(gameIndex == 2)
+	    		return new FramesSequenceAnimation(imageView, mGame2AnimFrames, FPS);
+	    	else if(gameIndex == 3)
+	    		return new FramesSequenceAnimation(imageView, mGame3AnimFrames, FPS);
+	    	else if(gameIndex == 4)
+	    		return new FramesSequenceAnimation(imageView, mGame4AnimFrames, FPS);
+	    	else
+	    		return null;
+    	} else {
+    		if(gameIndex == 1)
+	    		return new FramesSequenceAnimation(imageView, mGame1LoseFrames, LOSE_FPS, true);
+	    	else if(gameIndex == 2)
+	    		return new FramesSequenceAnimation(imageView, mGame2LoseFrames, LOSE_FPS, true);
+	    	else if(gameIndex == 3)
+	    		return new FramesSequenceAnimation(imageView, mGame3LoseFrames, LOSE_FPS, true);
+	    	else if(gameIndex == 4)
+	    		return new FramesSequenceAnimation(imageView, mGame4LoseFrames, LOSE_FPS, true);
+	    	else
+	    		return null;
+    	}
     }
-
-    /**
-     * AnimationPlayer. Plays animation frames sequence in loop
-     */
-
-
 }
