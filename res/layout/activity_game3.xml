@@ -145,7 +145,15 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="190dp"
             android:src="@drawable/helical"/>
-        
+       
+        <ImageView
+        	android:id="@+id/Game3_cakeCreamHintView"
+        	android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="190dp"
+            android:src="@drawable/game3_cake_cream_hint"/>
+        	
         <TextView
             android:id="@+id/testProgressCount"
             android:layout_width="wrap_content"

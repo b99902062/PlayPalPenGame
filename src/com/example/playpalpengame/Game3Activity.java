@@ -83,6 +83,7 @@ public class Game3Activity extends Activity {
 	protected int curProgress;
 	protected boolean canTouchOven = false;
 	protected boolean butterSqueezing = false;
+	protected String userName = null;
 	
 	TextView  progressCountText;
 	ImageView bowlView;
@@ -98,6 +99,7 @@ public class Game3Activity extends Activity {
 	ImageView squeezerView;
 	ImageView helicalView;
 	ImageView currentFoodView;
+	ImageView cakeCreamHintView;
 
 	AnimationDrawable mixStirAnim;
 	AnimationDrawable ovenAnimation;
@@ -110,6 +112,10 @@ public class Game3Activity extends Activity {
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		
+		
+		Bundle bundle = getIntent().getExtras();
+		userName = bundle.getString("userName");
+		
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
@@ -121,7 +127,6 @@ public class Game3Activity extends Activity {
 		curProgress = 0;
 		boxSize = 100;
 		gameContext = this;
-		
 		
 		progressCountText = (TextView)findViewById(R.id.testProgressCount);
 		bowlView = (ImageView)findViewById(R.id.Game3_bowl);
@@ -136,6 +141,7 @@ public class Game3Activity extends Activity {
 		cakeCreamView = (ImageView)findViewById(R.id.Game3_cakeCream);
 		cakeStrawberryView = (ImageView)findViewById(R.id.Game3_cakeStrawberry);
 		helicalView = (ImageView)findViewById(R.id.Game3_helicalView);
+		cakeCreamHintView = (ImageView)findViewById(R.id.Game3_cakeCreamHintView);
 		
 		mixView.setBackgroundResource(R.anim.game3_mix_stir_animation);
 		mixStirAnim = (AnimationDrawable) mixView.getBackground();
@@ -292,6 +298,9 @@ public class Game3Activity extends Activity {
 				PlayPalUtility.unregisterLineGesture(game3RelativeLayout);
 				
 				Intent newAct = new Intent();
+				Bundle bundle = new Bundle();
+				bundle.putString("userName", userName);
+	            newAct.putExtras(bundle);
 				newAct.setClass(Game3Activity.this, MainActivity.class);
 				startActivityForResult(newAct, 0);
 				Game3Activity.this.finish();
@@ -479,7 +488,8 @@ public class Game3Activity extends Activity {
 		curProgress++;
 		progressCountText.setText("ProgressCount: " + new String("" + curProgress));
 		
-		//cakeCreamView.setVisibility(ImageView.VISIBLE);
+		
+		cakeCreamHintView.setVisibility(ImageView.VISIBLE);
 		PlayPalUtility.clearGestureSets();
 		PlayPalUtility.unregisterHoverLineGesture(game3RelativeLayout);
 		
@@ -537,6 +547,7 @@ public class Game3Activity extends Activity {
 		newAct.setClass(Game3Activity.this, AnimationActivity.class);
 		Bundle bundle = new Bundle();
 		bundle.putInt("GameIndex", 3);
+		bundle.putString("userName", userName);
         newAct.putExtras(bundle);
 		startActivityForResult(newAct, 0);
 		Game3Activity.this.finish();
