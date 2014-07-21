@@ -52,6 +52,7 @@ public class Game1Activity extends Activity {
 	
 	protected Game1Activity self;
 	
+	private String mUserName = null;
 	protected ArrayList<View> foodInPot;
 
 	protected ImageView currentFoodView;
@@ -92,6 +93,9 @@ public class Game1Activity extends Activity {
 		
 		setContentView(R.layout.activity_game1);
 		PlayPalUtility.setDebugMode(false);
+		
+		Bundle bundle = getIntent().getExtras();
+		mUserName = bundle.getString("userName");
 		
 		doInitial();
 
@@ -139,7 +143,8 @@ public class Game1Activity extends Activity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		PlayPalUtility.pauseProgress();
+		PlayPalUtility.killTimeBar();
+		PlayPalUtility.clearDrawView();
 	}
 	
 	private void doInitial() {
@@ -185,6 +190,9 @@ public class Game1Activity extends Activity {
 				
 				Intent newAct = new Intent();
 				newAct.setClass(Game1Activity.this, MainActivity.class);
+				Bundle bundle = new Bundle();
+				bundle.putString("userName", mUserName);
+	            newAct.putExtras(bundle);
 				startActivityForResult(newAct, 0);
 				Game1Activity.this.finish();
 				return true;
@@ -206,7 +214,7 @@ public class Game1Activity extends Activity {
 		potDropAnim.start();
 
 		if (progressCount == step2TotalProgressCount) {
-			PlayPalUtility.pauseProgress();
+			PlayPalUtility.killTimeBar();
 			Animation boardAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTLEFT);
 			boardAnim.setAnimationListener(new AnimationListener() {
 				@Override
@@ -306,7 +314,7 @@ public class Game1Activity extends Activity {
 		potStirAnim.start();
 
 		if (progressCount == step3TotalProgressCount) {
-			PlayPalUtility.pauseProgress();
+			PlayPalUtility.killTimeBar();
 			PlayPalUtility.setLineGesture(false);
 			PlayPalUtility.unregisterLineGesture(game1RelativeLayout);
 			PlayPalUtility.clearGestureSets();
@@ -315,6 +323,7 @@ public class Game1Activity extends Activity {
 			newAct.setClass(Game1Activity.this, AnimationActivity.class);
 			Bundle bundle = new Bundle();
 			bundle.putInt("GameIndex", 1);
+			bundle.putString("userName", mUserName);
             newAct.putExtras(bundle);
 			startActivityForResult(newAct, 0);
 			Game1Activity.this.finish();
@@ -369,6 +378,7 @@ public class Game1Activity extends Activity {
 			// Slide the cucumber
 			isFoodCanTouch = false;
 			PlayPalUtility.clearDrawView();
+			PlayPalUtility.pauseProgress();
 			
 			PlayPalUtility.setLineGesture(false);
 			PlayPalUtility.clearGestureSets();
@@ -388,6 +398,8 @@ public class Game1Activity extends Activity {
 					cucumberAnim.setAnimationListener(new AnimationListener() {
 						@Override
 						public void onAnimationEnd(Animation anim) {
+							PlayPalUtility.resumeProgress();
+							
 							PlayPalUtility.setLineGesture(true);
 							Point beginPnt = new Point(foodOffsetX + cucumberCutBeginPointArray[0].x, foodOffsetY + cucumberCutBeginPointArray[0].y);
 							Point endPnt = new Point(foodOffsetX + cucumberCutEndPointArray[0].x, foodOffsetY + cucumberCutEndPointArray[0].y);
@@ -420,7 +432,7 @@ public class Game1Activity extends Activity {
 		} else if (progressCount == step1TotalProgressCount) {
 			isFoodCanTouch = false;
 			PlayPalUtility.clearDrawView();
-			PlayPalUtility.pauseProgress();
+			PlayPalUtility.killTimeBar();
 
 			Animation cucumberAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTRIGHT);
 			Animation boardAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTRIGHT);

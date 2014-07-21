@@ -21,8 +21,9 @@ import android.widget.ImageView;
 public class AnimationActivity extends Activity {
 	FramesSequenceAnimation anim = null;
 	ImageView monsterView;
-	int gameIndex;
-	int[] monsterAnimArray = {0, R.anim.monster1_animation, R.anim.monster2_animation, R.anim.monster3_animation, R.anim.monster4_animation};
+	private String mUserName = null;
+	private int gameIndex;
+	private int[] monsterAnimArray = {0, R.anim.monster1_animation, R.anim.monster2_animation, R.anim.monster3_animation, R.anim.monster4_animation};
 	protected AnimationDrawable monsterAnim;
 	
 	@Override
@@ -36,7 +37,8 @@ public class AnimationActivity extends Activity {
 		
 		Bundle bundle = getIntent().getExtras();
 		gameIndex = bundle.getInt("GameIndex");
-				
+		mUserName = bundle.getString("userName");
+		
 		monsterView = (ImageView)findViewById(R.id.monsterView);
 		ImageView replayBtn = (ImageView)findViewById(R.id.replayBtn);
 		
@@ -65,6 +67,9 @@ public class AnimationActivity extends Activity {
 			public boolean onTouch(View view, MotionEvent event) {
 				Intent newAct = new Intent();
 				newAct.setClass(AnimationActivity.this, MainActivity.class);
+				Bundle bundle = new Bundle();
+				bundle.putString("userName", mUserName);
+	            newAct.putExtras(bundle);
 				startActivityForResult(newAct, 0);
 				AnimationActivity.this.finish();
 				return true;
