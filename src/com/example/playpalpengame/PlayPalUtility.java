@@ -693,6 +693,23 @@ public class PlayPalUtility {
 		drawview.reset();
 		drawview.invalidate();
 	}
+	
+	
+	
+	protected static void initRecorder(){
+		Timer timer = new Timer( );
+		RecordTimerTask recorderTask = new RecordTimerTask();
+		
+		timer.schedule(recorderTask, 0, 100);
+	}
+	
+	protected static void registerRecorder(final Callable<Integer> func){
+		
+	}
+	
+	protected static void clearRecoreder(){
+	
+	}	
 }
 
 class GestureSet {
@@ -791,4 +808,4 @@ class TimeBarTask extends TimerTask {
     public void resume() {
     	isPause = false;
     }
-  };
+}; 

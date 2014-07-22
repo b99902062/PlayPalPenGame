@@ -14,6 +14,7 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.RelativeLayout.LayoutParams;
@@ -29,7 +30,7 @@ import com.samsung.spen.lib.input.SPenEventLibrary;
 import com.samsung.spensdk.applistener.SPenHoverListener;
 
 public class Game4Activity extends Activity {
-	
+	protected final int CREAM_BOX_SIZE = 50;
 	protected final int CREAM_COLOR_NUM = 6;
 	protected final int CREAM_SIZE = 50;
 	protected final int CREAM_DIST = 10;
@@ -37,8 +38,13 @@ public class Game4Activity extends Activity {
 	protected boolean canTouchOven = false;
 	protected boolean butterSqueezing = false;
 	
+	protected final int DOUGH_TIME  = 600;
+	protected final int COOKIE_TIME = 600;
+	protected final int CREAM_TIME  = 1800;
+	
 	protected final int DOUGH_PROGRESS_END  = 4;
 	protected final int COOKIE_PROGRESS_END = 12;
+	protected final int CREAM_PROGRESS_END  = 28;	
 	
 	protected final int TRIANGULAR_COOKIE = 0;
 	protected final int CIRCLE_COOKIE = 1;
@@ -61,6 +67,7 @@ public class Game4Activity extends Activity {
 				{new Point(0,-100), new Point(-100,70), new Point(100,70), new Point(0,-100)},//TRIANGULAR_COOKIE
 				{new Point(70,-70), new Point(-70,-70), new Point(-70,70), new Point(70,70) },//CIRCLE_COOKIE
 				{new Point(100,0),  new Point(0,-100),  new Point(-100,0), new Point(0,100)}};//SQUARE_COOKIE
+		
 		
 		public Cookie(int _id, int _t, ImageView _v){
 			id   = _id;
@@ -86,7 +93,8 @@ public class Game4Activity extends Activity {
 			
 			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         	params.setMargins(center.x - 200, center.y - 200 , 0, 0);
-        	this.view.setLayoutParams(params);
+        	this.view.setLayoutParams(params);        	
+        	
 		}
 		
 		public void setCreamColor(){
@@ -123,6 +131,7 @@ public class Game4Activity extends Activity {
 	protected int curProgress;
 	protected int curCookieType;
 	
+	protected String userName;
 	protected Context gameContext;
 	protected Point centerPoint = new Point(1280,800);
 	
@@ -204,10 +213,30 @@ public class Game4Activity extends Activity {
 		R.drawable.game4_cream6			
 	};
 	
+	protected Point[][] cookieCreamOffsetArray = new Point[][]{
+			{new Point(0,-150),  new Point(-25,-100), new Point(25,-100), new Point(-50,-50), new Point(0,-50),
+			 new Point(50,-50),  new Point(-75,0),    new Point(-25,0),   new Point(25,0),    new Point(75,0),
+			 new Point(-100,-50),new Point(-50,-50),  new Point(0,-50),   new Point(50,-50),  new Point(100,-50), new Point(100,-50)},
+			{new Point(0,-150),
+		     new Point(-50,-100), new Point(50,-100),
+			 new Point(-100,-50), new Point(0,-50),  new Point(100,-50),
+			 new Point(-150,0),   new Point(-50,0),  new Point(50,0), new Point(150,0),
+			 new Point(-100,50),  new Point(0,50),    new Point(100,50),
+			 new Point(-50,100),  new Point(50,100), 
+			 new Point(0,150)}, 
+			{new Point(-150,-150),new Point(-50,-150),new Point(50,-150),new Point(150,-150),
+		     new Point(-150,-50), new Point(-50,-50), new Point(50,-50), new Point(150,-50),
+		     new Point(-150,50),  new Point(-50,50),  new Point(50,50),  new Point(150,50),
+		     new Point(-150,150), new Point(-50,150), new Point(50,150), new Point(150,150)}};
+	
 
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
+		
+		Bundle bundle = getIntent().getExtras();
+		userName = bundle.getString("userName");
 		
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -262,13 +291,48 @@ public class Game4Activity extends Activity {
 		
 		gameContext = this;
 		mSPenEventLibrary = new SPenEventLibrary();
+		
+		
+		PlayPalUtility.registerProgressBar((ProgressBar)findViewById(R.id.progressBarRed), (ImageView)findViewById(R.id.progressMark), (ImageView)findViewById(R.id.progressBar), new Callable<Integer>() {
+			public Integer call() {
+				
+				
+				PlayPalUtility.killTimeBar();
+				PlayPalUtility.setLineGesture(false);
+				PlayPalUtility.unregisterLineGesture(game4RelativeLayout);
+				PlayPalUtility.clearGestureSets();
+				
+				
+				Intent newAct = new Intent();
+				newAct.setClass(Game4Activity.this, AnimationActivity.class);
+				Bundle bundle = new Bundle();
+				bundle.putInt("GameIndex", 4);
+				bundle.putBoolean("isWin", false);
+				bundle.putString("userName", userName);
+	            newAct.putExtras(bundle);
+				startActivityForResult(newAct, 0);
+				Game4Activity.this.finish();
+				return 0;
+			}
+		});
+		PlayPalUtility.initialProgressBar(DOUGH_TIME, PlayPalUtility.TIME_MODE);
 	}	
 
 	protected void setHomeListener(View targetView) {
 		targetView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
+				PlayPalUtility.killTimeBar();
+				PlayPalUtility.setLineGesture(false);
+				PlayPalUtility.unregisterLineGesture(game4RelativeLayout);
+				PlayPalUtility.clearGestureSets();
+				
 				Intent newAct = new Intent();
+				Bundle bundle = new Bundle();
+				bundle.putInt("GameIndex", 4);
+				bundle.putBoolean("isWin", true);
+				bundle.putString("userName", userName);
+	            newAct.putExtras(bundle);				
 				newAct.setClass(Game4Activity.this, MainActivity.class);
 				startActivityForResult(newAct, 0);
 				Game4Activity.this.finish();
@@ -378,6 +442,7 @@ public class Game4Activity extends Activity {
 
 			PlayPalUtility.clearGestureSets();
 			PlayPalUtility.clearDrawView();
+			PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
 			initCookieView();
 		}
 		
@@ -396,6 +461,7 @@ public class Game4Activity extends Activity {
 		
 		if(curProgress == COOKIE_PROGRESS_END){
 			PlayPalUtility.clearDrawView();
+			PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
 			
 			for(int i=0; i<DOUGH_NUM; i++){
 				final ImageView curDoughView = (ImageView)findViewById(doughViewArray[i]);
@@ -429,6 +495,10 @@ public class Game4Activity extends Activity {
 						curCookie.view.clearAnimation();
 						
 						curCookie.beBaked();
+						
+						for(int j=0; j<16; j++)
+							PlayPalUtility.initialLineGestureParams(false, true, CREAM_BOX_SIZE, pointAddition(curCookie.center, cookieCreamOffsetArray[curCookie.type][j]));
+						
 						Animation cookieAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_OUTLEFT_TO_CUR);
 						cookieAnim.setAnimationListener(new AnimationListener() {
 							@Override
@@ -460,10 +530,49 @@ public class Game4Activity extends Activity {
 				game4RelativeLayout.invalidate();
 				
 				curCookie.view.setAnimation(cookieAnim);
-				cookieAnim.startNow();
+				cookieAnim.startNow();	
 			}
+			
+			PlayPalUtility.clearGestureSets();
+			PlayPalUtility.registerSingleHoverPoint(game4RelativeLayout, this, new Callable<Integer>() {
+				public Integer call() {
+					return handleCookieCreamAction(cookieArray[0].view);
+				}
+			});
+	
+			PlayPalUtility.setLineGesture(true);
+			
 		}
 		
+		return 1;
+	}
+	
+	
+	protected Integer handleCookieCreamAction(View view){
+		curProgress++;
+		progressCountText.setText("ProgressCount: " + new String("" + curProgress));
+		
+		int idx = PlayPalUtility.getLastTriggerSetIndex();
+		PlayPalUtility.cancelGestureSet(idx);
+		
+		if(curProgress == CREAM_PROGRESS_END){
+			
+			PlayPalUtility.killTimeBar();
+			PlayPalUtility.setLineGesture(false);
+			PlayPalUtility.unregisterLineGesture(game4RelativeLayout);
+			PlayPalUtility.clearGestureSets();			
+			
+			Intent newAct = new Intent();
+			newAct.setClass(Game4Activity.this, AnimationActivity.class);
+			Bundle bundle = new Bundle();
+			bundle.putInt("GameIndex", 4);
+			bundle.putBoolean("isWin", true);
+			bundle.putString("userName", userName);
+            newAct.putExtras(bundle);
+			startActivityForResult(newAct, 0);
+			Game4Activity.this.finish();
+			return 0;
+		}
 		return 1;
 	}
 	

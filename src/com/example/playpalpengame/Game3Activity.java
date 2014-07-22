@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ProgressBar;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.ImageView;
@@ -71,19 +72,26 @@ public class Game3Activity extends Activity {
 		new Point(780+710, 380+512),	
 		new Point(780+588, 380+310)};
 	
+	
+	
 	protected final int CREAM_MAX_RATIO = 20;
 	protected final int SMALL_CREAM_SIZE = 50;
 	protected final int LARGE_CREAM_SIZE = 150;
+	
 	protected final int MIX_PROGRESS_FIRST = 3;
 	protected final int MIX_PROGRESS_SECOND = 6;
 	protected final int MIX_PROGRESS_END = 10;
 	protected final int CREAM_PROGRESS_END = 17;
+	
+	protected final int MIX_TIME   = 600;
+	protected final int CREAM_TIME = 600;
 	
 	protected int boxSize;
 	protected int curProgress;
 	protected boolean canTouchOven = false;
 	protected boolean butterSqueezing = false;
 	protected String userName = null;
+	
 	
 	TextView  progressCountText;
 	ImageView bowlView;
@@ -281,6 +289,28 @@ public class Game3Activity extends Activity {
 				pointArray[1], 
 				pointArray[2], 
 				pointArray[3]);
+		
+		
+		PlayPalUtility.registerProgressBar((ProgressBar)findViewById(R.id.progressBarRed), (ImageView)findViewById(R.id.progressMark), (ImageView)findViewById(R.id.progressBar), new Callable<Integer>() {
+			public Integer call() {
+				PlayPalUtility.killTimeBar();
+				PlayPalUtility.setLineGesture(false);
+				PlayPalUtility.unregisterLineGesture(game3RelativeLayout);
+				PlayPalUtility.clearGestureSets();
+				
+				Intent newAct = new Intent();
+				newAct.setClass(Game3Activity.this, AnimationActivity.class);
+				Bundle bundle = new Bundle();
+				bundle.putInt("GameIndex", 3);
+				bundle.putBoolean("isWin", false);
+				bundle.putString("userName", userName);
+	            newAct.putExtras(bundle);
+				startActivityForResult(newAct, 0);
+				Game3Activity.this.finish();
+				return 0;
+			}
+		});
+		PlayPalUtility.initialProgressBar(MIX_TIME, PlayPalUtility.TIME_MODE);
 	}	
 	
 	
@@ -293,9 +323,11 @@ public class Game3Activity extends Activity {
 		targetView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
+				
+				PlayPalUtility.killTimeBar();
 				PlayPalUtility.setLineGesture(false);
-	            PlayPalUtility.clearGestureSets();
 				PlayPalUtility.unregisterLineGesture(game3RelativeLayout);
+				PlayPalUtility.clearGestureSets();
 				
 				Intent newAct = new Intent();
 				Bundle bundle = new Bundle();
@@ -492,7 +524,7 @@ public class Game3Activity extends Activity {
 		cakeCreamHintView.setVisibility(ImageView.VISIBLE);
 		PlayPalUtility.clearGestureSets();
 		PlayPalUtility.unregisterHoverLineGesture(game3RelativeLayout);
-		
+		PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
 		
 		PlayPalUtility.registerSingleHoverPoint(game3RelativeLayout, this, new Callable<Integer>() {
 			@Override
@@ -517,6 +549,7 @@ public class Game3Activity extends Activity {
 		PlayPalUtility.cancelGestureSet(idx);
 		
 		if(curProgress == CREAM_PROGRESS_END){
+			cakeDottedLineView.setVisibility(ImageView.INVISIBLE);
 			cakeStrawberryView.setVisibility(ImageView.VISIBLE);
 			PlayPalUtility.setAlphaAnimation(cakeStrawberryView,true);
 			
@@ -543,10 +576,12 @@ public class Game3Activity extends Activity {
 		PlayPalUtility.unregisterLineGesture(game3RelativeLayout);
 		PlayPalUtility.clearGestureSets();
 		PlayPalUtility.clearDrawView();
+		
 		Intent newAct = new Intent();
 		newAct.setClass(Game3Activity.this, AnimationActivity.class);
 		Bundle bundle = new Bundle();
 		bundle.putInt("GameIndex", 3);
+		bundle.putBoolean("isWin", true);
 		bundle.putString("userName", userName);
         newAct.putExtras(bundle);
 		startActivityForResult(newAct, 0);

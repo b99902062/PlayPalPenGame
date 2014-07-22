@@ -45,8 +45,9 @@ public class AnimationActivity extends Activity {
 		
 		setHomeListener(findViewById(R.id.homeBtn));
 		
-		anim = AnimationsContainer.getInstance().createGameAnim(monsterView, gameIndex, isWin);
-		
+		anim = AnimationsContainer.getInstance()
+				.createGameAnim(monsterView, gameIndex, isWin);
+
 		replayBtn.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
@@ -254,6 +255,7 @@ class AnimationsContainer {
     private int[] mGame2LoseFrames = {R.drawable.lose_2_1, R.drawable.lose_2_2};
     private int[] mGame3LoseFrames = {R.drawable.lose_3_1, R.drawable.lose_3_2};
     private int[] mGame4LoseFrames = {R.drawable.lose_4_1, R.drawable.lose_4_2};
+    
     /**
      * @param imageView
      * @return splash screen animation

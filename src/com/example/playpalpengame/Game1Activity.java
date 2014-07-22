@@ -98,7 +98,7 @@ public class Game1Activity extends Activity {
 		mUserName = bundle.getString("userName");
 		
 		doInitial();
-
+		
 		PlayPalUtility.registerProgressBar((ProgressBar)findViewById(R.id.progressBarRed), (ImageView)findViewById(R.id.progressMark), (ImageView)findViewById(R.id.progressBar), new Callable<Integer>() {
 			public Integer call() {
 				Intent newAct = new Intent();
