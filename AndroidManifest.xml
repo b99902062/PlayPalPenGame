@@ -64,5 +64,10 @@
             android:theme="@style/FullscreenTheme" 
             android:screenOrientation="landscape" >
         </activity>
+        <activity 
+            android:name="com.example.playpalpengame.TherapyMainActivity"
+            android:theme="@style/FullscreenTheme" 
+            android:screenOrientation="landscape" >
+        </activity>
     </application> 
 </manifest>

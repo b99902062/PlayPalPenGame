@@ -44,6 +44,15 @@
             android:layout_toRightOf="@+id/textView1"
             android:text="Submit" />
 
+        <ImageView
+            android:id="@+id/therapyIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/submitBtn"
+            android:layout_marginLeft="64dp"
+            android:layout_toRightOf="@+id/submitBtn"
+            android:src="@drawable/therapy_icon" />
+
     </RelativeLayout>
 
 </FrameLayout>

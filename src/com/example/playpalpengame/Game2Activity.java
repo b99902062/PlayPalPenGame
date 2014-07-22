@@ -44,8 +44,8 @@ public class Game2Activity extends Activity {
 	
 	protected final int testTotalTime = 500;
 	
-	private final int fishW =  140;
-	private final int fishH = 80;
+	private final static int fishW =  140;
+	private final static int fishH = 80;
 	
 	private final Point[] fishOffset = {new Point(420, 430), new Point(860, 430), new Point(1300,430), new Point(1740, 430)};
 	private final Point[] cutBeginOffset = {new Point(124, 263), new Point(301, 262), new Point(134, 459), new Point(278, 457)};
@@ -65,7 +65,7 @@ public class Game2Activity extends Activity {
 	protected TextView testProgressCountText;
 	
 	protected int progressCount;
-	protected LinkedList<FishHandlerThread> fishThreadList = new LinkedList<FishHandlerThread>();
+	protected static LinkedList<FishHandlerThread> fishThreadList = new LinkedList<FishHandlerThread>();
 	
 	private int[] fishCutIdArray = {R.id.fishCut11, R.id.fishCut12, R.id.fishCut13, R.id.fishCut14, 
 			R.id.fishCut21, R.id.fishCut22, R.id.fishCut23, R.id.fishCut24,
@@ -371,7 +371,7 @@ public class Game2Activity extends Activity {
 		return 0;
 	}
 	
-	private Handler fishLocationHandler = new Handler() {
+	private static Handler fishLocationHandler = new Handler() {
         public void handleMessage(Message msg) {
         	Log.d("PlayPalTest", "Get msg");
         	
