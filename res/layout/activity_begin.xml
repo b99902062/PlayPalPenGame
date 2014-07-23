@@ -15,7 +15,7 @@
         android:layout_height="match_parent" >
 
         <TextView
-            android:id="@+id/textView1"
+            android:id="@+id/nameLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/userNameText"
@@ -38,10 +38,10 @@
             android:id="@+id/submitBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/textView1"
-            android:layout_alignBottom="@+id/textView1"
+            android:layout_alignBaseline="@+id/nameLabel"
+            android:layout_alignBottom="@+id/nameLabel"
             android:layout_marginLeft="40dp"
-            android:layout_toRightOf="@+id/textView1"
+            android:layout_toRightOf="@+id/nameLabel"
             android:text="Submit" />
 
         <ImageView

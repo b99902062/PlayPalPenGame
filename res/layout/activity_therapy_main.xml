@@ -15,30 +15,34 @@
         android:layout_height="match_parent" >
 
         <RelativeLayout
+            android:id="@+id/therapyMainLeftLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true">
+            android:layout_alignParentTop="true" >
 
             <Spinner
                 android:id="@+id/playerSpinner"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content" 
-                android:layout_marginLeft="50dp" 
+                android:layout_marginLeft="40dp" 
+                android:layout_marginRight="1110dp"
                 android:layout_marginTop="50dp" />
 
             <Spinner
                 android:id="@+id/stageSpinner"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content" 
-                android:layout_marginLeft="50dp" 
+                android:layout_marginLeft="40dp"
+                android:layout_marginRight="1110dp" 
                 android:layout_marginTop="150dp"/>
 
             <Spinner
                 android:id="@+id/recordSpinner"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content" 
-                android:layout_marginLeft="50dp" 
+                android:layout_marginLeft="40dp"
+                android:layout_marginRight="1110dp" 
                 android:layout_marginTop="250dp"/>
 
             <ImageView
@@ -47,7 +51,67 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/home" 
                 android:layout_marginLeft="50dp" 
-                android:layout_marginTop="400dp"/>
+                android:layout_marginTop="600dp"/>
+
+            <TextView
+                android:id="@+id/nameLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="24dp"
+                android:layout_marginTop="35dp"
+                android:text="UserName:" />
+            
+            <TextView
+                android:id="@+id/stageLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="24dp"
+                android:layout_marginTop="135dp"
+                android:text="Stage:" />
+            
+            <TextView
+                android:id="@+id/recordLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="24dp"
+                android:layout_marginTop="235dp"
+                android:text="Record:" />
+
+            <TextView
+                android:id="@+id/speedLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="24dp"
+                android:layout_marginTop="335dp"
+                android:text="Replay Speed:" />
+            
+            <SeekBar
+                android:id="@+id/replaySpeedBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="550dp"
+                android:layout_marginTop="350dp"
+                android:max="100" />
+
+            <Button
+                android:id="@+id/replayTrackBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/recordSpinner"
+                android:layout_below="@+id/replaySpeedBar"
+                android:layout_marginTop="17dp"
+                android:text="Replay" />
 
         </RelativeLayout>
         <LinearLayout
@@ -61,11 +125,12 @@
             android:layout_marginRight="56dp"
             android:orientation="vertical" >
 
-            <View
-                android:id="@+id/view1"
+            <view
+                class="com.example.playpalpengame.DrawCanvasView"
+                android:id="@+id/canvasView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/black_overlay" />
+            />
 
         </LinearLayout>
 
