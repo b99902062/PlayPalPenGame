@@ -77,6 +77,8 @@ public class PlayPalUtility {
 	
 	protected static boolean butterSqueezing = false;
 	protected static SPenEventLibrary mSPenEventLibrary = new SPenEventLibrary();
+	protected static MotionEvent curEvent;
+	
 	
 	protected static float calcDistance(Point p1, Point p2){
 		float dx = p1.x - p2.x;
@@ -345,9 +347,12 @@ public class PlayPalUtility {
 	protected static void registerLineGesture(View view, Context context, final Callable<Integer> func) {
 		targetView = view;
 		targetContext = context;
+		
 		view.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
+				curEvent = event;
+				
 				if(!isLineGestureOn)
 					return false;
 				for(int setIndex=0; setIndex<gestureSetList.size(); setIndex++) {
@@ -358,6 +363,8 @@ public class PlayPalUtility {
 					
 					switch(event.getAction()) {
 						case MotionEvent.ACTION_DOWN:
+							PenRecorder.startRecorder();
+							
 							if(curSet.isInOrder) {
 								if(isWithinBox(setIndex, 0, new Point((int)event.getX(), (int)event.getY())))
 									pointPassedList.add(0);
@@ -418,6 +425,7 @@ public class PlayPalUtility {
 							}
 							break;
 						case MotionEvent.ACTION_UP:
+							PenRecorder.stopRecoreder();
 							if(curSet.isContinuous) {
 								pointPassedList.clear();
 								break;
@@ -648,12 +656,8 @@ public class PlayPalUtility {
 	
 	/*DrawView utility*/
 	protected static void initDrawView(RelativeLayout layout, Context context){
-		initDrawView(layout, context, new Point(0,0), 0);
-	}
-	
-	
-	protected static void initDrawView(RelativeLayout layout, Context context, Point orig, int r){
-		drawview = new DrawView(context, orig, r);
+
+		drawview = new DrawView(context);
 		drawview.setMinimumHeight(2160);
 		drawview.setMinimumWidth(1600);
 		
@@ -690,26 +694,12 @@ public class PlayPalUtility {
 	}
 	
 	protected static void clearDrawView(){
-		drawview.reset();
-		drawview.invalidate();
+		if(drawview != null){
+			drawview.reset();
+			drawview.invalidate();
+		}
 	}
 	
-	
-	
-	protected static void initRecorder(){
-		Timer timer = new Timer( );
-		RecordTimerTask recorderTask = new RecordTimerTask();
-		
-		timer.schedule(recorderTask, 0, 100);
-	}
-	
-	protected static void registerRecorder(final Callable<Integer> func){
-		
-	}
-	
-	protected static void clearRecoreder(){
-	
-	}	
 }
 
 class GestureSet {
@@ -741,11 +731,9 @@ class DrawView extends View{
 	
 	Canvas canvas;
 	
-	public DrawView(Context context, Point orig, int r) {
+	public DrawView(Context context) {
 		super(context);
 		canvas= new Canvas();
-		radius = r;
-        
 		paint = new Paint();
         initPenEffect(paint);
 	}

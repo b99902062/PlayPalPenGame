@@ -121,17 +121,14 @@ public class Game1Activity extends Activity {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_HOVER_ENTER:
                     	knifeView.setVisibility(ImageView.VISIBLE);
-                        Log.d("PlayPal", "Enter");
                         break;
                     case MotionEvent.ACTION_HOVER_MOVE:
                     	RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
                     	params.setMargins((int)event.getX(), (int)event.getY() , 0, 0);
                     	knifeView.setLayoutParams(params);
-                    	Log.d("PlayPal", "Move");
                         break;
                     case MotionEvent.ACTION_HOVER_EXIT:
                     	knifeView.setVisibility(ImageView.INVISIBLE);
-                    	Log.d("PlayPal", "Exit");
                         break;
                 }
                 return true;
@@ -151,6 +148,7 @@ public class Game1Activity extends Activity {
 
 		PlayPalUtility.initDrawView(game1RelativeLayout, this);
 		DrawGestureLine();
+		PenRecorder.registerRecorder(game1RelativeLayout, this, mUserName, 1);
 	}
 	
 	@Override
@@ -412,7 +410,7 @@ public class Game1Activity extends Activity {
 					cucumberAnim.setAnimationListener(new AnimationListener() {
 						@Override
 						public void onAnimationEnd(Animation anim) {
-							PlayPalUtility.resumeProgress();
+							//PlayPalUtility.resumeProgress();
 							
 							PlayPalUtility.setLineGesture(true);
 							Point beginPnt = new Point(foodOffsetX + cucumberCutBeginPointArray[0].x, foodOffsetY + cucumberCutBeginPointArray[0].y);
@@ -447,6 +445,7 @@ public class Game1Activity extends Activity {
 			isFoodCanTouch = false;
 			PlayPalUtility.clearDrawView();
 			PlayPalUtility.killTimeBar();
+			PenRecorder.outputJSON();
 
 			Animation cucumberAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTRIGHT);
 			Animation boardAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTRIGHT);

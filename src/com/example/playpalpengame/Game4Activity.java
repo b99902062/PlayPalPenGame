@@ -30,6 +30,7 @@ import com.samsung.spen.lib.input.SPenEventLibrary;
 import com.samsung.spensdk.applistener.SPenHoverListener;
 
 public class Game4Activity extends Activity {
+	
 	protected final int CREAM_BOX_SIZE = 50;
 	protected final int CREAM_COLOR_NUM = 6;
 	protected final int CREAM_SIZE = 50;
@@ -37,6 +38,7 @@ public class Game4Activity extends Activity {
 	protected final int CREAM_MAX_RATIO = 10;
 	protected boolean canTouchOven = false;
 	protected boolean butterSqueezing = false;
+	
 	
 	protected final int DOUGH_TIME  = 600;
 	protected final int COOKIE_TIME = 600;
@@ -316,6 +318,7 @@ public class Game4Activity extends Activity {
 			}
 		});
 		PlayPalUtility.initialProgressBar(DOUGH_TIME, PlayPalUtility.TIME_MODE);
+		PenRecorder.registerRecorder(game4RelativeLayout, this, userName, 4);
 	}	
 
 	protected void setHomeListener(View targetView) {
@@ -436,7 +439,8 @@ public class Game4Activity extends Activity {
 			PlayPalUtility.clearDrawView();
 			PlayPalUtility.setStraightStroke(centerPoint,doughPosArray[curProgress]);
 		}
-		else if(curProgress == DOUGH_PROGRESS_END){			
+		else if(curProgress == DOUGH_PROGRESS_END){
+			PenRecorder.outputJSON();
 			ImageView curDough = (ImageView)findViewById(doughViewArray[curProgress]);
 			curDough.setVisibility(ImageView.VISIBLE);
 
