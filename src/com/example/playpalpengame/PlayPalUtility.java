@@ -698,9 +698,9 @@ public class PlayPalUtility {
 	
 	protected static void initRecorder(){
 		Timer timer = new Timer( );
-		RecordTimerTask recorderTask = new RecordTimerTask();
+		//RecordTimerTask recorderTask = new RecordTimerTask();
 		
-		timer.schedule(recorderTask, 0, 100);
+		//timer.schedule(recorderTask, 0, 100);
 	}
 	
 	protected static void registerRecorder(final Callable<Integer> func){

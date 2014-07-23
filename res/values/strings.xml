@@ -4,5 +4,7 @@
     <string name="app_name">PlayPalPenGame</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="str_cannot_find_analysis_file">Sorry, the analysis file seems not exist</string>
+    <string name="str_target_record_not_exist">Sorry, the target record seems not exist</string>
 
 </resources>
