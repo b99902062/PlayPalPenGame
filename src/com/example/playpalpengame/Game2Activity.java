@@ -127,8 +127,8 @@ public class Game2Activity extends Activity {
 				return catchFish();
 			}
 		});
+		PenRecorder.registerRecorder(game2RelativeLayout, this, mUserName, 2);
 		PlayPalUtility.setLineGesture(true);
-		
 		PlayPalUtility.initDrawView(game2RelativeLayout, this);
 		
 		game2RelativeLayout.setOnHoverListener(new View.OnHoverListener() {
@@ -356,6 +356,7 @@ public class Game2Activity extends Activity {
 			PlayPalUtility.setLineGesture(false);
 			PlayPalUtility.unregisterLineGesture(game2RelativeLayout);
 			PlayPalUtility.clearGestureSets();
+			PenRecorder.outputJSON();
 			Intent newAct = new Intent();
 			newAct.setClass(Game2Activity.this, AnimationActivity.class);
 			Bundle bundle = new Bundle();

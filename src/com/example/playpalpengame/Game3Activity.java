@@ -275,7 +275,7 @@ public class Game3Activity extends Activity {
 		});
 
 		PlayPalUtility.setDebugMode(false);
-		PenRecorder.registerRecorder(game3RelativeLayout, this, userName, 4);
+		PenRecorder.registerRecorder(game3RelativeLayout, this, userName, 3);
 		PlayPalUtility.initDrawView(game3RelativeLayout, this);
 		setFoodListener(mixView);
 		
