@@ -160,32 +160,33 @@ public class Game3Activity extends Activity {
             public boolean onHover(View v, MotionEvent event) {
             	
             	ImageView hoverItem;
-            	if(curProgress<10)
+            	if(curProgress < MIX_PROGRESS_END)
             		hoverItem = eggbeatView;
             	else
             		hoverItem = squeezerView;//others
-            		
+            	
+            	PlayPalUtility.setHoverTarget(true, hoverItem);
+            	
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_HOVER_ENTER:
                     	hoverItem.setVisibility(ImageView.VISIBLE);
-                        //Log.d("PlayPal", "Enter");
                         break;
                      
                     case MotionEvent.ACTION_HOVER_MOVE:
                     	RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
                     	params.setMargins((int)event.getX() - 200, (int)event.getY() - 200 , 0, 0);
                     	hoverItem.setLayoutParams(params);
-                    	//Log.d("PlayPal", "Move");
                         break;
 
                     case MotionEvent.ACTION_HOVER_EXIT:
                     	hoverItem.setVisibility(ImageView.INVISIBLE);
-                    	//Log.d("PlayPal", "Exit");
                         break;
                 }
                 return true;
             }
         });	
+		
+		
 		
 		mSPenEventLibrary = new SPenEventLibrary();
 		mSPenEventLibrary.setSPenHoverListener(cakeView, new SPenHoverListener(){
@@ -273,7 +274,8 @@ public class Game3Activity extends Activity {
 			
 		});
 
-		
+		PlayPalUtility.setDebugMode(false);
+		PenRecorder.registerRecorder(game3RelativeLayout, this, userName, 4);
 		PlayPalUtility.initDrawView(game3RelativeLayout, this);
 		setFoodListener(mixView);
 		
@@ -381,7 +383,8 @@ public class Game3Activity extends Activity {
 					@Override
 					public void onAnimationEnd(Animation anim) {	
 						cakeDottedLineView.setVisibility(ImageView.VISIBLE);
-						
+						PlayPalUtility.setLineGesture(true);
+						PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
 					}
 
 					@Override
@@ -421,14 +424,11 @@ public class Game3Activity extends Activity {
 						dottedLineArray[15],
 						dottedLineArray[16],
 						dottedLineArray[17]);
-
-				PlayPalUtility.setLineGesture(true);
 			}
 		});
 		
 	}
 		
-	
 	protected Integer handleStirring(View view){
 		curProgress++;
 		progressCountText.setText("ProgressCount: " + new String("" + curProgress));
@@ -448,7 +448,8 @@ public class Game3Activity extends Activity {
 		}
 		else if( curProgress == MIX_PROGRESS_END){
 			helicalView.setVisibility(ImageView.GONE);
-						
+
+			PlayPalUtility.killTimeBar();
 			Animation mixAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTLEFT);
 			mixAnim.setAnimationListener(new AnimationListener() {
 				@Override
@@ -572,6 +573,9 @@ public class Game3Activity extends Activity {
 	protected Integer handleCutting(View view)
 	{
 		//finished game3
+		
+		PenRecorder.outputJSON();
+		
 		PlayPalUtility.setLineGesture(false);
 		PlayPalUtility.unregisterLineGesture(game3RelativeLayout);
 		PlayPalUtility.clearGestureSets();

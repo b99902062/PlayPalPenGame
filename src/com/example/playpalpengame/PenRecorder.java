@@ -65,6 +65,7 @@ public class PenRecorder{
 	protected static int passedTime;
 	private static boolean isRecording = false;
 	
+	//must be called before game starting
 	protected static void registerRecorder( RelativeLayout gameLayout, Context _context, String name, int stage){
 		Log.d("Recorder","finish registering");
 		if(posArray == null)
@@ -78,7 +79,7 @@ public class PenRecorder{
 	}
 	
 	
-	
+	//call from utility when down
 	protected static void startRecorder(){
 		timer = new Timer( );
 		RecordTimerTask recorderTask = new RecordTimerTask();
@@ -87,12 +88,12 @@ public class PenRecorder{
 		
 	}
 	
-	
+	//call from utility when up
 	protected static void stopRecoreder(){
 		timer.cancel();
 	}
 	
-	
+	//called after the game finished
 	protected static void outputJSON(){
 		 try {
 			 String jsonString = readJSONFile();        
@@ -166,7 +167,7 @@ public class PenRecorder{
 
 class RecordTimerTask extends TimerTask{	 
 	 public void run(){
-		 Log.d("Recorder","recording"+ PenRecorder.passedTime);
+		 //Log.d("Recorder","recording"+ PenRecorder.passedTime);
 		 PenRecorder.passedTime++;
 		 
 		 PenRecorder.posArray.add(new Point((int)PlayPalUtility.curEvent.getX(), (int)PlayPalUtility.curEvent.getY()));

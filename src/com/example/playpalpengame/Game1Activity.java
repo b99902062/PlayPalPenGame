@@ -410,7 +410,7 @@ public class Game1Activity extends Activity {
 					cucumberAnim.setAnimationListener(new AnimationListener() {
 						@Override
 						public void onAnimationEnd(Animation anim) {
-							//PlayPalUtility.resumeProgress();
+							PlayPalUtility.resumeProgress();
 							
 							PlayPalUtility.setLineGesture(true);
 							Point beginPnt = new Point(foodOffsetX + cucumberCutBeginPointArray[0].x, foodOffsetY + cucumberCutBeginPointArray[0].y);

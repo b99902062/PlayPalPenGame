@@ -128,6 +128,7 @@ public class Game4Activity extends Activity {
 	
 	protected ImageView doughView;
 	protected ImageView laddleView;
+	protected ImageView stickView;
 	
 	protected int boxSize;
 	protected int curProgress;
@@ -138,10 +139,10 @@ public class Game4Activity extends Activity {
 	protected Point centerPoint = new Point(1280,800);
 	
 	protected Point[] doughPosArray = {
-			new Point(1660,400),
-			new Point(1660,1200),
-			new Point(900,1200),
-			new Point(900,400)};
+			new Point(2080,400),
+			new Point(2080,1200),
+			new Point(480,1200),
+			new Point(480,400)};
 	
 	protected int[] doughViewArray = {
 		R.id.Game4_dough,
@@ -256,54 +257,68 @@ public class Game4Activity extends Activity {
 		curProgress = 0;
 		boxSize = 100;
 		
-		PlayPalUtility.registerLineGesture(game4RelativeLayout, this, new Callable<Integer>() {
-			public Integer call() {
-				return handleLineAction(doughView);
-			}
-		});
+		PlayPalUtility.registerLineGesture(game4RelativeLayout, this, 
+			new Callable<Integer>() {
+				public Integer call() {
+					return handleDoughAction(doughView);
+				}
+			},new Callable<Integer>(){
+				public Integer call(){
+					return doughSizeHandler();
+				 }
+			});
 
 		PlayPalUtility.setLineGesture(true);
-		PlayPalUtility.initialLineGestureParams(false, true, boxSize, centerPoint, doughPosArray[0]);
+		PlayPalUtility.initialLineGestureParams(false, true, boxSize, centerPoint, doughPosArray[0]);//not continuous but in-order
+		
 
 		PlayPalUtility.initDrawView(game4RelativeLayout, this);
 		PlayPalUtility.setStraightStroke(centerPoint,doughPosArray[0]);
 		
 		
+		
 		game4RelativeLayout.setOnHoverListener(new View.OnHoverListener() {
             @Override
             public boolean onHover(View v, MotionEvent event) {
+            	ImageView hoverItem;
+            	//TODO
+            	//if(curProgress < DOUGH_PROGRESS_END)
+            		hoverItem = laddleView;
+            	//else
+            	//	hoverItem = stickView;//others
+            	
+            	PlayPalUtility.setHoverTarget(true, hoverItem);
+            	
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_HOVER_ENTER:
-                    	laddleView.setVisibility(ImageView.VISIBLE);
+                    	hoverItem.setVisibility(ImageView.VISIBLE);
                         break;
                      
                     case MotionEvent.ACTION_HOVER_MOVE:
                     	RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
                     	params.setMargins((int)event.getX() - 200, (int)event.getY() - 200 , 0, 0);
-                    	laddleView.setLayoutParams(params);
+                    	hoverItem.setLayoutParams(params);
                         break;
 
                     case MotionEvent.ACTION_HOVER_EXIT:
-                    	laddleView.setVisibility(ImageView.INVISIBLE);
+                    	hoverItem.setVisibility(ImageView.INVISIBLE);
                         break;
                 }
                 return true;
             }
         });	
-		
+				
 		gameContext = this;
 		mSPenEventLibrary = new SPenEventLibrary();
 		
 		
 		PlayPalUtility.registerProgressBar((ProgressBar)findViewById(R.id.progressBarRed), (ImageView)findViewById(R.id.progressMark), (ImageView)findViewById(R.id.progressBar), new Callable<Integer>() {
 			public Integer call() {
-				
-				
 				PlayPalUtility.killTimeBar();
 				PlayPalUtility.setLineGesture(false);
 				PlayPalUtility.unregisterLineGesture(game4RelativeLayout);
 				PlayPalUtility.clearGestureSets();
-				
+				PlayPalUtility.clearDrawView();
 				
 				Intent newAct = new Intent();
 				newAct.setClass(Game4Activity.this, AnimationActivity.class);
@@ -342,6 +357,7 @@ public class Game4Activity extends Activity {
 			}
 		});
 	}
+	
 	
 	protected void initCookieView(){
 		Random ran = new Random();
@@ -418,20 +434,22 @@ public class Game4Activity extends Activity {
 			});			
 		}
 		
-		PlayPalUtility.registerLineGesture(game4RelativeLayout, this, new Callable<Integer>() {
-			public Integer call() {
-				return handleCookieAction(cookieArray[0].view);
-			}
-		});
+		PlayPalUtility.registerLineGesture(game4RelativeLayout, this, 
+			new Callable<Integer>(){
+				public Integer call() {
+					return handleCookieAction(cookieArray[0].view);
+				}
+			});
 	}
 	
-	protected Integer handleLineAction (View view){
+	protected Integer handleDoughAction (View view){
 		curProgress++;
 		progressCountText.setText("ProgressCount: " + new String("" + curProgress));
 		
 		if(curProgress < DOUGH_PROGRESS_END){
 			ImageView curDough = (ImageView)findViewById(doughViewArray[curProgress]);
 			curDough.setVisibility(ImageView.VISIBLE);
+			
 			PlayPalUtility.changeGestureParams(false, 0, 
 					centerPoint, 
 					doughPosArray[curProgress]);
@@ -448,6 +466,9 @@ public class Game4Activity extends Activity {
 			PlayPalUtility.clearDrawView();
 			PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
 			initCookieView();
+		}
+		else{
+			Log.d("Game4","error in handling dough");
 		}
 		
 		return 1;
@@ -564,7 +585,8 @@ public class Game4Activity extends Activity {
 			PlayPalUtility.killTimeBar();
 			PlayPalUtility.setLineGesture(false);
 			PlayPalUtility.unregisterLineGesture(game4RelativeLayout);
-			PlayPalUtility.clearGestureSets();			
+			PlayPalUtility.clearGestureSets();
+			PlayPalUtility.clearDrawView();
 			
 			Intent newAct = new Intent();
 			newAct.setClass(Game4Activity.this, AnimationActivity.class);
@@ -579,6 +601,58 @@ public class Game4Activity extends Activity {
 		}
 		return 1;
 	}
+	
+	protected Integer doughSizeHandler(){
+		if(curProgress >= DOUGH_PROGRESS_END)
+			return 0;
+		
+		ImageView curDough = (ImageView)findViewById(doughViewArray[curProgress+1]);
+		curDough.setVisibility(ImageView.VISIBLE);
+		MotionEvent event   = PlayPalUtility.curEvent;
+		
+		int dxy = 50;
+		int x,y,w,h;
+		switch(curProgress){
+			case 0:
+				x = centerPoint.x-dxy;
+				y = (int)event.getY(); 
+				break;
+				
+			case 1:
+				x = centerPoint.x-dxy;
+				y = centerPoint.y-dxy;
+				break;
+				
+			case 2:
+				x = (int)event.getX();
+				y = centerPoint.y-dxy;
+				break;
+			
+			case 3:
+				x = (int)event.getX();
+				y = (int)event.getY();
+				break;
+				
+			default:
+				x = centerPoint.x;
+				y = centerPoint.y;
+		
+		}
+		
+		
+		
+		w = curDough.getLayoutParams().width  = Math.abs(centerPoint.x-(int)event.getX())+dxy;
+		h = curDough.getLayoutParams().height = Math.abs(centerPoint.y-(int)event.getY())+dxy;
+	
+		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(w, h);
+    	params.setMargins(x, y , 0, 0);
+    	curDough.setLayoutParams(params);
+		curDough.setScaleType(ImageView.ScaleType.FIT_XY);
+		curDough.invalidate();
+		
+		return 1;
+	}
+	
 	
 	
 	@SuppressLint("FloatMath")

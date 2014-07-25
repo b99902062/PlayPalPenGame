@@ -235,6 +235,7 @@ public class PlayPalUtility {
 			
 			@Override
 			public boolean onHover(View arg0, MotionEvent event) {
+				curEvent = event;
 				if(!isLineGestureOn || !isPressing)
 					return false;
 				
@@ -343,8 +344,15 @@ public class PlayPalUtility {
 		
 	}
 	
+	/* func  : called after finish line gesture
+	 * func2 : always called when touched (default null)
+	 * */
 	
-	protected static void registerLineGesture(View view, Context context, final Callable<Integer> func) {
+	protected static void registerLineGesture(View view, Context context, final Callable<Integer> func){
+		registerLineGesture(view, context, func, null);
+	}
+	
+	protected static void registerLineGesture(View view, Context context, final Callable<Integer> func, final Callable<Integer> func2 ){
 		targetView = view;
 		targetContext = context;
 		
@@ -352,6 +360,15 @@ public class PlayPalUtility {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				curEvent = event;
+				
+				if(func2 != null){
+					try {
+						func2.call();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				
 				
 				if(!isLineGestureOn)
 					return false;
@@ -452,6 +469,8 @@ public class PlayPalUtility {
 		hoverTarget = view;
 	}
 	
+	
+	
 	protected static int initialLineGestureParams(boolean isContinuous, boolean isInOrder, int size, Point... points) {
 		for (Point p : points) 
 			Log.d("PlayPalUtility", String.format("Point = (%d, %d)", p.x, p.y));
@@ -487,7 +506,7 @@ public class PlayPalUtility {
 	}
 	
 	protected static void changeGestureParams(boolean basedOnPrev, int setIndex, Point... points) {
-		Log.d("PlayPalUtility", String.format("SetIndex: %d", setIndex));
+		//Log.d("PlayPalUtility", String.format("SetIndex: %d", setIndex));
 		for (Point p : points) 
 			Log.d("PlayPalUtility", String.format("Point = (%d, %d)", p.x, p.y));
 		
@@ -664,20 +683,15 @@ public class PlayPalUtility {
 		layout.addView(drawview);
 	}
 	
-	protected static void initialStroke(){
-		StrokeSet curSet = new StrokeSet();
-		strokeSetList.add(curSet);
-		curSet.isValid = true;
-	}
-	
 	protected static void setStraightStroke(Point... points){
-		initialStroke(); 
-		int idx = strokeSetList.size()-1; 
-		setStraightStroke(idx, points);
+		setStraightStroke(strokeSetList.size(), points);
 	}
 	
 	protected static void setStraightStroke(int setIndex, Point... points){
-		initialStroke();
+		//initial strokeset
+		StrokeSet curSet = new StrokeSet();
+		strokeSetList.add(curSet);
+		curSet.isValid = true;
 		
 		for(Point p:points){
 			strokeSetList.get(setIndex).pointList.add (p);			
