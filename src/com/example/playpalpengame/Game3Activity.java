@@ -275,7 +275,7 @@ public class Game3Activity extends Activity {
 		});
 
 		PlayPalUtility.setDebugMode(false);
-		PenRecorder.registerRecorder(game3RelativeLayout, this, userName, 3);
+		PenRecorder.registerRecorder(game3RelativeLayout, this, userName, "3-1");
 		PlayPalUtility.initDrawView(game3RelativeLayout, this);
 		setFoodListener(mixView);
 		
@@ -508,6 +508,9 @@ public class Game3Activity extends Activity {
 			PlayPalUtility.setLineGesture(false);
             PlayPalUtility.clearGestureSets();
 			PlayPalUtility.unregisterLineGesture(game3RelativeLayout);
+			
+			PenRecorder.outputJSON();
+			PenRecorder.registerRecorder(game3RelativeLayout, this, userName, "3-2");
 		}
 		else{
 			mixStirAnim.setVisible(true,true);
@@ -563,6 +566,10 @@ public class Game3Activity extends Activity {
 					return handleCutting(null);		
 				}
 			});
+			
+			PenRecorder.outputJSON();
+			PenRecorder.registerRecorder(game3RelativeLayout, this, userName, "3-3");
+			
 			PlayPalUtility.initialLineGestureParams(false, false, boxSize, new Point(1560,600) ,centralPoint,  new Point(1560,1160));
 			PlayPalUtility.setStraightStroke(new Point(1560,600) ,centralPoint,  new Point(1560,1160));
 			
@@ -572,10 +579,9 @@ public class Game3Activity extends Activity {
 	
 	protected Integer handleCutting(View view)
 	{
-		//finished game3
-		
+		//finishing game3
 		PenRecorder.outputJSON();
-		
+		PlayPalUtility.killTimeBar();
 		PlayPalUtility.setLineGesture(false);
 		PlayPalUtility.unregisterLineGesture(game3RelativeLayout);
 		PlayPalUtility.clearGestureSets();
