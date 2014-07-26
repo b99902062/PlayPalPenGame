@@ -31,6 +31,9 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -61,10 +64,9 @@ public class TherapyMainActivity extends Activity {
 			new SimpleEntry("2-1", new StageBackgroundInfo(R.drawable.game2_basket_1, 1568, 304, 0, 176)),
 			new SimpleEntry("2-2", new StageBackgroundInfo(R.drawable.game2_grill, 304, 304, 304, 176)),
 			new SimpleEntry("3-1", new StageBackgroundInfo(R.drawable.game3_mixbowl, 624, 304, 624, 176)),
-			new SimpleEntry("3-2", new StageBackgroundInfo(R.drawable.game3_oven1, 624, 304, 624, 176)),
+			new SimpleEntry("3-2", new StageBackgroundInfo(R.drawable.game3_cake1, 624, 304, 624, 176)),
 			new SimpleEntry("3-3", new StageBackgroundInfo(R.drawable.game3_cake1, 624, 304, 624, 176)),
 			new SimpleEntry("3-4", new StageBackgroundInfo(R.drawable.game3_cake1, 624, 304, 624, 176)),
-			new SimpleEntry("3-5", new StageBackgroundInfo(R.drawable.game3_cake1, 624, 304, 624, 176)),
 			new SimpleEntry("4-1", new StageBackgroundInfo(R.drawable.game4_plate, 304, 304, 304, 176)),
 			new SimpleEntry("4-2", new StageBackgroundInfo(R.drawable.game4_plate, 304, 304, 304, 176)),
 			new SimpleEntry("4-3", new StageBackgroundInfo(R.drawable.game4_plate, 304, 304, 304, 176))
@@ -97,6 +99,14 @@ public class TherapyMainActivity extends Activity {
 				newAct.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startActivityForResult(newAct, 0);
 				TherapyMainActivity.this.finish();
+			}
+		});
+		
+		CheckBox isLineUpCheckbox = (CheckBox) findViewById(R.id.isLineUpCheckbox);
+		isLineUpCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
+				TherapyMainActivity.canvasView.setLineUp(arg1);
 			}
 		});
 		
@@ -375,9 +385,25 @@ class AnalysisMessage {
 	}
 }
 
+class CustomPoint extends Point {
+	private boolean isHover;
+	public CustomPoint(int x, int y, boolean h) {
+		super(x, y);
+		isHover = h;
+	}
+	
+	public boolean isHover() {
+		return isHover;
+	}
+}
+
 class DrawCanvasView extends View {
+	private Paint p;
 	private ArrayList<Point> pointList = new ArrayList<Point>();
 	private int pointLimit = 0;
+	private boolean isLineUp = false;
+	private int preX = -1;
+	private int preY = -1;
 	
 	public DrawCanvasView(Context context) {
 		super(context);
@@ -399,6 +425,14 @@ class DrawCanvasView extends View {
     	Drawable background = getBackground();
     	background.setAlpha(80);
     	pointLimit = -1;
+    	
+    	p = new Paint();
+		p.setColor(Color.WHITE);
+		p.setAntiAlias(true);
+    }
+    
+    public void setLineUp(boolean value) {
+    	isLineUp = value;
     }
     
     public void updatePointList(ArrayList<Point> newPointList) {
@@ -426,17 +460,29 @@ class DrawCanvasView extends View {
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
 		
-		Paint p = new Paint();
-		p.setColor(Color.WHITE);
-
-		p.setAntiAlias(true);
-		
 		int pointCounter = 0;
+		
+		preX = -1;
+		preY = -1;
+		
 		for(Point pnt: pointList) {
 			if(pointLimit >= 0 && pointCounter >= pointLimit)
 				break;
 			pointCounter++;
-			canvas.drawCircle(pnt.x * 8/10, pnt.y * 8/10, 5, p);
+			/* if(pnt.isHover)
+			 * 	p.setColor(Color.WHITE);
+			 * else
+			 * 	p.setColor(Color.RED);
+			 * */
+			int newX = pnt.x * 8/10;
+			int newY = pnt.y * 8/10;
+			canvas.drawCircle(newX, newY, 5, p);
+			if(isLineUp) {
+				if(preX >= 0)
+					canvas.drawLine(preX, preY, newX, newY, p);
+				preX = newX;
+				preY = newY;
+			}
 		}
 	}
 }

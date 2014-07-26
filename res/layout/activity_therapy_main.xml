@@ -104,14 +104,29 @@
                 android:layout_marginTop="350dp"
                 android:max="100" />
 
+            <CheckBox
+                android:id="@+id/isLineUpCheckbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="550dp"
+                android:layout_marginTop="390dp"
+                android:text="Line Up" />
+            
             <Button
                 android:id="@+id/replayTrackBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignLeft="@+id/recordSpinner"
-                android:layout_below="@+id/replaySpeedBar"
-                android:layout_marginTop="17dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="550dp"
+                android:layout_marginTop="430dp"
                 android:text="Replay" />
+
+            
 
         </RelativeLayout>
 
