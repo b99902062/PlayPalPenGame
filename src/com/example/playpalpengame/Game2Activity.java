@@ -133,7 +133,7 @@ public class Game2Activity extends Activity {
 				return catchFish();
 			}
 		});
-		PenRecorder.registerRecorder(game2RelativeLayout, this, mUserName, 2);
+		PenRecorder.registerRecorder(game2RelativeLayout, this, mUserName, "2-1");
 		PlayPalUtility.setLineGesture(true);
 		PlayPalUtility.initDrawView(game2RelativeLayout, this);
 		
@@ -309,8 +309,10 @@ public class Game2Activity extends Activity {
 	
 	protected Integer prepareCutting() {
 		PlayPalUtility.initialProgressBar(testTotalTime, PlayPalUtility.TIME_MODE);
-		
 		PlayPalUtility.setLineGesture(true);
+		
+		PenRecorder.outputJSON();
+		PenRecorder.registerRecorder(game2RelativeLayout, this, mUserName, "2-2");
 		
 		return 0;
 	}

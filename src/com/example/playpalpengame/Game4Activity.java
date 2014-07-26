@@ -333,7 +333,7 @@ public class Game4Activity extends Activity {
 			}
 		});
 		PlayPalUtility.initialProgressBar(DOUGH_TIME, PlayPalUtility.TIME_MODE);
-		PenRecorder.registerRecorder(game4RelativeLayout, this, userName, 4);
+		PenRecorder.registerRecorder(game4RelativeLayout, this, userName, "4-1");
 	}	
 
 	protected void setHomeListener(View targetView) {
@@ -344,6 +344,7 @@ public class Game4Activity extends Activity {
 				PlayPalUtility.setLineGesture(false);
 				PlayPalUtility.unregisterLineGesture(game4RelativeLayout);
 				PlayPalUtility.clearGestureSets();
+				PlayPalUtility.clearDrawView();
 				
 				Intent newAct = new Intent();
 				Bundle bundle = new Bundle();
@@ -446,7 +447,21 @@ public class Game4Activity extends Activity {
 		curProgress++;
 		progressCountText.setText("ProgressCount: " + new String("" + curProgress));
 		
-		if(curProgress < DOUGH_PROGRESS_END){
+		if(curProgress == DOUGH_PROGRESS_END){
+			PenRecorder.outputJSON();
+			ImageView curDough = (ImageView)findViewById(doughViewArray[curProgress]);
+			curDough.setVisibility(ImageView.VISIBLE);
+
+			PlayPalUtility.clearGestureSets();
+			PlayPalUtility.clearDrawView();
+			PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
+			initCookieView();
+			
+			PenRecorder.outputJSON();
+			PenRecorder.registerRecorder(game4RelativeLayout, this, userName, "4-2");
+			
+		}
+		else if(curProgress < DOUGH_PROGRESS_END){
 			ImageView curDough = (ImageView)findViewById(doughViewArray[curProgress]);
 			curDough.setVisibility(ImageView.VISIBLE);
 			
@@ -457,20 +472,7 @@ public class Game4Activity extends Activity {
 			PlayPalUtility.clearDrawView();
 			PlayPalUtility.setStraightStroke(centerPoint,doughPosArray[curProgress]);
 		}
-		else if(curProgress == DOUGH_PROGRESS_END){
-			PenRecorder.outputJSON();
-			ImageView curDough = (ImageView)findViewById(doughViewArray[curProgress]);
-			curDough.setVisibility(ImageView.VISIBLE);
-
-			PlayPalUtility.clearGestureSets();
-			PlayPalUtility.clearDrawView();
-			PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
-			initCookieView();
-		}
-		else{
-			Log.d("Game4","error in handling dough");
-		}
-		
+ 		
 		return 1;
 	}
 	
@@ -567,6 +569,9 @@ public class Game4Activity extends Activity {
 	
 			PlayPalUtility.setLineGesture(true);
 			
+			PenRecorder.outputJSON();
+			PenRecorder.registerRecorder(game4RelativeLayout, this, userName, "4-3");
+			
 		}
 		
 		return 1;
@@ -587,6 +592,8 @@ public class Game4Activity extends Activity {
 			PlayPalUtility.unregisterLineGesture(game4RelativeLayout);
 			PlayPalUtility.clearGestureSets();
 			PlayPalUtility.clearDrawView();
+			PenRecorder.outputJSON();
+			PenRecorder.registerRecorder(game4RelativeLayout, this, userName, "4-4");
 			
 			Intent newAct = new Intent();
 			newAct.setClass(Game4Activity.this, AnimationActivity.class);

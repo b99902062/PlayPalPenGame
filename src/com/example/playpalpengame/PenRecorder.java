@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.RandomAccessFile;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -60,20 +61,17 @@ public class PenRecorder{
 	
 	
 	private static String playerName;
-	private static int stageNum;
+	private static String stageName;
 	protected static Context context;
 	protected static int passedTime;
 	private static boolean isRecording = false;
 	
 	//must be called before game starting
-	protected static void registerRecorder( RelativeLayout gameLayout, Context _context, String name, int stage){
-		Log.d("Recorder","finish registering");
-		if(posArray == null)
-			posArray = new ArrayList<Point>();
-		
+	protected static void registerRecorder( RelativeLayout gameLayout, Context _context, String name, String stage){
+		posArray = new ArrayList<Point>();
 		context    = _context;
 		playerName = name;
-		stageNum   = stage;
+		stageName   = stage;
 		passedTime = 0;
 		
 	}
@@ -84,8 +82,6 @@ public class PenRecorder{
 		timer = new Timer( );
 		RecordTimerTask recorderTask = new RecordTimerTask();
 		timer.schedule(recorderTask, 0, 50);
-		
-		
 	}
 	
 	//call from utility when up
@@ -95,81 +91,63 @@ public class PenRecorder{
 	
 	//called after the game finished
 	protected static void outputJSON(){
-		 try {
-			 String jsonString = readJSONFile();        
-			 JSONObject jsonResponse = new JSONObject(jsonString);
-			 JSONArray  jsonArray = jsonResponse.getJSONArray("record");
-			 
-			 Log.d("Recorder",jsonArray.toString());
-
-			
-			 JSONObject curRecord = new JSONObject();
-			 curRecord.put("name",playerName);
-			 curRecord.put("stage",stageNum);
-			 
-			 SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
-			 String date = df.format(Calendar.getInstance().getTime());
-			 curRecord.put("date",date);
-			 curRecord.put("time",passedTime);
-			 
-			 
-			 
-			 JSONArray pointJSONArray = new JSONArray();
-			 
-			 for(int i=0; i<posArray.size(); i++){
-				 JSONArray curPoint = new JSONArray();
-				 curPoint.put(posArray.get(i).x);
-				 curPoint.put(posArray.get(i).y);
+		Boolean isTheFirstRecord = false;
+		String jsonString = "";
+		String filePath = android.os.Environment.getExternalStorageDirectory()+ "/Android/data/com.example.playpalgame/analysis.json";
+		FileOutputStream fout = null;
+		RandomAccessFile analysisFile;
+		
+		
+		try {
+			File file = new File(filePath);
+			if(!file.exists()){
+				isTheFirstRecord = true;
+				file.createNewFile();
+				FileWriter fWriter = new FileWriter(file);
+				fWriter.write("{\"record\":[]}");
+	        	fWriter.flush();
+	        	fWriter.close();
+			}
+	
+			analysisFile = new RandomAccessFile(filePath, "rw");
+			analysisFile.seek(analysisFile.length()-2); 
 				 
-				 pointJSONArray.put(curPoint);
+			JSONObject curRecord = new JSONObject();
+			curRecord.put("name",playerName);
+			curRecord.put("stage",stageName);
+			 
+			SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
+			String date = df.format(Calendar.getInstance().getTime());
+			curRecord.put("date",date);
+			curRecord.put("time",passedTime);
+			 
+			JSONArray pointJSONArray = new JSONArray();
+			 
+			for(int i=0; i<posArray.size(); i++){
+				JSONArray curPoint = new JSONArray();
+				curPoint.put(posArray.get(i).x);
+				curPoint.put(posArray.get(i).y);
+				 
+				pointJSONArray.put(curPoint);
 			 }
 		 
-		
 			curRecord.put("point", pointJSONArray);
-			jsonArray.put(curRecord);			
+			String result = (isTheFirstRecord)? curRecord.toString()+"]}" : ","+curRecord.toString()+"]}";
 			
-			JSONObject newObj = new JSONObject();
-			newObj.put("record",jsonArray);
-			
-			FileOutputStream fout = new FileOutputStream(android.os.Environment.getExternalStorageDirectory()+ "/Android/data/com.example.playpalgame/analysis.json",false);
-			fout.write(newObj.toString().getBytes());
-			fout.flush();
-			fout.close();		
-			
-		} catch (JSONException e) {
-			e.printStackTrace();
+			analysisFile.write(result.getBytes());
+			analysisFile.close();	
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 	}
-	
-
-	
-	private static String readJSONFile(){
-		StringBuilder sb = new StringBuilder();
-		FileInputStream fin = null;
-        try {           
-        	fin = new FileInputStream(android.os.Environment.getExternalStorageDirectory()+ "/Android/data/com.example.playpalgame/analysis.json");
-            byte[] data = new byte[fin.available()];
-            while (fin.read(data) != -1) {
-              sb.append(new String(data));
-            }
-            fin.close();
-        } catch (FileNotFoundException e) {
-        	e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return sb.toString();
-    }
-	
 }
 
 class RecordTimerTask extends TimerTask{	 
 	 public void run(){
 		 //Log.d("Recorder","recording"+ PenRecorder.passedTime);
 		 PenRecorder.passedTime++;
-		 
 		 PenRecorder.posArray.add(new Point((int)PlayPalUtility.curEvent.getX(), (int)PlayPalUtility.curEvent.getY()));
 	 }
  }

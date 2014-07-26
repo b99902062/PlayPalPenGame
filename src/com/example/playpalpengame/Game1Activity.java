@@ -148,7 +148,7 @@ public class Game1Activity extends Activity {
 
 		PlayPalUtility.initDrawView(game1RelativeLayout, this);
 		DrawGestureLine();
-		PenRecorder.registerRecorder(game1RelativeLayout, this, mUserName, 1);
+		PenRecorder.registerRecorder(game1RelativeLayout, this, mUserName, "1-1");
 	}
 	
 	@Override
@@ -254,6 +254,9 @@ public class Game1Activity extends Activity {
 					
 					ImageView helicalView = (ImageView)findViewById(R.id.helicalView);
 					helicalView.setVisibility(ImageView.VISIBLE);
+					
+					PenRecorder.outputJSON();
+					PenRecorder.registerRecorder(game1RelativeLayout, Game1Activity.this, mUserName, "1-3");
 					
 					isDoneDropFood = true;
 				}
@@ -457,6 +460,9 @@ public class Game1Activity extends Activity {
 			PlayPalUtility.setLineGesture(false);
 			PlayPalUtility.clearGestureSets();
 			PlayPalUtility.unregisterLineGesture(game1RelativeLayout);
+			
+			PenRecorder.outputJSON();
+			PenRecorder.registerRecorder(game1RelativeLayout, Game1Activity.this, mUserName, "1-2");
 
 			cucumberView.setAnimation(cucumberAnim);
 			cucumberAnim.setAnimationListener(new AnimationListener() {
