@@ -332,6 +332,7 @@ public class Game1Activity extends Activity {
 			PlayPalUtility.setLineGesture(false);
 			PlayPalUtility.unregisterLineGesture(game1RelativeLayout);
 			PlayPalUtility.clearGestureSets();
+			PenRecorder.outputJSON();
 			
 			Intent newAct = new Intent();
 			newAct.setClass(Game1Activity.this, AnimationActivity.class);
@@ -395,6 +396,9 @@ public class Game1Activity extends Activity {
 			PlayPalUtility.clearDrawView();
 			PlayPalUtility.pauseProgress();
 			
+			PenRecorder.outputJSON();
+			PenRecorder.registerRecorder(game1RelativeLayout, Game1Activity.this, mUserName, "1-2");
+			
 			PlayPalUtility.setLineGesture(false);
 			PlayPalUtility.clearGestureSets();
 			Animation carrotAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTRIGHT);
@@ -448,7 +452,6 @@ public class Game1Activity extends Activity {
 			isFoodCanTouch = false;
 			PlayPalUtility.clearDrawView();
 			PlayPalUtility.killTimeBar();
-			PenRecorder.outputJSON();
 
 			Animation cucumberAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTRIGHT);
 			Animation boardAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTRIGHT);
@@ -460,9 +463,6 @@ public class Game1Activity extends Activity {
 			PlayPalUtility.setLineGesture(false);
 			PlayPalUtility.clearGestureSets();
 			PlayPalUtility.unregisterLineGesture(game1RelativeLayout);
-			
-			PenRecorder.outputJSON();
-			PenRecorder.registerRecorder(game1RelativeLayout, Game1Activity.this, mUserName, "1-2");
 
 			cucumberView.setAnimation(cucumberAnim);
 			cucumberAnim.setAnimationListener(new AnimationListener() {
