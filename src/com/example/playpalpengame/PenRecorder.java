@@ -104,13 +104,14 @@ public class PenRecorder{
 				isTheFirstRecord = true;
 				file.createNewFile();
 				FileWriter fWriter = new FileWriter(file);
-				fWriter.write("{\"record\":[]}");
+				//fWriter.write("{\"record\":[]}");
+				fWriter.write("[]");
 	        	fWriter.flush();
 	        	fWriter.close();
 			}
 	
 			analysisFile = new RandomAccessFile(filePath, "rw");
-			analysisFile.seek(analysisFile.length()-2); 
+			analysisFile.seek(analysisFile.length()-1); 
 				 
 			JSONObject curRecord = new JSONObject();
 			curRecord.put("name",playerName);
@@ -132,7 +133,7 @@ public class PenRecorder{
 			 }
 		 
 			curRecord.put("point", pointJSONArray);
-			String result = (isTheFirstRecord)? curRecord.toString()+"]}" : ","+curRecord.toString()+"]}";
+			String result = (isTheFirstRecord)? curRecord.toString()+"]" : ","+curRecord.toString()+"]";
 			
 			analysisFile.write(result.getBytes());
 			analysisFile.close();	
@@ -141,6 +142,7 @@ public class PenRecorder{
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
+		
 	}
 }
 
