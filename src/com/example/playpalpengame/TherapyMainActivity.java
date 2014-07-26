@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -31,7 +32,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
+import android.widget.RelativeLayout.LayoutParams;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -49,6 +52,23 @@ public class TherapyMainActivity extends Activity {
 	private ArrayList<AnalysisMessage> targetPlayerList;
 	private ArrayList<AnalysisMessage> targetStageList;
 	private AnalysisMessage targetRecord;
+	private SimpleEntry[] srcBackgroundList = {new SimpleEntry("1-1", new StageBackgroundInfo(R.drawable.game1_carrot_1, 304, 304, 304, 0)),
+			new SimpleEntry("1-2", new StageBackgroundInfo(R.drawable.game1_cucumber_1, 304, 304, 304, 0)),
+			new SimpleEntry("1-3", new StageBackgroundInfo(R.drawable.game1_pot_1, 624, 304, 624, 0)),
+			new SimpleEntry("1-4", new StageBackgroundInfo(R.drawable.game1_pot_1, 624, 304, 624, 0)),
+			new SimpleEntry("2-1", new StageBackgroundInfo(R.drawable.game2_basket_1, 1568, 304, 0, 0)),
+			new SimpleEntry("2-2", new StageBackgroundInfo(R.drawable.game2_grill, 304, 304, 304, 0)),
+			new SimpleEntry("3-1", new StageBackgroundInfo(R.drawable.game3_mixbowl, 624, 304, 624, 0)),
+			new SimpleEntry("3-2", new StageBackgroundInfo(R.drawable.game3_oven1, 624, 304, 624, 0)),
+			new SimpleEntry("3-3", new StageBackgroundInfo(R.drawable.game3_cake1, 624, 304, 624, 0)),
+			new SimpleEntry("3-4", new StageBackgroundInfo(R.drawable.game3_cake1, 624, 304, 624, 0)),
+			new SimpleEntry("3-5", new StageBackgroundInfo(R.drawable.game3_cake1, 624, 304, 624, 0)),
+			new SimpleEntry("4-1", new StageBackgroundInfo(R.drawable.game4_plate, 304, 304, 304, 0)),
+			new SimpleEntry("4-2", new StageBackgroundInfo(R.drawable.game4_plate, 304, 304, 304, 0)),
+			new SimpleEntry("4-3", new StageBackgroundInfo(R.drawable.game4_plate, 304, 304, 304, 0))
+	};
+	
+	private ImageView srcBackgroundView = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +80,7 @@ public class TherapyMainActivity extends Activity {
 		setContentView(R.layout.activity_therapy_main);
 
 		canvasView = ((DrawCanvasView)findViewById(R.id.canvasView));
+		srcBackgroundView = (ImageView)findViewById(R.id.srcBackgroundView);
 		
 		ImageView backBtn = (ImageView) findViewById(R.id.backBtn);
 		backBtn.setOnClickListener(new OnClickListener() {
@@ -73,18 +94,24 @@ public class TherapyMainActivity extends Activity {
 			}
 		});
 
-		if(loadRecord()) {
+		resultList = loadRecord();
+		if(resultList != null) {
 			playerSpinner = (Spinner) findViewById(R.id.playerSpinner);
 			stageSpinner = (Spinner) findViewById(R.id.stageSpinner);
 			recordSpinner = (Spinner) findViewById(R.id.recordSpinner);
 	
+			if(resultList == null)
+				Log.d("EndTest", "resultList is null");
+			else
+				Log.d("EndTest", "resultList is not null");
+			
 			initialSpinner();
 			
 			Button replayTrackBtn = (Button)findViewById(R.id.replayTrackBtn);
 			replayTrackBtn.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					((DrawCanvasView)findViewById(R.id.canvasView)).resetLimit();
+					((DrawCanvasView)findViewById(R.id.canvasView)).setLimit(0);
 					setReplayTimer();
 				}
 			});
@@ -132,16 +159,16 @@ public class TherapyMainActivity extends Activity {
         }
     };
 
-	private boolean loadRecord() {
+	public static ArrayList<AnalysisMessage> loadRecord() {
 		try {
 			FileInputStream input = new FileInputStream(
 					"/sdcard/Android/data/com.example.playpalgame/analysis.json");
 
 			JsonReader reader = new JsonReader(new InputStreamReader(input,
 					"UTF-8"));
-			resultList = readMessagesArray(reader);
+			ArrayList<AnalysisMessage> returnList = readMessagesArray(reader);
 			reader.close();
-			return true;
+			return returnList;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (UnsupportedEncodingException e) {
@@ -149,12 +176,12 @@ public class TherapyMainActivity extends Activity {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return false;
+		return null;
 	}
 	
 	public void initialSpinner() {
 		String[] nameStrArr = getAllNames(resultList);
-		connectSource(playerSpinner, nameStrArr);
+		connectSource(this, playerSpinner, nameStrArr);
 
 		playerSpinner
 				.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
@@ -163,7 +190,7 @@ public class TherapyMainActivity extends Activity {
 							View view, int position, long id) {
 						targetPlayerList = getTargetPlayerList(adapterView.getSelectedItem().toString(), resultList);
 						String[] stageStrArr = getAllStages(targetPlayerList);
-						connectSource(stageSpinner, stageStrArr);
+						connectSource(TherapyMainActivity.this, stageSpinner, stageStrArr);
 					}
 					
 					@Override
@@ -178,7 +205,9 @@ public class TherapyMainActivity extends Activity {
 							View view, int position, long id) {
 						targetStageList = getTargetStageList(adapterView.getSelectedItem().toString(), targetPlayerList);
 						String[] recordStrArr = getAllRecords(targetStageList);
-						connectSource(recordSpinner, recordStrArr);
+						connectSource(TherapyMainActivity.this, recordSpinner, recordStrArr);
+						
+						setSrcBackground(adapterView.getSelectedItem().toString());
 					}
 					
 					@Override
@@ -191,6 +220,10 @@ public class TherapyMainActivity extends Activity {
 					@Override
 					public void onItemSelected(AdapterView adapterView,
 							View view, int position, long id) {
+						if(replayTimer != null)
+							replayTimer.cancel();
+						canvasView.setLimit(-1);
+						
 						targetRecord = getTargetRecord(adapterView.getSelectedItem().toString(), targetStageList);
 						if(targetRecord == null)
 							Toast.makeText(TherapyMainActivity.this, R.string.str_target_record_not_exist, Toast.LENGTH_SHORT).show();
@@ -204,15 +237,28 @@ public class TherapyMainActivity extends Activity {
 				});
 	}
 	
-	public void connectSource(Spinner spinner, String[] srcStrArr) {
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+	public void setSrcBackground(String curStage) {
+		for(SimpleEntry pair : srcBackgroundList) {
+			if(pair.getKey().equals(curStage)) {
+				StageBackgroundInfo info = (StageBackgroundInfo) pair.getValue();
+				srcBackgroundView.setImageResource(info.drawableId);
+				RelativeLayout.LayoutParams params = (LayoutParams) srcBackgroundView.getLayoutParams();
+				params.setMargins(info.marginLeft, info.marginTop, info.marginRight, info.marginBottom);
+				srcBackgroundView.setLayoutParams(params);
+				break;
+			}
+		}
+	}
+	
+	public static void connectSource(Context context, Spinner spinner, String[] srcStrArr) {
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(context,
 				android.R.layout.simple_spinner_dropdown_item, srcStrArr);
 		adapter
 				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner.setAdapter(adapter);
 	}
 
-	public String[] getAllNames(ArrayList<AnalysisMessage> targetList) {
+	public static  String[] getAllNames(ArrayList<AnalysisMessage> targetList) {
 		ArrayList<String> nameList = new ArrayList<String>();
 
 		for (AnalysisMessage msg : targetList) {
@@ -222,7 +268,7 @@ public class TherapyMainActivity extends Activity {
 		return (String[]) nameList.toArray(new String[nameList.size()]);
 	}
 	
-	public String[] getAllStages(ArrayList<AnalysisMessage> targetList) {
+	public static String[] getAllStages(ArrayList<AnalysisMessage> targetList) {
 		ArrayList<String> stageList = new ArrayList<String>();
 
 		for (AnalysisMessage msg : targetList) {
@@ -232,7 +278,7 @@ public class TherapyMainActivity extends Activity {
 		return (String[]) stageList.toArray(new String[stageList.size()]);
 	}
 
-	public String[] getAllRecords(ArrayList<AnalysisMessage> targetList) {
+	public static String[] getAllRecords(ArrayList<AnalysisMessage> targetList) {
 		ArrayList<String> recordList = new ArrayList<String>();
 
 		for (AnalysisMessage msg : targetList) {
@@ -251,7 +297,7 @@ public class TherapyMainActivity extends Activity {
 		return returnList;
 	}
 	
-	public ArrayList<AnalysisMessage> getTargetStageList(String targetName, ArrayList<AnalysisMessage> targetList) {
+	public static ArrayList<AnalysisMessage> getTargetStageList(String targetName, ArrayList<AnalysisMessage> targetList) {
 		ArrayList<AnalysisMessage> returnList = new ArrayList<AnalysisMessage>();
 		for(AnalysisMessage msg : targetList) {
 			if(msg.stage.equals(targetName))
@@ -260,7 +306,7 @@ public class TherapyMainActivity extends Activity {
 		return returnList;
 	}
 	
-	public AnalysisMessage getTargetRecord(String targetName, ArrayList<AnalysisMessage> targetList) {
+	public static AnalysisMessage getTargetRecord(String targetName, ArrayList<AnalysisMessage> targetList) {
 		for(AnalysisMessage msg : targetList) {
 			if(msg.date.equals(targetName))
 				return msg;
@@ -268,7 +314,7 @@ public class TherapyMainActivity extends Activity {
 		return null;
 	}
 
-	public ArrayList<AnalysisMessage> readMessagesArray(JsonReader reader)
+	public static ArrayList<AnalysisMessage> readMessagesArray(JsonReader reader)
 			throws IOException {
 		ArrayList<AnalysisMessage> messages = new ArrayList<AnalysisMessage>();
 
@@ -289,7 +335,7 @@ public class TherapyMainActivity extends Activity {
 		return messages;
 	}
 
-	public AnalysisMessage readMessage(JsonReader reader) throws IOException {
+	public static AnalysisMessage readMessage(JsonReader reader) throws IOException {
 		AnalysisMessage msg = new AnalysisMessage();
 
 		reader.beginObject();
@@ -374,8 +420,8 @@ class DrawCanvasView extends View {
     	pointLimit++;
     }
     
-    public void resetLimit() {
-    	pointLimit = 0;
+    public void setLimit(int value) {
+    	pointLimit = value;
     }
     
     public int getLimit() {
@@ -422,4 +468,20 @@ class ReplayTimerTask extends TimerTask {
     public void resume() {
     	isPause = false;
     }
+};
+
+class StageBackgroundInfo {
+	public int drawableId;
+	public int marginLeft;
+	public int marginTop;
+	public int marginRight;
+	public int marginBottom;
+	
+	public StageBackgroundInfo(int d, int m1, int m2, int m3, int m4) {
+		drawableId = d;
+		marginLeft = m1;
+		marginTop = m2;
+		marginRight = m3;
+		marginBottom = m4;
+	}
 };

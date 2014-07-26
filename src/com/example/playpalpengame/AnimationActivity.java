@@ -53,9 +53,25 @@ public class AnimationActivity extends Activity {
 			public boolean onTouch(View v, MotionEvent event) {
 				if(anim != null)
 					anim.stop();
+				Intent newAct = new Intent();
+				if(gameIndex == 1)
+					newAct.setClass(AnimationActivity.this, Game1Activity.class);
+				else if(gameIndex == 2)
+					newAct.setClass(AnimationActivity.this, Game2Activity.class);
+				else if(gameIndex == 3)
+					newAct.setClass(AnimationActivity.this, Game3Activity.class);
+				else if(gameIndex == 4)
+					newAct.setClass(AnimationActivity.this, Game4Activity.class);
+				Bundle bundle = new Bundle();
+				bundle.putString("userName", mUserName);
+	            newAct.putExtras(bundle);
+				startActivityForResult(newAct, 0);
+				AnimationActivity.this.finish();
+				return true;
+				/*
 				anim = AnimationsContainer.getInstance().createGameAnim(monsterView, gameIndex, isWin);
 				anim.start();
-				return true;
+				*/
 			}
 		});
 		

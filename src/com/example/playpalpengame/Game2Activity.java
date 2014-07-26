@@ -51,6 +51,8 @@ public class Game2Activity extends Activity {
 	private final Point[] cutBeginOffset = {new Point(124, 263), new Point(301, 262), new Point(134, 459), new Point(278, 457)};
 	private final Point[] cutEndOffset = {new Point(308, 438), new Point(123, 446), new Point(284, 600), new Point(134, 607)};
 
+	public static boolean isReady;
+	
 	private String mUserName = null;
 	private int curFishIndex;
 	protected boolean canPutInBasket = false;
@@ -65,7 +67,7 @@ public class Game2Activity extends Activity {
 	protected TextView testProgressCountText;
 	
 	protected int progressCount;
-	protected static LinkedList<FishHandlerThread> fishThreadList = new LinkedList<FishHandlerThread>();
+	protected static LinkedList<FishHandlerThread> fishThreadList;
 	
 	private int[] fishCutIdArray = {R.id.fishCut11, R.id.fishCut12, R.id.fishCut13, R.id.fishCut14, 
 			R.id.fishCut21, R.id.fishCut22, R.id.fishCut23, R.id.fishCut24,
@@ -83,8 +85,12 @@ public class Game2Activity extends Activity {
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
+		isReady = false;
+		
 		setContentView(R.layout.activity_game2);
 		PlayPalUtility.setDebugMode(false);
+		
+		fishThreadList = new LinkedList<FishHandlerThread>();
 
 		Bundle bundle = getIntent().getExtras();
 		mUserName = bundle.getString("userName");
@@ -182,6 +188,7 @@ public class Game2Activity extends Activity {
         });
 		
 		createFish();
+		isReady = true;
 	}
 	
 	@Override
@@ -194,8 +201,12 @@ public class Game2Activity extends Activity {
 		        	fishThreadList.get(i).interrupt();
 	    	}
 	    }
+	    fishThreadList.clear();
 	    PlayPalUtility.killTimeBar();
 	    PlayPalUtility.clearDrawView();
+	    PlayPalUtility.clearGestureSets();
+	    
+	    isReady = false;
 	}
 	
 	protected void setHomeListener(View targetView) {
@@ -374,8 +385,10 @@ public class Game2Activity extends Activity {
 	
 	private static Handler fishLocationHandler = new Handler() {
         public void handleMessage(Message msg) {
-        	Log.d("PlayPalTest", "Get msg");
-        	
+        	if(!Game2Activity.isReady)
+        		return;
+        	if(msg.getData().getInt("index") >= fishThreadList.size())
+        		return;
         	if(msg.getData().getInt("fishType") == 1)
             	fishThreadList.get(msg.getData().getInt("index")).fishView.setImageResource(R.drawable.game2_fish_2);
     		else
