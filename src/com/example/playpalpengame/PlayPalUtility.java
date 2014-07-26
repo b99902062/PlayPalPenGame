@@ -77,7 +77,7 @@ public class PlayPalUtility {
 	
 	protected static boolean butterSqueezing = false;
 	protected static SPenEventLibrary mSPenEventLibrary = new SPenEventLibrary();
-	protected static MotionEvent curEvent;
+	public static MotionEvent curEvent;
 	
 	
 	protected static float calcDistance(Point p1, Point p2){
@@ -368,7 +368,6 @@ public class PlayPalUtility {
 						e.printStackTrace();
 					}
 				}
-				
 				
 				if(!isLineGestureOn)
 					return false;

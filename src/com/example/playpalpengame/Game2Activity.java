@@ -160,6 +160,7 @@ public class Game2Activity extends Activity {
                     			testProgressCountText.setText(String.format("ProgressCount: %d", progressCount));
                     			if(progressCount == step1TotalProgressCount) {
                     				PlayPalUtility.killTimeBar();
+                    				PenRecorder.outputJSON();
                     				
                     				PlayPalUtility.clearGestureSets();
                     				PlayPalUtility.setLineGesture(false);
@@ -310,8 +311,6 @@ public class Game2Activity extends Activity {
 	protected Integer prepareCutting() {
 		PlayPalUtility.initialProgressBar(testTotalTime, PlayPalUtility.TIME_MODE);
 		PlayPalUtility.setLineGesture(true);
-		
-		PenRecorder.outputJSON();
 		PenRecorder.registerRecorder(game2RelativeLayout, this, mUserName, "2-2");
 		
 		return 0;

@@ -13,18 +13,17 @@ import java.util.TimerTask;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
 import android.util.JsonReader;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -33,26 +32,28 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.SeekBar;
 import android.widget.RelativeLayout.LayoutParams;
+import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 public class TherapyMainActivity extends Activity {
-	private static final int REPLAY_SPEED = 10;
+	private static final int REPLAY_SPEED = 1;
 	
 	private Timer replayTimer;
 	private static ReplayTimerTask replayTimerTask;
 	public static DrawCanvasView canvasView;
-	private Spinner playerSpinner = null;
-	private Spinner stageSpinner = null;
-	private Spinner recordSpinner = null;
-	private ArrayList<AnalysisMessage> resultList;
-	private ArrayList<AnalysisMessage> targetPlayerList;
-	private ArrayList<AnalysisMessage> targetStageList;
-	private AnalysisMessage targetRecord;
+	public static Spinner playerSpinner = null;
+	public static Spinner stageSpinner = null;
+	public static Spinner recordSpinner = null;
+	public static ProgressBar loadingBar = null;
+	public static ArrayList<AnalysisMessage> resultList;
+	public static ArrayList<AnalysisMessage> targetPlayerList;
+	public static ArrayList<AnalysisMessage> targetStageList;
+	public static AnalysisMessage targetRecord;
 	private SimpleEntry[] srcBackgroundList = {new SimpleEntry("1-1", new StageBackgroundInfo(R.drawable.game1_carrot_1, 304, 304, 304, 0)),
 			new SimpleEntry("1-2", new StageBackgroundInfo(R.drawable.game1_cucumber_1, 304, 304, 304, 0)),
 			new SimpleEntry("1-3", new StageBackgroundInfo(R.drawable.game1_pot_1, 624, 304, 624, 0)),
@@ -82,6 +83,10 @@ public class TherapyMainActivity extends Activity {
 
 		canvasView = ((DrawCanvasView)findViewById(R.id.canvasView));
 		srcBackgroundView = (ImageView)findViewById(R.id.srcBackgroundView);
+		playerSpinner = (Spinner) findViewById(R.id.playerSpinner);
+		stageSpinner = (Spinner) findViewById(R.id.stageSpinner);
+		recordSpinner = (Spinner) findViewById(R.id.recordSpinner);
+		loadingBar = (ProgressBar) findViewById(R.id.loadingBar);
 		
 		ImageView backBtn = (ImageView) findViewById(R.id.backBtn);
 		backBtn.setOnClickListener(new OnClickListener() {
@@ -94,18 +99,12 @@ public class TherapyMainActivity extends Activity {
 				TherapyMainActivity.this.finish();
 			}
 		});
-
-		resultList = loadRecord();
+		
+		new RecordLoader().execute();
+		
+		while(resultList == null);
+		
 		if(resultList != null) {
-			playerSpinner = (Spinner) findViewById(R.id.playerSpinner);
-			stageSpinner = (Spinner) findViewById(R.id.stageSpinner);
-			recordSpinner = (Spinner) findViewById(R.id.recordSpinner);
-	
-			if(resultList == null)
-				Log.d("EndTest", "resultList is null");
-			else
-				Log.d("EndTest", "resultList is not null");
-			
 			initialSpinner();
 			
 			Button replayTrackBtn = (Button)findViewById(R.id.replayTrackBtn);
@@ -140,7 +139,7 @@ public class TherapyMainActivity extends Activity {
 	
 	public void setReplayTimer() {
 		float percentage = ((SeekBar)findViewById(R.id.replaySpeedBar)).getProgress() / 100.f;
-		int targetSpeed = REPLAY_SPEED + (int) (REPLAY_SPEED * 29 * (1 - percentage));
+		int targetSpeed = REPLAY_SPEED + (int) (REPLAY_SPEED * 299 * (1 - percentage));
 		if(replayTimer != null)
 			replayTimer.cancel();
 		if(replayTimerTask != null)
@@ -474,5 +473,19 @@ class StageBackgroundInfo {
 		marginTop = m2;
 		marginRight = m3;
 		marginBottom = m4;
+	}
+};
+
+
+class RecordLoader extends AsyncTask<Void, Integer, Boolean> {
+	@Override
+	protected Boolean doInBackground(Void... arg0) {
+		TherapyMainActivity.resultList = TherapyMainActivity.loadRecord();
+		return true;
+	}
+	
+	@Override  
+    protected void onPostExecute(Boolean result) {
+		TherapyMainActivity.loadingBar.setVisibility(ProgressBar.GONE);
 	}
 };
