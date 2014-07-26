@@ -24,10 +24,10 @@ public class MainActivity extends Activity {
 								{R.id.mainBadges3_1, R.id.mainBadges3_2, R.id.mainBadges3_3, R.id.mainBadges3_4, R.id.mainBadges3_5, R.id.mainBadges3_6},
 								{R.id.mainBadges4_1, R.id.mainBadges4_2, R.id.mainBadges4_3, R.id.mainBadges4_4, R.id.mainBadges4_5, R.id.mainBadges4_6}};
 	
-	private int[] badges = new int[4];
-	private int[] highScores = new int[4];
+	private static int[] badges = new int[4];
+	private static int[] highScores = new int[4];
 	
-	private String mUserName = null;
+	private static String mUserName = null;
 	
 	@Override
 	public void onBackPressed() {
@@ -45,8 +45,9 @@ public class MainActivity extends Activity {
 		mUserName = bundle.getString("userName");
 		
 		java.util.Arrays.fill(badges, 0);
-		loadRecord();
-		UpdateBadges();
+		ArrayList<RecordMessage>resultList = loadRecord();
+		if(resultList != null)
+			UpdateBadges();
 		
 		View playBtn1 = findViewById(R.id.mainPlayBtn1);
 		setStallListener(playBtn1, 1);	
@@ -75,17 +76,16 @@ public class MainActivity extends Activity {
 		});		
 	}
 	
-	private void loadRecord() {
+	public static ArrayList<RecordMessage> loadRecord() {
 		try {
 			FileInputStream input = new FileInputStream("/sdcard/Android/data/com.example.playpalgame/record.json");
 			
 			JsonReader reader = new JsonReader(new InputStreamReader(input, "UTF-8"));
-		    List<RecordMessage> resultList = readMessagesArray(reader);
+		    ArrayList<RecordMessage> returnList = readMessagesArray(reader);
 			reader.close();
 			
-			for(RecordMessage msg : resultList) {
+			for(RecordMessage msg : returnList) {
 				Log.d("jsonTest", String.format("Name: %s", msg.userName));
-				Log.d("jsonTest", String.format("Password: %s", msg.password));
 				for(int i=0; i<4; i++) {
 					Log.d("jsonTest", String.format("GameBadge_%d: %d", i+1, msg.badges[i]));
 					Log.d("jsonTest", String.format("GameHS_%d: %d", i+1, msg.highScores[i]));
@@ -96,9 +96,7 @@ public class MainActivity extends Activity {
 					highScores = msg.highScores;
 				}
 			}
-			
-			
-			
+			return returnList;
 			//FileOutputStream output = new FileOutputStream("/sdcard/Android/data/com.example.playpalgame/record.json");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -107,6 +105,7 @@ public class MainActivity extends Activity {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		return null;
 	}
 	
 	private void UpdateBadges() {
@@ -122,20 +121,18 @@ public class MainActivity extends Activity {
 		}
 	}
 	
-	public List<RecordMessage> readMessagesArray(JsonReader reader) throws IOException {
-	     List<RecordMessage> messages = new ArrayList<RecordMessage>();
+	public static ArrayList<RecordMessage> readMessagesArray(JsonReader reader) throws IOException {
+	     ArrayList<RecordMessage> messages = new ArrayList<RecordMessage>();
 
 	     reader.beginArray();
-	     while (reader.hasNext()) {
+	     while (reader.hasNext()) 
 	       messages.add(readMessage(reader));
-	     }
 	     reader.endArray();
 	     return messages;
 	   }
 
-	public RecordMessage readMessage(JsonReader reader) throws IOException {
+	public static RecordMessage readMessage(JsonReader reader) throws IOException {
 		String userName = null;
-		String password = null;
 		int[] badges = new int[4];
 		int[] highScores = new int[4];
 		
@@ -144,8 +141,6 @@ public class MainActivity extends Activity {
 	       String name = reader.nextName();
 	       if (name.equals("name")) 
 	    	   userName = reader.nextString();
-	       else if (name.equals("password")) 
-	           password = reader.nextString();
 	       else if (name.contains("gameBadge")) {
 	    	   for(int i=1; i<=4; i++) {
 	    		   if(name.contains(Integer.toString(i)))
@@ -163,19 +158,27 @@ public class MainActivity extends Activity {
 	       }
 	     }
 	     reader.endObject();
-	     return new RecordMessage(userName, password, badges, highScores);
+	     return new RecordMessage(userName, badges, highScores);
 	 }
+	
+	public static String[] getAllNames(ArrayList<RecordMessage> targetList) {
+		ArrayList<String> nameList = new ArrayList<String>();
+
+		for (RecordMessage msg : targetList) {
+			if (!nameList.contains(msg.userName))
+				nameList.add(msg.userName);
+		}
+		return (String[]) nameList.toArray(new String[nameList.size()]);
+	}
 }
 
 class RecordMessage {
 	public String userName;
-	public String password;
 	public int[] badges = new int[4];
 	public int[] highScores = new int[4];
 	
-	public RecordMessage(String userName, String password, int[] badges, int[] highScores) {
+	public RecordMessage(String userName, int[] badges, int[] highScores) {
 		this.userName = userName;
-		this.password = password;
 		for(int i=0; i<4; i++) {
 			this.badges[i] = badges[i];
 			this.highScores[i] = highScores[i];

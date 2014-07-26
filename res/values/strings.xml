@@ -6,5 +6,7 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="str_cannot_find_analysis_file">Sorry, the analysis file seems not exist</string>
     <string name="str_target_record_not_exist">Sorry, the target record seems not exist</string>
+    <string name="str_analysis_json_location">/sdcard/Android/data/com.example.playpalgame/analysis.json</string>
+    <string name="str_record_json_location">/sdcard/Android/data/com.example.playpalgame/record.json</string>
 
 </resources>

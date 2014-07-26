@@ -1,11 +1,22 @@
 package com.example.playpalpengame;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.Editable;
 import android.util.Log;
@@ -19,6 +30,8 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 
 public class BeginActivity extends Activity {
+	private static boolean isTheFirstRecord = false;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -27,6 +40,8 @@ public class BeginActivity extends Activity {
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.activity_begin);
 
+		isTheFirstRecord = false;
+		
 		ImageView therapyIcon = (ImageView)findViewById(R.id.therapyIcon);
 		therapyIcon.setOnClickListener(new OnClickListener() {
 			@Override
@@ -99,10 +114,12 @@ public class BeginActivity extends Activity {
 			}
 		});
 		
-		ArrayList<AnalysisMessage> resultList = new ArrayList<AnalysisMessage>();
-		resultList = TherapyMainActivity.loadRecord(); 
+		ArrayList<RecordMessage> resultList = new ArrayList<RecordMessage>();
+		resultList = MainActivity.loadRecord(); 
 		if(resultList != null) {
-			String[] nameList = TherapyMainActivity.getAllNames(resultList);
+			String[] nameList = MainActivity.getAllNames(resultList);
+			if(nameList.length == 0)
+				isTheFirstRecord = true;
 			Spinner nameSpinner = (Spinner)findViewById(R.id.userNameSpinner);
 			TherapyMainActivity.connectSource(this, nameSpinner, nameList);
 		}
@@ -112,6 +129,47 @@ public class BeginActivity extends Activity {
 	}
 	
 	public static void createNewPlayerData(String newName) {
+		RandomAccessFile analysisFile;
+		//String filePath = Resources.getSystem().getString(R.string.str_record_json_location);
+		String filePath = "/sdcard/Android/data/com.example.playpalgame/record.json";
 		
+		
+		try {
+			File file = new File(filePath);
+			if(!file.exists()){
+				isTheFirstRecord = true;
+				file.createNewFile();
+				FileWriter fWriter = new FileWriter(file);
+				fWriter.write("[");
+	        	fWriter.flush();
+	        	fWriter.close();
+			}
+	
+			analysisFile = new RandomAccessFile(filePath, "rw");
+			analysisFile.seek(analysisFile.length()-1); 
+				 
+			JSONObject curRecord = new JSONObject();
+			
+			curRecord.put("gameBadge4", 0);
+			curRecord.put("gameHighScore4", 0);
+			curRecord.put("gameBadge3", 0);
+			curRecord.put("gameHighScore3", 0);
+			curRecord.put("gameBadge2", 0);
+			curRecord.put("gameHighScore2", 0);
+			curRecord.put("gameBadge1", 0);
+			curRecord.put("gameHighScore1", 0);
+			curRecord.put("name", newName);
+			
+			String result = (isTheFirstRecord)? curRecord.toString()+"]" : ","+curRecord.toString()+"]";
+			
+			Log.d("EndTest", result);
+			
+			analysisFile.write(result.getBytes());
+			analysisFile.close();	
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 	}
 }

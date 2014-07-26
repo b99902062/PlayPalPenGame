@@ -13,6 +13,7 @@ import java.util.TimerTask;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -161,9 +162,9 @@ public class TherapyMainActivity extends Activity {
 
 	public static ArrayList<AnalysisMessage> loadRecord() {
 		try {
-			FileInputStream input = new FileInputStream(
-					"/sdcard/Android/data/com.example.playpalgame/analysis.json");
-
+			//FileInputStream input = new FileInputStream(Resources.getSystem().getString(R.string.str_analysis_json_location));
+			FileInputStream input = new FileInputStream("/sdcard/Android/data/com.example.playpalgame/analysis.json");
+			
 			JsonReader reader = new JsonReader(new InputStreamReader(input,
 					"UTF-8"));
 			ArrayList<AnalysisMessage> returnList = readMessagesArray(reader);
@@ -318,20 +319,10 @@ public class TherapyMainActivity extends Activity {
 			throws IOException {
 		ArrayList<AnalysisMessage> messages = new ArrayList<AnalysisMessage>();
 
-		reader.beginObject();
-		while (reader.hasNext()) {
-			String name = reader.nextName();
-			if (name.equals("record")) {
-				reader.beginArray();
-				while (reader.hasNext()) {
-					messages.add(readMessage(reader));
-					Log.d("Therapy", "1 record collected.");
-				}
-				reader.endArray();
-			} else
-				reader.skipValue();
-		}
-		reader.endObject();
+		reader.beginArray();
+		while (reader.hasNext()) 
+			messages.add(readMessage(reader));
+		reader.endArray();
 		return messages;
 	}
 
