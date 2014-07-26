@@ -142,6 +142,15 @@
                 android:alpha="0.5"
                 android:src="@drawable/background" />
 
+            <ProgressBar
+                android:id="@+id/loadingBar"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="457dp" />
+
         </RelativeLayout>
 
     </RelativeLayout>

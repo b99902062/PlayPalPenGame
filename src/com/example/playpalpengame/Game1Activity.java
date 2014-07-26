@@ -226,6 +226,7 @@ public class Game1Activity extends Activity {
 
 		if (progressCount == step2TotalProgressCount) {
 			PlayPalUtility.killTimeBar();
+			PenRecorder.outputJSON();
 			Animation boardAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTLEFT);
 			boardAnim.setAnimationListener(new AnimationListener() {
 				@Override
@@ -255,8 +256,7 @@ public class Game1Activity extends Activity {
 					ImageView helicalView = (ImageView)findViewById(R.id.helicalView);
 					helicalView.setVisibility(ImageView.VISIBLE);
 					
-					PenRecorder.outputJSON();
-					PenRecorder.registerRecorder(game1RelativeLayout, Game1Activity.this, mUserName, "1-3");
+					PenRecorder.registerRecorder(game1RelativeLayout, Game1Activity.this, mUserName, "1-4");
 					
 					isDoneDropFood = true;
 				}
@@ -278,6 +278,8 @@ public class Game1Activity extends Activity {
 		targetView.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View view, MotionEvent event) {
+				PlayPalUtility.curEvent = event;
+				
 				int minXBoardBound = 0;
 				int maxXBoardBound = 1000;
 				int minYBoardBound = 380;
@@ -287,6 +289,7 @@ public class Game1Activity extends Activity {
 						.getLayoutParams();
 				switch (event.getAction()) {
 					case MotionEvent.ACTION_DOWN:
+						PenRecorder.startRecorder();
 						break;
 					case MotionEvent.ACTION_MOVE:
 						int x_cord = (int) event.getRawX();
@@ -310,6 +313,9 @@ public class Game1Activity extends Activity {
 	
 						layoutParams.setMargins(x_cord - minXBoardBound, y_cord - minYBoardBound, 0, 0);
 						view.setLayoutParams(layoutParams);
+						break;
+					case MotionEvent.ACTION_UP:
+						PenRecorder.stopRecoreder();
 						break;
 					default:
 						break;
@@ -397,7 +403,6 @@ public class Game1Activity extends Activity {
 			PlayPalUtility.pauseProgress();
 			
 			PenRecorder.outputJSON();
-			PenRecorder.registerRecorder(game1RelativeLayout, Game1Activity.this, mUserName, "1-2");
 			
 			PlayPalUtility.setLineGesture(false);
 			PlayPalUtility.clearGestureSets();
@@ -418,6 +423,7 @@ public class Game1Activity extends Activity {
 						@Override
 						public void onAnimationEnd(Animation anim) {
 							PlayPalUtility.resumeProgress();
+							PenRecorder.registerRecorder(game1RelativeLayout, Game1Activity.this, mUserName, "1-2");
 							
 							PlayPalUtility.setLineGesture(true);
 							Point beginPnt = new Point(foodOffsetX + cucumberCutBeginPointArray[0].x, foodOffsetY + cucumberCutBeginPointArray[0].y);
@@ -452,6 +458,8 @@ public class Game1Activity extends Activity {
 			isFoodCanTouch = false;
 			PlayPalUtility.clearDrawView();
 			PlayPalUtility.killTimeBar();
+			
+			PenRecorder.outputJSON();
 
 			Animation cucumberAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTRIGHT);
 			Animation boardAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTRIGHT);
@@ -487,6 +495,7 @@ public class Game1Activity extends Activity {
 						@Override
 						public void onAnimationEnd(Animation arg0) {
 							PlayPalUtility.initialProgressBar(testTotalTime, PlayPalUtility.TIME_MODE);
+							PenRecorder.registerRecorder(game1RelativeLayout, Game1Activity.this, mUserName, "1-3");
 						}
 
 						@Override
