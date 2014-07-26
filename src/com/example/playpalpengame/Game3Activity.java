@@ -540,7 +540,9 @@ public class Game3Activity extends Activity {
 		PlayPalUtility.setLineGesture(true);
 		for(int i=0; i<5; i++)
 			PlayPalUtility.initialLineGestureParams(false, false, boxSize/2, creamPosArray[i]);
-			
+		
+		PenRecorder.outputJSON();
+		PenRecorder.registerRecorder(game3RelativeLayout, this, userName, "3-3");
 		
 		return 1;
 	}
@@ -568,7 +570,7 @@ public class Game3Activity extends Activity {
 			});
 			
 			PenRecorder.outputJSON();
-			PenRecorder.registerRecorder(game3RelativeLayout, this, userName, "3-3");
+			PenRecorder.registerRecorder(game3RelativeLayout, this, userName, "3-4");
 			
 			PlayPalUtility.initialLineGestureParams(false, false, boxSize, new Point(1560,600) ,centralPoint,  new Point(1560,1160));
 			PlayPalUtility.setStraightStroke(new Point(1560,600) ,centralPoint,  new Point(1560,1160));
