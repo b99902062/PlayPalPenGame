@@ -615,14 +615,14 @@ public class Game4Activity extends Activity {
 		
 		ImageView curDough = (ImageView)findViewById(doughViewArray[curProgress+1]);
 		curDough.setVisibility(ImageView.VISIBLE);
-		MotionEvent event   = PlayPalUtility.curEvent;
+		Point p = PlayPalUtility.curEntry.point;
 		
 		int dxy = 50;
 		int x,y,w,h;
 		switch(curProgress){
 			case 0:
 				x = centerPoint.x-dxy;
-				y = (int)event.getY(); 
+				y = p.y; 
 				break;
 				
 			case 1:
@@ -631,13 +631,13 @@ public class Game4Activity extends Activity {
 				break;
 				
 			case 2:
-				x = (int)event.getX();
+				x = p.x;
 				y = centerPoint.y-dxy;
 				break;
 			
 			case 3:
-				x = (int)event.getX();
-				y = (int)event.getY();
+				x = p.x;
+				y = p.y;
 				break;
 				
 			default:
@@ -648,8 +648,8 @@ public class Game4Activity extends Activity {
 		
 		
 		
-		w = curDough.getLayoutParams().width  = Math.abs(centerPoint.x-(int)event.getX())+dxy;
-		h = curDough.getLayoutParams().height = Math.abs(centerPoint.y-(int)event.getY())+dxy;
+		w = curDough.getLayoutParams().width  = Math.abs(centerPoint.x-p.x)+dxy;
+		h = curDough.getLayoutParams().height = Math.abs(centerPoint.y-p.y)+dxy;
 	
 		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(w, h);
     	params.setMargins(x, y , 0, 0);

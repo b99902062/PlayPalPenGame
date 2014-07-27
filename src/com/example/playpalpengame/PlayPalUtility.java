@@ -77,7 +77,7 @@ public class PlayPalUtility {
 	
 	protected static boolean butterSqueezing = false;
 	protected static SPenEventLibrary mSPenEventLibrary = new SPenEventLibrary();
-	public static MotionEvent curEvent;
+	public static RecordEntry curEntry;
 	
 	
 	protected static float calcDistance(Point p1, Point p2){
@@ -235,7 +235,10 @@ public class PlayPalUtility {
 			
 			@Override
 			public boolean onHover(View arg0, MotionEvent event) {
-				curEvent = event;
+				
+				curEntry = new RecordEntry(
+						new Point((int)event.getX(), (int)event.getY()),
+						true);
 				if(!isLineGestureOn || !isPressing)
 					return false;
 				
@@ -359,7 +362,9 @@ public class PlayPalUtility {
 		view.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-				curEvent = event;
+				curEntry = new RecordEntry(
+						new Point((int)event.getX(), (int)event.getY()),
+						false);
 				
 				if(func2 != null){
 					try {
