@@ -54,15 +54,15 @@ import android.widget.RelativeLayout.LayoutParams;
 
 class RecordEntry{
 	Point point;
-	boolean isHover;
+	int state;
 	
 	RecordEntry(){
 		point = new Point(0,0);
-		isHover = false;
+		state = 0;
 	}
-	RecordEntry(Point p, boolean h){
+	RecordEntry(Point p, int s){
 		point = p;
-		h = isHover;
+		state = s;
 	}
 }
 
@@ -79,6 +79,7 @@ public class PenRecorder{
 	protected static int passedTime;
 	private static boolean isRecording = false;
 	
+	
 	//must be called before game starting
 	protected static void registerRecorder( RelativeLayout gameLayout, Context _context, String name, String stage){
 		posArray = new ArrayList<RecordEntry>();
@@ -92,13 +93,16 @@ public class PenRecorder{
 	//call from utility when down
 	protected static void startRecorder(){
 		timer = new Timer( );
-		RecordTimerTask recorderTask = new RecordTimerTask();
+		recorderTask = new RecordTimerTask();
 		timer.schedule(recorderTask, 0, 50);
+		recorderTask.forceRecord();
 	}
 	
 	//call from utility when up
-	protected static void stopRecoreder(){
+	protected static void stopRecorder(){
 		timer.cancel();
+		timer = null;
+		recorderTask.forceRecord();
 	}
 	
 	//called after the game finished
@@ -140,7 +144,7 @@ public class PenRecorder{
 				JSONArray curPoint = new JSONArray();
 				curPoint.put(posArray.get(i).point.x);
 				curPoint.put(posArray.get(i).point.y);
-				curPoint.put(posArray.get(i).isHover);
+				curPoint.put(posArray.get(i).state);
 				 
 				pointJSONArray.put(curPoint);
 			 }
@@ -160,8 +164,13 @@ public class PenRecorder{
 
 class RecordTimerTask extends TimerTask{	 
 	 public void run(){
-		 //Log.d("Recorder","recording"+ PenRecorder.passedTime);
 		 PenRecorder.passedTime++;
 		 PenRecorder.posArray.add(PlayPalUtility.curEntry);
 	 }
+	 
+	 //use when touch down/up occur
+	 public void forceRecord(){	
+		 PenRecorder.posArray.add(PlayPalUtility.curEntry);
+	 }
+	 
  }
