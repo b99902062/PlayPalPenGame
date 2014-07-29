@@ -234,6 +234,9 @@ public class TherapyMainActivity extends Activity {
 							View view, int position, long id) {
 						if(replayTimer != null)
 							replayTimer.cancel();
+						if(replayTimerTask != null)
+							replayTimerTask.cancel();
+						
 						canvasView.setLimit(-1);
 						
 						targetRecord = getTargetRecord(adapterView.getSelectedItem().toString(), targetStageList);

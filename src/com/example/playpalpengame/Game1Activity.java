@@ -280,13 +280,13 @@ public class Game1Activity extends Activity {
 			public boolean onTouch(View view, MotionEvent event) {
 				if(event.getAction() == MotionEvent.ACTION_DOWN) 
 					PlayPalUtility.curEntry = new RecordEntry(
-						new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_TOUCH_START);
+						new Point((int)event.getRawX(), (int)event.getRawY()), RecordEntry.STATE_TOUCH_START);
 				else if(event.getAction() == MotionEvent.ACTION_MOVE)
 					PlayPalUtility.curEntry = new RecordEntry(
-							new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_TOUCH_MOVE);
+							new Point((int)event.getRawX(), (int)event.getRawY()), RecordEntry.STATE_TOUCH_MOVE);
 				else
 					PlayPalUtility.curEntry = new RecordEntry(
-							new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_TOUCH_END);
+							new Point((int)event.getRawX(), (int)event.getRawY()), RecordEntry.STATE_TOUCH_END);
 				
 				int minXBoardBound = 0;
 				int maxXBoardBound = 1000;
@@ -323,7 +323,7 @@ public class Game1Activity extends Activity {
 						view.setLayoutParams(layoutParams);
 						break;
 					case MotionEvent.ACTION_UP:
-						PenRecorder.stopRecoreder();
+						PenRecorder.stopRecorder();
 						break;
 					default:
 						break;

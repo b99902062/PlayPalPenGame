@@ -453,7 +453,7 @@ public class PlayPalUtility {
 							}
 							break;
 						case MotionEvent.ACTION_UP:
-							PenRecorder.stopRecoreder();
+							PenRecorder.stopRecorder();
 							if(curSet.isContinuous) {
 								pointPassedList.clear();
 								break;
