@@ -162,8 +162,11 @@ public class Game3Activity extends Activity {
             	ImageView hoverItem;
             	if(curProgress < MIX_PROGRESS_END)
             		hoverItem = eggbeatView;
+            	else if(curProgress == MIX_PROGRESS_END)
+            		hoverItem = null;
             	else
-            		hoverItem = squeezerView;//others
+            		hoverItem = squeezerView;
+            	
             	
             	PlayPalUtility.setHoverTarget(true, hoverItem);
             	

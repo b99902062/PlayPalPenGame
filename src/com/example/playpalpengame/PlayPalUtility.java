@@ -364,7 +364,7 @@ public class PlayPalUtility {
 			public boolean onTouch(View v, MotionEvent event) {
 				curEntry = new RecordEntry(
 						new Point((int)event.getX(), (int)event.getY()),
-						false);
+						2);
 				
 				if(func2 != null){
 					try {

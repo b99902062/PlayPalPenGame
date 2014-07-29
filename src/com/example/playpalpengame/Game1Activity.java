@@ -278,7 +278,9 @@ public class Game1Activity extends Activity {
 		targetView.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View view, MotionEvent event) {
-				PlayPalUtility.curEvent = event;
+				PlayPalUtility.curEntry = new RecordEntry(
+						new Point((int)event.getX(), (int)event.getY()),
+						false);
 				
 				int minXBoardBound = 0;
 				int maxXBoardBound = 1000;
