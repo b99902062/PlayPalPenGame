@@ -9,7 +9,6 @@ import com.samsung.spen.lib.input.SPenEventLibrary;
 import com.samsung.spensdk.applistener.SPenHoverListener;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
@@ -18,7 +17,6 @@ import android.graphics.Paint.Style;
 import android.graphics.Path;
 import android.graphics.PathEffect;
 import android.graphics.Point;
-import android.graphics.RectF;
 import android.os.Handler;
 import android.os.Message;
 import android.util.FloatMath;
@@ -78,7 +76,6 @@ public class PlayPalUtility {
 	protected static boolean butterSqueezing = false;
 	protected static SPenEventLibrary mSPenEventLibrary = new SPenEventLibrary();
 	public static RecordEntry curEntry;
-	
 	
 	protected static float calcDistance(Point p1, Point p2){
 		float dx = p1.x - p2.x;
@@ -235,10 +232,15 @@ public class PlayPalUtility {
 			
 			@Override
 			public boolean onHover(View arg0, MotionEvent event) {
-				
-				curEntry = new RecordEntry(
-						new Point((int)event.getX(), (int)event.getY()),
-						true);
+				if(event.getAction()  == MotionEvent.ACTION_DOWN)
+					curEntry = new RecordEntry(
+							new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_START);
+				else if(event.getAction()  == MotionEvent.ACTION_MOVE)
+					curEntry = new RecordEntry(
+							new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_MOVE);
+				else
+					curEntry = new RecordEntry(
+							new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_END);
 				if(!isLineGestureOn || !isPressing)
 					return false;
 				
@@ -362,10 +364,15 @@ public class PlayPalUtility {
 		view.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-				curEntry = new RecordEntry(
-						new Point((int)event.getX(), (int)event.getY()),
-						false);
-				
+				if(event.getAction() == MotionEvent.ACTION_DOWN)
+					curEntry = new RecordEntry(
+						new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_TOUCH_START);
+				else if(event.getAction() == MotionEvent.ACTION_MOVE)
+					curEntry = new RecordEntry(
+						new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_TOUCH_MOVE);
+				else
+					curEntry = new RecordEntry(
+						new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_TOUCH_END);
 				if(func2 != null){
 					try {
 						func2.call();

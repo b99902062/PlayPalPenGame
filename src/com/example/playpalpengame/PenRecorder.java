@@ -53,16 +53,23 @@ import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 
 class RecordEntry{
+	public final static int STATE_TOUCH_START = 1;
+	public final static int STATE_TOUCH_MOVE = 2;
+	public final static int STATE_TOUCH_END = 3;
+	public final static int STATE_HOVER_START = 4;
+	public final static int STATE_HOVER_MOVE = 5;
+	public final static int STATE_HOVER_END = 6;
+	
 	Point point;
-	boolean isHover;
+	int state;
 	
 	RecordEntry(){
 		point = new Point(0,0);
-		isHover = false;
+		state = 0;
 	}
-	RecordEntry(Point p, boolean h){
+	RecordEntry(Point p, int s){
 		point = p;
-		h = isHover;
+		state = s;
 	}
 }
 
@@ -140,7 +147,7 @@ public class PenRecorder{
 				JSONArray curPoint = new JSONArray();
 				curPoint.put(posArray.get(i).point.x);
 				curPoint.put(posArray.get(i).point.y);
-				curPoint.put(posArray.get(i).isHover);
+				curPoint.put(posArray.get(i).state);
 				 
 				pointJSONArray.put(curPoint);
 			 }
