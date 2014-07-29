@@ -11,12 +11,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -278,16 +280,20 @@ public class Game1Activity extends Activity {
 		targetView.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View view, MotionEvent event) {
-				if(event.getAction() == MotionEvent.ACTION_DOWN) 
+				if(event.getAction() == MotionEvent.ACTION_DOWN) { 
 					PlayPalUtility.curEntry = new RecordEntry(
 						new Point((int)event.getRawX(), (int)event.getRawY()), RecordEntry.STATE_TOUCH_START);
+					PenRecorder.startRecorder();
+				}
 				else if(event.getAction() == MotionEvent.ACTION_MOVE)
 					PlayPalUtility.curEntry = new RecordEntry(
 							new Point((int)event.getRawX(), (int)event.getRawY()), RecordEntry.STATE_TOUCH_MOVE);
-				else
+				else {
 					PlayPalUtility.curEntry = new RecordEntry(
 							new Point((int)event.getRawX(), (int)event.getRawY()), RecordEntry.STATE_TOUCH_END);
-				
+					PenRecorder.stopRecorder();
+				}
+					
 				int minXBoardBound = 0;
 				int maxXBoardBound = 1000;
 				int minYBoardBound = 380;
@@ -297,7 +303,6 @@ public class Game1Activity extends Activity {
 						.getLayoutParams();
 				switch (event.getAction()) {
 					case MotionEvent.ACTION_DOWN:
-						PenRecorder.startRecorder();
 						break;
 					case MotionEvent.ACTION_MOVE:
 						int x_cord = (int) event.getRawX();
@@ -323,7 +328,6 @@ public class Game1Activity extends Activity {
 						view.setLayoutParams(layoutParams);
 						break;
 					case MotionEvent.ACTION_UP:
-						PenRecorder.stopRecorder();
 						break;
 					default:
 						break;

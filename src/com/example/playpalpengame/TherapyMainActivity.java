@@ -112,6 +112,15 @@ public class TherapyMainActivity extends Activity {
 			}
 		});
 		
+		CheckBox isShowHoverCheckbox = (CheckBox) findViewById(R.id.isShowHoverCheckbox);
+		isShowHoverCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
+				TherapyMainActivity.canvasView.setShowHover(arg1);
+				TherapyMainActivity.canvasView.invalidate();
+			}
+		});
+		
 		new RecordLoader().execute();
 		
 		while(resultList == null);
@@ -402,6 +411,7 @@ class DrawCanvasView extends View {
 	private ArrayList<RecordEntry> pointList = new ArrayList<RecordEntry>();
 	private int pointLimit = 0;
 	private boolean isLineUp = false;
+	private boolean isShowHover = false;
 	private int preX = -1;
 	private int preY = -1;
 	private int preStatus = 0;
@@ -434,6 +444,10 @@ class DrawCanvasView extends View {
     
     public void setLineUp(boolean value) {
     	isLineUp = value;
+    }
+    
+    public void setShowHover(boolean value) {
+    	isShowHover = value;
     }
     
     public void updatePointList(ArrayList<RecordEntry> newPointList) {
@@ -473,8 +487,11 @@ class DrawCanvasView extends View {
 			pointCounter++;
 			if(pnt.state == RecordEntry.STATE_HOVER_START
 			|| pnt.state == RecordEntry.STATE_HOVER_MOVE
-			|| pnt.state == RecordEntry.STATE_HOVER_END)
+			|| pnt.state == RecordEntry.STATE_HOVER_END) {
+				if(!isShowHover)
+					continue;
 				p.setColor(Color.WHITE);
+			}
 			else
 				p.setColor(Color.RED);
 			int newX = pnt.point.x * 8/10;

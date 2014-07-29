@@ -293,6 +293,8 @@ public class PlayPalUtility {
 			}
 			@Override
 			public void onHoverButtonDown(View v, MotionEvent event) {
+				PenRecorder.startRecorder();
+				
 				if(!isLineGestureOn)
 					return;
 				
@@ -319,6 +321,8 @@ public class PlayPalUtility {
 				
 			@Override
 			public void onHoverButtonUp(View v, MotionEvent event) {
+				PenRecorder.stopRecorder();
+				
 				if(!isLineGestureOn)
 					return;
 				
@@ -364,15 +368,19 @@ public class PlayPalUtility {
 		view.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-				if(event.getAction() == MotionEvent.ACTION_DOWN)
+				if(event.getAction() == MotionEvent.ACTION_DOWN) {
 					curEntry = new RecordEntry(
 						new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_TOUCH_START);
+					PenRecorder.startRecorder();
+				}
 				else if(event.getAction() == MotionEvent.ACTION_MOVE)
 					curEntry = new RecordEntry(
 						new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_TOUCH_MOVE);
-				else
+				else {
 					curEntry = new RecordEntry(
 						new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_TOUCH_END);
+					PenRecorder.stopRecorder();
+				}
 				if(func2 != null){
 					try {
 						func2.call();
@@ -391,8 +399,6 @@ public class PlayPalUtility {
 					
 					switch(event.getAction()) {
 						case MotionEvent.ACTION_DOWN:
-							PenRecorder.startRecorder();
-							
 							if(curSet.isInOrder) {
 								if(isWithinBox(setIndex, 0, new Point((int)event.getX(), (int)event.getY())))
 									pointPassedList.add(0);
@@ -453,7 +459,6 @@ public class PlayPalUtility {
 							}
 							break;
 						case MotionEvent.ACTION_UP:
-							PenRecorder.stopRecorder();
 							if(curSet.isContinuous) {
 								pointPassedList.clear();
 								break;
