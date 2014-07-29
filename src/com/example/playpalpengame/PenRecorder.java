@@ -53,6 +53,13 @@ import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 
 class RecordEntry{
+	public final static int STATE_TOUCH_START = 1;
+	public final static int STATE_TOUCH_MOVE = 2;
+	public final static int STATE_TOUCH_END = 3;
+	public final static int STATE_HOVER_START = 4;
+	public final static int STATE_HOVER_MOVE = 5;
+	public final static int STATE_HOVER_END = 6;
+	
 	Point point;
 	int state;
 	

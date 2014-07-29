@@ -24,6 +24,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
 import android.util.JsonReader;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -107,6 +108,7 @@ public class TherapyMainActivity extends Activity {
 			@Override
 			public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
 				TherapyMainActivity.canvasView.setLineUp(arg1);
+				TherapyMainActivity.canvasView.invalidate();
 			}
 		});
 		
@@ -232,6 +234,9 @@ public class TherapyMainActivity extends Activity {
 							View view, int position, long id) {
 						if(replayTimer != null)
 							replayTimer.cancel();
+						if(replayTimerTask != null)
+							replayTimerTask.cancel();
+						
 						canvasView.setLimit(-1);
 						
 						targetRecord = getTargetRecord(adapterView.getSelectedItem().toString(), targetStageList);
@@ -354,14 +359,21 @@ public class TherapyMainActivity extends Activity {
 				while (reader.hasNext()) {
 					int x = -1;
 					int y = -1;
+					int status = 0;
 					reader.beginArray();
+					int counter = 0;
 					while (reader.hasNext()) {
-						if(x < 0)
+						if (counter == 0)
 							x = reader.nextInt();
-						else
+						else if (counter == 1)
 							y = reader.nextInt();
+						else if (counter == 2) 
+							status = reader.nextInt();
+						else
+							Log.d("EndTest", "WTF");
+						counter++;
 					}
-					msg.points.add(new Point(x, y));
+					msg.points.add(new RecordEntry(new Point(x, y), status));
 					reader.endArray();
 				}
 				reader.endArray();
@@ -379,31 +391,20 @@ class AnalysisMessage {
 	public String stage = null;
 	public String date = null;
 	public int time = -1;
-	public ArrayList<Point> points = new ArrayList<Point>();
+	public ArrayList<RecordEntry> points = new ArrayList<RecordEntry>();
 
 	public AnalysisMessage() {
 	}
 }
 
-class CustomPoint extends Point {
-	private boolean isHover;
-	public CustomPoint(int x, int y, boolean h) {
-		super(x, y);
-		isHover = h;
-	}
-	
-	public boolean isHover() {
-		return isHover;
-	}
-}
-
 class DrawCanvasView extends View {
 	private Paint p;
-	private ArrayList<Point> pointList = new ArrayList<Point>();
+	private ArrayList<RecordEntry> pointList = new ArrayList<RecordEntry>();
 	private int pointLimit = 0;
 	private boolean isLineUp = false;
 	private int preX = -1;
 	private int preY = -1;
+	private int preStatus = 0;
 	
 	public DrawCanvasView(Context context) {
 		super(context);
@@ -435,9 +436,9 @@ class DrawCanvasView extends View {
     	isLineUp = value;
     }
     
-    public void updatePointList(ArrayList<Point> newPointList) {
+    public void updatePointList(ArrayList<RecordEntry> newPointList) {
     	pointList.clear();
-    	pointList = (ArrayList<Point>) newPointList.clone();
+    	pointList = (ArrayList<RecordEntry>) newPointList.clone();
     }
     
     public void addLimit() {
@@ -464,24 +465,27 @@ class DrawCanvasView extends View {
 		
 		preX = -1;
 		preY = -1;
+		preStatus = 0;
 		
-		for(Point pnt: pointList) {
+		for(RecordEntry pnt: pointList) {
 			if(pointLimit >= 0 && pointCounter >= pointLimit)
 				break;
 			pointCounter++;
-			/* if(pnt.isHover)
-			 * 	p.setColor(Color.WHITE);
-			 * else
-			 * 	p.setColor(Color.RED);
-			 * */
-			int newX = pnt.x * 8/10;
-			int newY = pnt.y * 8/10;
+			if(pnt.state == RecordEntry.STATE_HOVER_START
+			|| pnt.state == RecordEntry.STATE_HOVER_MOVE
+			|| pnt.state == RecordEntry.STATE_HOVER_END)
+				p.setColor(Color.WHITE);
+			else
+				p.setColor(Color.RED);
+			int newX = pnt.point.x * 8/10;
+			int newY = pnt.point.y * 8/10;
 			canvas.drawCircle(newX, newY, 5, p);
 			if(isLineUp) {
-				if(preX >= 0)
+				if(preX >= 0 && preStatus != RecordEntry.STATE_HOVER_END && preStatus != RecordEntry.STATE_TOUCH_END)
 					canvas.drawLine(preX, preY, newX, newY, p);
 				preX = newX;
 				preY = newY;
+				preStatus = pnt.state;
 			}
 		}
 	}
