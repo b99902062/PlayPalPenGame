@@ -137,6 +137,9 @@ public class Game4Activity extends Activity {
 	protected String userName;
 	protected Context gameContext;
 	protected Point centerPoint = new Point(1280,800);
+	private int mBadges = 0;
+	private int mHighScore = 0;
+	private int score = 0;
 	
 	protected Point[] doughPosArray = {
 			new Point(2080,400),
@@ -240,6 +243,8 @@ public class Game4Activity extends Activity {
 		
 		Bundle bundle = getIntent().getExtras();
 		userName = bundle.getString("userName");
+		mBadges = bundle.getInt("GameBadges");
+		mHighScore = bundle.getInt("GameHighScore");
 		
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -326,6 +331,9 @@ public class Game4Activity extends Activity {
 				bundle.putInt("GameIndex", 4);
 				bundle.putBoolean("isWin", false);
 				bundle.putString("userName", userName);
+				bundle.putInt("GameBadges", mBadges);
+				bundle.putInt("GameHighScore", mHighScore);
+				bundle.putInt("NewScore", -1);
 	            newAct.putExtras(bundle);
 				startActivityForResult(newAct, 0);
 				Game4Activity.this.finish();
@@ -351,6 +359,9 @@ public class Game4Activity extends Activity {
 				bundle.putInt("GameIndex", 4);
 				bundle.putBoolean("isWin", true);
 				bundle.putString("userName", userName);
+				bundle.putInt("GameBadges", mBadges);
+				bundle.putInt("GameHighScore", mHighScore);
+				bundle.putInt("NewScore", score);
 	            newAct.putExtras(bundle);				
 				newAct.setClass(Game4Activity.this, MainActivity.class);
 				startActivityForResult(newAct, 0);
@@ -448,6 +459,8 @@ public class Game4Activity extends Activity {
 		progressCountText.setText("ProgressCount: " + new String("" + curProgress));
 		
 		if(curProgress == DOUGH_PROGRESS_END){
+			score += PlayPalUtility.killTimeBar();
+			
 			PenRecorder.outputJSON();
 			ImageView curDough = (ImageView)findViewById(doughViewArray[curProgress]);
 			curDough.setVisibility(ImageView.VISIBLE);
@@ -487,6 +500,7 @@ public class Game4Activity extends Activity {
 		cookieArray[idx].beCutted();
 		
 		if(curProgress == COOKIE_PROGRESS_END){
+			score += PlayPalUtility.killTimeBar();
 			PlayPalUtility.clearDrawView();
 			PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
 			
@@ -587,7 +601,7 @@ public class Game4Activity extends Activity {
 		
 		if(curProgress == CREAM_PROGRESS_END){
 			
-			PlayPalUtility.killTimeBar();
+			score += PlayPalUtility.killTimeBar();
 			PlayPalUtility.setLineGesture(false);
 			PlayPalUtility.unregisterLineGesture(game4RelativeLayout);
 			PlayPalUtility.clearGestureSets();

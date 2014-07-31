@@ -1,6 +1,19 @@
 package com.example.playpalpengame;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.ref.SoftReference;
+import java.util.Scanner;
+import java.util.concurrent.Callable;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -14,6 +27,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -22,9 +36,11 @@ public class AnimationActivity extends Activity {
 	FramesSequenceAnimation anim = null;
 	ImageView monsterView;
 	private String mUserName = null;
+	private int mBadges = 0;
+	private int mHighScore = 0;
 	private int gameIndex;
 	private boolean isWin;
-	private int[] monsterAnimArray = {0, R.anim.monster1_animation, R.anim.monster2_animation, R.anim.monster3_animation, R.anim.monster4_animation};
+	private int[] starResArray = {R.drawable.star_1, R.drawable.star_2, R.drawable.star_3, R.drawable.star_4, R.drawable.star_5, R.drawable.star_6};
 	protected AnimationDrawable monsterAnim;
 	
 	@Override
@@ -40,15 +56,49 @@ public class AnimationActivity extends Activity {
 		gameIndex = bundle.getInt("GameIndex");
 		mUserName = bundle.getString("userName");
 		isWin = bundle.getBoolean("isWin");
+		mBadges = bundle.getInt("GameBadges");
+		mHighScore = bundle.getInt("GameHighScore");
+		int newScore = bundle.getInt("NewScore");
 		monsterView = (ImageView)findViewById(R.id.monsterView);
 		ImageView replayBtn = (ImageView)findViewById(R.id.replayBtn);
 		
 		setHomeListener(findViewById(R.id.homeBtn));
 		
-		anim = AnimationsContainer.getInstance()
-				.createGameAnim(monsterView, gameIndex, isWin);
-
-		replayBtn.setOnTouchListener(new View.OnTouchListener() {
+		if(newScore >= mHighScore * 1.1) {
+			if(mHighScore == 0)
+				mHighScore = newScore;
+			else
+				mHighScore = (int) (mHighScore * 1.1);
+			for(int j=0; j<6; j++) {
+				if(((mBadges >> j) & 0x1) == 0) {
+					((ImageView)findViewById(R.id.starView)).setImageResource(starResArray[j]);
+					mBadges |= (0x1 << j);
+					break;
+				}
+			}
+		
+			updateRecordJson();
+			
+			anim = AnimationsContainer.getInstance().createStarAnim(monsterView);
+			anim.start();
+			monsterView.setOnTouchListener(new OnTouchListener() {
+				private boolean isSetEnd = false;
+				@Override
+				public boolean onTouch(View arg0, MotionEvent arg1) {
+					if(!isSetEnd) {
+						anim.stop();
+						((ImageView)findViewById(R.id.starView)).setVisibility(ImageView.GONE);
+						setEndAnim();
+						isSetEnd = true;
+					}
+					return true;
+				}
+			});
+		}
+		else 
+			setEndAnim();
+		
+		((ImageView)findViewById(R.id.replayBtn)).setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				if(anim != null)
@@ -68,15 +118,54 @@ public class AnimationActivity extends Activity {
 				startActivityForResult(newAct, 0);
 				AnimationActivity.this.finish();
 				return true;
-				/*
-				anim = AnimationsContainer.getInstance().createGameAnim(monsterView, gameIndex, isWin);
-				anim.start();
-				*/
 			}
 		});
-		
-		anim.start();
+			
     	return;
+	}
+	
+	private void updateRecordJson() {
+		String recordJson = "";
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader("/sdcard/Android/data/com.example.playpalgame/record.json"));
+			String line = null;
+			while ((line = reader.readLine()) != null)
+			    recordJson = recordJson.concat(line);
+			JSONArray recordArray = new JSONArray(recordJson);
+			Log.d("EndTest", String.valueOf(recordArray.length()));
+			for(int i=0; i<recordArray.length(); i++) {
+				JSONObject singleRecord = recordArray.getJSONObject(i);
+				if(singleRecord.getString("name").equals(mUserName)) {
+					Log.d("EndTest", "FInded!!!");
+					String badgeKey = "gameBadge".concat(String.valueOf(gameIndex));
+					String scoreKey = "gameHighScore".concat(String.valueOf(gameIndex));
+					singleRecord.put(badgeKey, mBadges);
+					singleRecord.put(scoreKey, mHighScore);
+					break;
+				}
+			}
+			File newTextFile = new File("/sdcard/Android/data/com.example.playpalgame/record.json");
+			FileWriter fileWriter = new FileWriter(newTextFile);
+            fileWriter.write(recordArray.toString(2));
+            fileWriter.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private void setEndAnim() {
+		((ImageView)findViewById(R.id.homeBtn)).setVisibility(ImageView.VISIBLE);
+		((ImageView)findViewById(R.id.replayBtn)).setVisibility(ImageView.VISIBLE);
+		anim = AnimationsContainer.getInstance()
+				.createGameAnim(monsterView, gameIndex, isWin);
+		anim.start();
 	}
 	
 	protected void setHomeListener(View targetView) {
@@ -110,6 +199,8 @@ class FramesSequenceAnimation {
 
     private Bitmap mBitmap = null;
     private BitmapFactory.Options mBitmapOptions;
+
+	private Callable<Integer> mStopListener = null;
 
     public FramesSequenceAnimation(ImageView imageView, int[] frames, int fps) {
         mHandler = new Handler();
@@ -215,12 +306,22 @@ class FramesSequenceAnimation {
          */
         public synchronized void stop() {
             mShouldRun = false;
+            if(mStopListener != null)
+				try {
+					mStopListener.call();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
         }
         
         public synchronized void replay() {
         	mIndex = 0;
             mShouldRun = true;
         }
+
+		public void setStoppedAnimListener(Callable<Integer> callable) {
+			mStopListener = callable;
+		}
     }
 
 class AnimationsContainer {
@@ -272,6 +373,17 @@ class AnimationsContainer {
     private int[] mGame3LoseFrames = {R.drawable.lose_3_1, R.drawable.lose_3_2};
     private int[] mGame4LoseFrames = {R.drawable.lose_4_1, R.drawable.lose_4_2};
     
+    private int[] mStarAnimFrames = {R.drawable.star_ani_01, R.drawable.star_ani_02, R.drawable.star_ani_03, R.drawable.star_ani_04, R.drawable.star_ani_05, R.drawable.star_ani_06, R.drawable.star_ani_07, R.drawable.star_ani_08, R.drawable.star_ani_09, R.drawable.star_ani_10, R.drawable.star_ani_11, R.drawable.star_ani_12, R.drawable.star_ani_13, R.drawable.star_ani_14, R.drawable.star_ani_15, R.drawable.star_ani_16, R.drawable.star_ani_17};
+    private int[] mWelcomeAnimFrames = {R.drawable.welcome_ani_01, R.drawable.welcome_ani_02, R.drawable.welcome_ani_03, R.drawable.welcome_ani_04, R.drawable.welcome_ani_05_x5, R.drawable.welcome_ani_06, R.drawable.welcome_ani_06_2, R.drawable.welcome_ani_07, R.drawable.welcome_ani_07_2, R.drawable.welcome_ani_08, R.drawable.welcome_ani_09, R.drawable.welcome_ani_10, R.drawable.welcome_ani_11, R.drawable.welcome_ani_12, R.drawable.welcome_ani_13, R.drawable.welcome_ani_14, R.drawable.welcome_ani_15, R.drawable.welcome_ani_16, R.drawable.welcome_ani_17, R.drawable.welcome_ani_18, R.drawable.welcome_ani_19, R.drawable.welcome_ani_20, R.drawable.welcome_ani_21, R.drawable.welcome_ani_22, R.drawable.welcome_ani_23, R.drawable.welcome_ani_24, R.drawable.welcome_ani_24_2, R.drawable.welcome_ani_25, R.drawable.welcome_ani_25_2, R.drawable.welcome_ani_26, R.drawable.welcome_ani_26_2, R.drawable.welcome_ani_27, R.drawable.welcome_ani_27_2, R.drawable.welcome_ani_28, R.drawable.welcome_ani_28_2, R.drawable.welcome_ani_29, R.drawable.welcome_ani_29_2, R.drawable.welcome_ani_30, R.drawable.welcome_ani_30_2, R.drawable.welcome_ani_31, R.drawable.welcome_ani_31_2, R.drawable.welcome_ani_32 };
+    
+    public FramesSequenceAnimation createStarAnim(ImageView imageView) {
+    	return new FramesSequenceAnimation(imageView, mStarAnimFrames, FPS, true);
+    }
+    
+    public FramesSequenceAnimation createWelcomeAnim(ImageView imageView) {
+    	return new FramesSequenceAnimation(imageView, mWelcomeAnimFrames, FPS, false);
+    } 
+    	
     /**
      * @param imageView
      * @return splash screen animation

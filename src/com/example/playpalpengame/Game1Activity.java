@@ -51,10 +51,13 @@ public class Game1Activity extends Activity {
 	protected boolean isFoodCanTouch;
 	protected boolean isDoneDropFood;
 	protected int progressCount;
+	private int score = 0;
 	
 	protected Game1Activity self;
 	
 	private String mUserName = null;
+	private int mBadges = 0;
+	private int mHighScore = 0;
 	protected ArrayList<View> foodInPot;
 
 	protected ImageView currentFoodView;
@@ -98,6 +101,8 @@ public class Game1Activity extends Activity {
 		
 		Bundle bundle = getIntent().getExtras();
 		mUserName = bundle.getString("userName");
+		mBadges = bundle.getInt("GameBadges");
+		mHighScore = bundle.getInt("GameHighScore");
 		
 		doInitial();
 		
@@ -109,6 +114,9 @@ public class Game1Activity extends Activity {
 				bundle.putInt("GameIndex", 1);
 				bundle.putBoolean("isWin", false);
 				bundle.putString("userName", mUserName);
+				bundle.putInt("GameBadges", mBadges);
+				bundle.putInt("GameHighScore", mHighScore);
+				bundle.putInt("NewScore", -1);
 	            newAct.putExtras(bundle);
 				startActivityForResult(newAct, 0);
 				Game1Activity.this.finish();
@@ -227,7 +235,7 @@ public class Game1Activity extends Activity {
 		potDropAnim.start();
 
 		if (progressCount == step2TotalProgressCount) {
-			PlayPalUtility.killTimeBar();
+			score += PlayPalUtility.killTimeBar();
 			PenRecorder.outputJSON();
 			Animation boardAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTLEFT);
 			boardAnim.setAnimationListener(new AnimationListener() {
@@ -346,11 +354,13 @@ public class Game1Activity extends Activity {
 		potStirAnim.start();
 
 		if (progressCount == step3TotalProgressCount) {
-			PlayPalUtility.killTimeBar();
+			score += PlayPalUtility.killTimeBar();
 			PlayPalUtility.setLineGesture(false);
 			PlayPalUtility.unregisterLineGesture(game1RelativeLayout);
 			PlayPalUtility.clearGestureSets();
 			PenRecorder.outputJSON();
+			
+			Log.d("EndTest", String.format("Game1Score: %d", score));
 			
 			Intent newAct = new Intent();
 			newAct.setClass(Game1Activity.this, AnimationActivity.class);
@@ -358,6 +368,9 @@ public class Game1Activity extends Activity {
 			bundle.putInt("GameIndex", 1);
 			bundle.putBoolean("isWin", true);
 			bundle.putString("userName", mUserName);
+			bundle.putInt("GameBadges", mBadges);
+			bundle.putInt("GameHighScore", mHighScore);
+			bundle.putInt("NewScore", score);
             newAct.putExtras(bundle);
 			startActivityForResult(newAct, 0);
 			Game1Activity.this.finish();
@@ -469,7 +482,7 @@ public class Game1Activity extends Activity {
 		} else if (progressCount == step1TotalProgressCount) {
 			isFoodCanTouch = false;
 			PlayPalUtility.clearDrawView();
-			PlayPalUtility.killTimeBar();
+			score += PlayPalUtility.killTimeBar();
 			
 			PenRecorder.outputJSON();
 

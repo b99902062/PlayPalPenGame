@@ -51,9 +51,14 @@ public class Game2Activity extends Activity {
 	private final Point[] cutBeginOffset = {new Point(124, 263), new Point(301, 262), new Point(134, 459), new Point(278, 457)};
 	private final Point[] cutEndOffset = {new Point(308, 438), new Point(123, 446), new Point(284, 600), new Point(134, 607)};
 
+	private int score = 0;
+	
 	public static boolean isReady;
 	
 	private String mUserName = null;
+	private int mBadges = 0;
+	private int mHighScore = 0;
+	
 	private int curFishIndex;
 	protected boolean canPutInBasket = false;
 	protected ImageView netView;
@@ -94,6 +99,8 @@ public class Game2Activity extends Activity {
 
 		Bundle bundle = getIntent().getExtras();
 		mUserName = bundle.getString("userName");
+		mBadges = bundle.getInt("GameBadges");
+		mHighScore = bundle.getInt("GameHighScore");
 		
 		progressCount = 0;
 		PlayPalUtility.registerProgressBar((ProgressBar)findViewById(R.id.progressBarRed), (ImageView)findViewById(R.id.progressMark), (ImageView)findViewById(R.id.progressBar), new Callable<Integer>() {
@@ -104,6 +111,8 @@ public class Game2Activity extends Activity {
 				bundle.putInt("GameIndex", 2);
 				bundle.putBoolean("isWin", false);
 				bundle.putString("userName", mUserName);
+				bundle.putInt("GameBadges", mBadges);
+				bundle.putInt("GameHighScore", mHighScore);
 	            newAct.putExtras(bundle);
 	            
 				startActivityForResult(newAct, 0);
@@ -159,7 +168,7 @@ public class Game2Activity extends Activity {
                     			progressCount++;
                     			testProgressCountText.setText(String.format("ProgressCount: %d", progressCount));
                     			if(progressCount == step1TotalProgressCount) {
-                    				PlayPalUtility.killTimeBar();
+                    				score += PlayPalUtility.killTimeBar();
                     				PenRecorder.outputJSON();
                     				
                     				PlayPalUtility.clearGestureSets();
@@ -365,6 +374,7 @@ public class Game2Activity extends Activity {
 		progressCount++;
 		testProgressCountText.setText(String.format("ProgressCount: %d", progressCount));
 		if(progressCount == step2TotalProgressCount) {
+			score += PlayPalUtility.killTimeBar();
 			PlayPalUtility.setLineGesture(false);
 			PlayPalUtility.unregisterLineGesture(game2RelativeLayout);
 			PlayPalUtility.clearGestureSets();
@@ -375,6 +385,9 @@ public class Game2Activity extends Activity {
 			bundle.putInt("GameIndex", 2);
 			bundle.putBoolean("isWin", true);
 			bundle.putString("userName", mUserName);
+			bundle.putInt("GameBadges", mBadges);
+			bundle.putInt("GameHighScore", mHighScore);
+			bundle.putInt("NewScore", score);
             newAct.putExtras(bundle);
 			startActivityForResult(newAct, 0);
 			Game2Activity.this.finish();

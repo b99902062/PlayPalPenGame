@@ -669,8 +669,9 @@ public class PlayPalUtility {
 		timerTask.resume();
 	}
 	
-	protected static void killTimeBar() {
+	protected static int killTimeBar() {
 		timerTask.cancel();
+		return curProgress;
 	}
 	
 	protected static void updateProgressBar() {

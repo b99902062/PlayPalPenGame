@@ -133,7 +133,6 @@ public class BeginActivity extends Activity {
 		//String filePath = Resources.getSystem().getString(R.string.str_record_json_location);
 		String filePath = "/sdcard/Android/data/com.example.playpalgame/record.json";
 		
-		
 		try {
 			File file = new File(filePath);
 			if(!file.exists()){

@@ -91,7 +91,9 @@ public class Game3Activity extends Activity {
 	protected boolean canTouchOven = false;
 	protected boolean butterSqueezing = false;
 	protected String userName = null;
-	
+	private int mBadges = 0;
+	private int mHighScore = 0;
+	private int score = 0;
 	
 	TextView  progressCountText;
 	ImageView bowlView;
@@ -123,6 +125,8 @@ public class Game3Activity extends Activity {
 		
 		Bundle bundle = getIntent().getExtras();
 		userName = bundle.getString("userName");
+		mBadges = bundle.getInt("GameBadges");
+		mHighScore = bundle.getInt("GameHighScore");
 		
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -309,6 +313,9 @@ public class Game3Activity extends Activity {
 				bundle.putInt("GameIndex", 3);
 				bundle.putBoolean("isWin", false);
 				bundle.putString("userName", userName);
+				bundle.putInt("GameBadges", mBadges);
+				bundle.putInt("GameHighScore", mHighScore);
+				bundle.putInt("NewScore", -1);
 	            newAct.putExtras(bundle);
 				startActivityForResult(newAct, 0);
 				Game3Activity.this.finish();
@@ -328,7 +335,6 @@ public class Game3Activity extends Activity {
 		targetView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				
 				PlayPalUtility.killTimeBar();
 				PlayPalUtility.setLineGesture(false);
 				PlayPalUtility.unregisterLineGesture(game3RelativeLayout);
@@ -452,7 +458,7 @@ public class Game3Activity extends Activity {
 		else if( curProgress == MIX_PROGRESS_END){
 			helicalView.setVisibility(ImageView.GONE);
 
-			PlayPalUtility.killTimeBar();
+			score += PlayPalUtility.killTimeBar();
 			Animation mixAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTLEFT);
 			mixAnim.setAnimationListener(new AnimationListener() {
 				@Override
@@ -586,7 +592,7 @@ public class Game3Activity extends Activity {
 	{
 		//finishing game3
 		PenRecorder.outputJSON();
-		PlayPalUtility.killTimeBar();
+		score += PlayPalUtility.killTimeBar();
 		PlayPalUtility.setLineGesture(false);
 		PlayPalUtility.unregisterLineGesture(game3RelativeLayout);
 		PlayPalUtility.clearGestureSets();
@@ -598,6 +604,9 @@ public class Game3Activity extends Activity {
 		bundle.putInt("GameIndex", 3);
 		bundle.putBoolean("isWin", true);
 		bundle.putString("userName", userName);
+		bundle.putInt("GameBadges", mBadges);
+		bundle.putInt("GameHighScore", mHighScore);
+		bundle.putInt("NewScore", score);
         newAct.putExtras(bundle);
 		startActivityForResult(newAct, 0);
 		Game3Activity.this.finish();

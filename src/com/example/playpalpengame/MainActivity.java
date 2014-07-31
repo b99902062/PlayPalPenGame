@@ -1,12 +1,14 @@
 package com.example.playpalpengame;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.List;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -69,6 +71,8 @@ public class MainActivity extends Activity {
 				Bundle bundle = new Bundle();
 				bundle.putInt("GameIndex", gameIndex);
 				bundle.putString("userName", mUserName);
+				bundle.putInt("GameBadges", badges[gameIndex-1]);
+				bundle.putInt("GameHighScore", highScores[gameIndex-1]);
 	            newAct.putExtras(bundle);
 	            startActivityForResult(newAct ,0);
 	            MainActivity.this.finish();
@@ -78,8 +82,19 @@ public class MainActivity extends Activity {
 	
 	public static ArrayList<RecordMessage> loadRecord() {
 		try {
+			File f = new File("/sdcard/Android/data/com.example.playpalgame/record.json");
+			if(!f.exists()) {
+				String newStr = "[]";
+				try {
+					File newTextFile = new File("/sdcard/Android/data/com.example.playpalgame/record.json");
+					FileWriter fileWriter = new FileWriter(newTextFile);
+		            fileWriter.write(newStr);
+		            fileWriter.close();
+				} catch (FileNotFoundException e1) {
+					e1.printStackTrace();
+				}
+			}
 			FileInputStream input = new FileInputStream("/sdcard/Android/data/com.example.playpalgame/record.json");
-			
 			JsonReader reader = new JsonReader(new InputStreamReader(input, "UTF-8"));
 		    ArrayList<RecordMessage> returnList = readMessagesArray(reader);
 			reader.close();
