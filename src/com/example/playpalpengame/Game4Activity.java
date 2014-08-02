@@ -39,7 +39,6 @@ public class Game4Activity extends Activity {
 	protected boolean canTouchOven = false;
 	protected boolean butterSqueezing = false;
 	
-	
 	protected final int DOUGH_TIME  = 600;
 	protected final int COOKIE_TIME = 600;
 	protected final int CREAM_TIME  = 1800;
@@ -53,6 +52,8 @@ public class Game4Activity extends Activity {
 	protected final int SQUARE_COOKIE = 2;
 	protected final int COOKIE_NUM = 8;
 	protected final int DOUGH_NUM = 5;
+	
+	private boolean isFirstCookie = true;
 	
 	public Point pointAddition(Point p1, Point p2){
 		return new Point(p1.x+p2.x, p1.y+p2.y);
@@ -123,12 +124,11 @@ public class Game4Activity extends Activity {
 	}
 	
 	protected TextView  progressCountText;
-	protected RelativeLayout game4RelativeLayout;
+	protected DrawableRelativeLayout game4RelativeLayout;
 	protected SPenEventLibrary mSPenEventLibrary;
 	
 	protected ImageView doughView;
 	protected ImageView laddleView;
-	protected ImageView stickView;
 	
 	protected int boxSize;
 	protected int curProgress;
@@ -257,7 +257,7 @@ public class Game4Activity extends Activity {
 		progressCountText = (TextView)findViewById(R.id.testProgressCount);
 		doughView = (ImageView)findViewById(doughViewArray[0]);
 		laddleView = (ImageView)findViewById(R.id.Game4_ladle);		
-		game4RelativeLayout = (RelativeLayout) findViewById(R.id.Game4RelativeLayout);
+		game4RelativeLayout = (DrawableRelativeLayout) findViewById(R.id.Game4RelativeLayout);
 		
 		curProgress = 0;
 		boxSize = 100;
@@ -285,28 +285,27 @@ public class Game4Activity extends Activity {
 		game4RelativeLayout.setOnHoverListener(new View.OnHoverListener() {
             @Override
             public boolean onHover(View v, MotionEvent event) {
-            	ImageView hoverItem;
-            	//TODO
-            	//if(curProgress < DOUGH_PROGRESS_END)
-            		hoverItem = laddleView;
-            	//else
-            	//	hoverItem = stickView;//others
-            	
-            	PlayPalUtility.setHoverTarget(true, hoverItem);
-            	
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_HOVER_ENTER:
-                    	hoverItem.setVisibility(ImageView.VISIBLE);
+                    	PlayPalUtility.curEntry = new RecordEntry(
+        						new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_START);
+        				PenRecorder.forceRecord();
+                    	laddleView.setVisibility(ImageView.VISIBLE);
                         break;
                      
                     case MotionEvent.ACTION_HOVER_MOVE:
+                    	PlayPalUtility.curEntry = new RecordEntry(
+        						new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_MOVE);
                     	RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-                    	params.setMargins((int)event.getX() - 200, (int)event.getY() - 200 , 0, 0);
-                    	hoverItem.setLayoutParams(params);
+                    	params.setMargins((int)event.getX(), (int)event.getY(), 0, 0);
+                    	laddleView.setLayoutParams(params);
                         break;
 
                     case MotionEvent.ACTION_HOVER_EXIT:
-                    	hoverItem.setVisibility(ImageView.INVISIBLE);
+                    	PlayPalUtility.curEntry = new RecordEntry(
+        						new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_END);
+        				PenRecorder.forceRecord();
+                    	laddleView.setVisibility(ImageView.INVISIBLE);
                         break;
                 }
                 return true;
@@ -342,8 +341,14 @@ public class Game4Activity extends Activity {
 		});
 		PlayPalUtility.initialProgressBar(DOUGH_TIME, PlayPalUtility.TIME_MODE);
 		PenRecorder.registerRecorder(game4RelativeLayout, this, userName, "4-1");
+		
+		PlayPalUtility.setHoverTarget(true, laddleView);
 	}	
 
+	@Override
+	public void onBackPressed() {
+	}
+	
 	protected void setHomeListener(View targetView) {
 		targetView.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -357,11 +362,7 @@ public class Game4Activity extends Activity {
 				Intent newAct = new Intent();
 				Bundle bundle = new Bundle();
 				bundle.putInt("GameIndex", 4);
-				bundle.putBoolean("isWin", true);
 				bundle.putString("userName", userName);
-				bundle.putInt("GameBadges", mBadges);
-				bundle.putInt("GameHighScore", mHighScore);
-				bundle.putInt("NewScore", score);
 	            newAct.putExtras(bundle);				
 				newAct.setClass(Game4Activity.this, MainActivity.class);
 				startActivityForResult(newAct, 0);
@@ -394,6 +395,8 @@ public class Game4Activity extends Activity {
 					if(curButterView == null || !butterSqueezing){
 						return false;
 					}
+					PlayPalUtility.curEntry = new RecordEntry(
+							new Point((int)event.getRawX(), (int)event.getRawY()), RecordEntry.STATE_HOVER_BTN_MOVE);
 					
 					if(ratio < CREAM_MAX_RATIO)
 						ratio++;
@@ -423,6 +426,9 @@ public class Game4Activity extends Activity {
 	
 				@Override
 				public void onHoverButtonDown(View arg0, MotionEvent event) {
+					PlayPalUtility.curEntry = new RecordEntry(
+							new Point((int)event.getRawX(), (int)event.getRawY()), RecordEntry.STATE_HOVER_BTN_START);
+					PenRecorder.forceRecord();
 					Log.d("Penpal","pressing");
 					butterSqueezing = true;				
 					
@@ -436,6 +442,9 @@ public class Game4Activity extends Activity {
 	
 				@Override
 				public void onHoverButtonUp(View arg0, MotionEvent event) {
+					PlayPalUtility.curEntry = new RecordEntry(
+							new Point((int)event.getRawX(), (int)event.getRawY()), RecordEntry.STATE_HOVER_BTN_END);
+					PenRecorder.forceRecord();
 					Log.d("Penpal","releasing");
 					butterSqueezing = false;
 					
@@ -461,6 +470,7 @@ public class Game4Activity extends Activity {
 		if(curProgress == DOUGH_PROGRESS_END){
 			score += PlayPalUtility.killTimeBar();
 			
+			laddleView.setImageResource(R.drawable.game4_thinknife);
 			PenRecorder.outputJSON();
 			ImageView curDough = (ImageView)findViewById(doughViewArray[curProgress]);
 			curDough.setVisibility(ImageView.VISIBLE);
@@ -469,10 +479,8 @@ public class Game4Activity extends Activity {
 			PlayPalUtility.clearDrawView();
 			PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
 			initCookieView();
-			
-			PenRecorder.outputJSON();
+
 			PenRecorder.registerRecorder(game4RelativeLayout, this, userName, "4-2");
-			
 		}
 		else if(curProgress < DOUGH_PROGRESS_END){
 			ImageView curDough = (ImageView)findViewById(doughViewArray[curProgress]);
@@ -502,7 +510,6 @@ public class Game4Activity extends Activity {
 		if(curProgress == COOKIE_PROGRESS_END){
 			score += PlayPalUtility.killTimeBar();
 			PlayPalUtility.clearDrawView();
-			PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
 			
 			for(int i=0; i<DOUGH_NUM; i++){
 				final ImageView curDoughView = (ImageView)findViewById(doughViewArray[i]);
@@ -544,6 +551,11 @@ public class Game4Activity extends Activity {
 						cookieAnim.setAnimationListener(new AnimationListener() {
 							@Override
 							public void onAnimationEnd(Animation anim) {
+								if(isFirstCookie) {
+									PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
+									laddleView.setImageResource(R.drawable.game4_squeezer);
+									isFirstCookie = false;
+								}
 								curCookie.view.clearAnimation();
 							}
 
@@ -567,7 +579,7 @@ public class Game4Activity extends Activity {
 					public void onAnimationStart(Animation animation) {
 					}
 				});
-				curCookie.view.bringToFront();
+				//curCookie.view.bringToFront();
 				game4RelativeLayout.invalidate();
 				
 				curCookie.view.setAnimation(cookieAnim);
@@ -599,8 +611,7 @@ public class Game4Activity extends Activity {
 		int idx = PlayPalUtility.getLastTriggerSetIndex();
 		PlayPalUtility.cancelGestureSet(idx);
 		
-		if(curProgress == CREAM_PROGRESS_END){
-			
+		if(curProgress >= CREAM_PROGRESS_END){
 			score += PlayPalUtility.killTimeBar();
 			PlayPalUtility.setLineGesture(false);
 			PlayPalUtility.unregisterLineGesture(game4RelativeLayout);
@@ -615,6 +626,9 @@ public class Game4Activity extends Activity {
 			bundle.putInt("GameIndex", 4);
 			bundle.putBoolean("isWin", true);
 			bundle.putString("userName", userName);
+			bundle.putInt("GameBadges", mBadges);
+			bundle.putInt("GameHighScore", mHighScore);
+			bundle.putInt("NewScore", score);
             newAct.putExtras(bundle);
 			startActivityForResult(newAct, 0);
 			Game4Activity.this.finish();

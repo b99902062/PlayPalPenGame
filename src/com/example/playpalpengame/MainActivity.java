@@ -100,12 +100,6 @@ public class MainActivity extends Activity {
 			reader.close();
 			
 			for(RecordMessage msg : returnList) {
-				Log.d("jsonTest", String.format("Name: %s", msg.userName));
-				for(int i=0; i<4; i++) {
-					Log.d("jsonTest", String.format("GameBadge_%d: %d", i+1, msg.badges[i]));
-					Log.d("jsonTest", String.format("GameHS_%d: %d", i+1, msg.highScores[i]));
-				}
-				
 				if(msg.userName.equals(mUserName)) {
 					badges = msg.badges;
 					highScores = msg.highScores;

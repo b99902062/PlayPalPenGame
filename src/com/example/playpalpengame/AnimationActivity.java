@@ -64,7 +64,7 @@ public class AnimationActivity extends Activity {
 		
 		setHomeListener(findViewById(R.id.homeBtn));
 		
-		if(newScore >= mHighScore * 1.1) {
+		if(isWin && newScore >= mHighScore * 1.1) {
 			if(mHighScore == 0)
 				mHighScore = newScore;
 			else
@@ -114,6 +114,8 @@ public class AnimationActivity extends Activity {
 					newAct.setClass(AnimationActivity.this, Game4Activity.class);
 				Bundle bundle = new Bundle();
 				bundle.putString("userName", mUserName);
+				bundle.putInt("GameBadges", mBadges);
+				bundle.putInt("GameHighScore", mHighScore);
 	            newAct.putExtras(bundle);
 				startActivityForResult(newAct, 0);
 				AnimationActivity.this.finish();

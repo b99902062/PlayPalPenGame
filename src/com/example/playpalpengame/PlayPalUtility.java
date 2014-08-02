@@ -85,6 +85,10 @@ public class PlayPalUtility {
 	}
 	
 	protected static TranslateAnimation CreateTranslateAnimation(int translateType) {
+		return CreateTranslateAnimation(translateType, 2000);
+	}
+	
+	protected static TranslateAnimation CreateTranslateAnimation(int translateType, int duration) {
 		TranslateAnimation newAnim;
 
 		if (translateType == FROM_OUTLEFT_TO_CUR)
@@ -112,7 +116,7 @@ public class PlayPalUtility {
 					(float) 0.0, Animation.RELATIVE_TO_SELF, (float) 0.0,
 					Animation.RELATIVE_TO_SELF, (float) 0.0,
 					Animation.RELATIVE_TO_SELF, (float) 0.0);
-		newAnim.setDuration(2000);
+		newAnim.setDuration(duration);
 		newAnim.setRepeatCount(0);
 		return newAnim;
 	}
@@ -205,9 +209,25 @@ public class PlayPalUtility {
 			}
 
 			@Override
-			public boolean onHover(View arg0, MotionEvent arg1) {
-				// TODO Auto-generated method stub
-				return false;
+			public boolean onHover(View arg0, MotionEvent event) {
+				if(event.getAction()  == MotionEvent.ACTION_HOVER_ENTER) {
+					hoverTarget.setVisibility(ImageView.VISIBLE);
+					curEntry = new RecordEntry(
+							new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_START);
+				} 
+				else if(event.getAction()  == MotionEvent.ACTION_HOVER_MOVE) {
+					RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                	params.setMargins((int)event.getX(), (int)event.getY(), 0, 0);
+                	hoverTarget.setLayoutParams(params);
+					curEntry = new RecordEntry(
+							new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_MOVE);
+				}
+				else {
+					hoverTarget.setVisibility(ImageView.INVISIBLE);
+					curEntry = new RecordEntry(
+							new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_END);
+				}
+				return true;
 			}
 
 			@Override
@@ -232,15 +252,23 @@ public class PlayPalUtility {
 			
 			@Override
 			public boolean onHover(View arg0, MotionEvent event) {
-				if(event.getAction()  == MotionEvent.ACTION_DOWN)
+				if(event.getAction()  == MotionEvent.ACTION_HOVER_ENTER) {
+					hoverTarget.setVisibility(ImageView.VISIBLE);
 					curEntry = new RecordEntry(
 							new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_START);
-				else if(event.getAction()  == MotionEvent.ACTION_MOVE)
+				} 
+				else if(event.getAction()  == MotionEvent.ACTION_HOVER_MOVE) {
+					RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                	params.setMargins((int)event.getX(), (int)event.getY(), 0, 0);
+                	hoverTarget.setLayoutParams(params);
 					curEntry = new RecordEntry(
 							new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_MOVE);
-				else
+				}
+				else {
+					hoverTarget.setVisibility(ImageView.INVISIBLE);
 					curEntry = new RecordEntry(
 							new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_END);
+				}
 				if(!isLineGestureOn || !isPressing)
 					return false;
 				
@@ -293,7 +321,8 @@ public class PlayPalUtility {
 			}
 			@Override
 			public void onHoverButtonDown(View v, MotionEvent event) {
-				PenRecorder.startRecorder();
+				PenRecorder.forceRecord();
+				//PenRecorder.startRecorder();
 				
 				if(!isLineGestureOn)
 					return;
@@ -321,7 +350,8 @@ public class PlayPalUtility {
 				
 			@Override
 			public void onHoverButtonUp(View v, MotionEvent event) {
-				PenRecorder.stopRecorder();
+				PenRecorder.forceRecord();
+				//PenRecorder.stopRecorder();
 				
 				if(!isLineGestureOn)
 					return;
@@ -371,7 +401,8 @@ public class PlayPalUtility {
 				if(event.getAction() == MotionEvent.ACTION_DOWN) {
 					curEntry = new RecordEntry(
 						new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_TOUCH_START);
-					PenRecorder.startRecorder();
+					//PenRecorder.startRecorder();
+					PenRecorder.forceRecord();
 				}
 				else if(event.getAction() == MotionEvent.ACTION_MOVE)
 					curEntry = new RecordEntry(
@@ -379,7 +410,8 @@ public class PlayPalUtility {
 				else {
 					curEntry = new RecordEntry(
 						new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_TOUCH_END);
-					PenRecorder.stopRecorder();
+					PenRecorder.forceRecord();
+					//PenRecorder.stopRecorder();
 				}
 				if(func2 != null){
 					try {

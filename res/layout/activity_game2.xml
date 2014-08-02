@@ -15,7 +15,8 @@
          android:fitsSystemWindows.
     -->
 	    
-    <RelativeLayout
+    <view
+        class="com.example.playpalpengame.DrawableRelativeLayout"
         android:id="@+id/Game2RelativeLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -327,6 +328,6 @@
             android:src="@drawable/game2_net"
             android:visibility="invisible" />
 
-    </RelativeLayout>
+    </view>
 
 </FrameLayout>

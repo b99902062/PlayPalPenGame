@@ -11,59 +11,91 @@
     -->
 
     <RelativeLayout
+        android:id="@+id/beginRelativeLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent"
+        android:background="@drawable/background" >
 
-        <TextView
-            android:id="@+id/nameLabel"
+        <RelativeLayout
+            android:id="@+id/centerPanel"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginLeft="310dp"
-            android:layout_marginTop="310dp"
-            android:text="Account"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:layout_height="wrap_content" 
+            android:layout_marginLeft="390dp"
+	        android:layout_marginTop="225dp" >
+
+            <ImageView
+	            android:id="@+id/centerPanelBackgroud"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:src="@drawable/login_bg1" />
+	
+	        <ImageView
+	            android:id="@+id/loginHeadView"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_marginLeft="55dp"
+	            android:layout_marginTop="90dp"
+	            android:src="@drawable/login_head" />
+	
+	        <ImageView
+	            android:id="@+id/loginLoginBtn"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_marginLeft="275dp"
+	            android:layout_marginTop="65dp"
+	            android:src="@drawable/login_login" />
+	
+	        <ImageView
+	            android:id="@+id/loginRegisterBtn"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_marginLeft="275dp"
+	            android:layout_marginTop="195dp"
+	            android:src="@drawable/login_login" />
+	        
+        </RelativeLayout>
+
         
-        <Spinner
-            android:id="@+id/userNameSpinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginLeft="410dp"
-            android:layout_marginTop="280dp"  />
-
-        <Button
-            android:id="@+id/submitBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginLeft="710dp"
-            android:layout_marginTop="310dp"
-            android:text="Submit" />
         
-        <Button
-            android:id="@+id/registerBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginLeft="810dp"
-            android:layout_marginTop="310dp"
-            android:text="New player" />
-
         <ImageView
             android:id="@+id/therapyIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:layout_marginLeft="1000dp"
-            android:layout_marginTop="310dp"
+            android:layout_marginLeft="38dp"
+            android:layout_marginTop="30dp"
             android:src="@drawable/therapy_icon" />
 
-    </RelativeLayout>
+    </RelativeLayout><RelativeLayout android:id="@+id/rightPanel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentLeft="true" android:layout_alignParentTop="true" android:layout_marginLeft="780dp" android:layout_marginTop="0dp" android:visibility="invisible">
+    
+            <ImageView android:id="@+id/rightPanelBackground" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/login_right_panel" />
+            
+                        <TextView android:id="@+id/nameLabel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="200dp" android:layout_marginTop="140dp" android:text="姓名" android:textAppearance="?android:attr/textAppearanceMedium" />
+                        
+            <Spinner android:id="@+id/userNameSpinner" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentLeft="true" android:layout_alignParentTop="true" android:layout_marginLeft="250dp" android:layout_marginTop="130dp" />
+            
+           <EditText android:id="@+id/userNameText" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentLeft="true" android:layout_alignParentTop="true" android:layout_marginLeft="250dp" android:layout_marginTop="130dp" android:ems="10" android:inputType="textPersonName" android:visibility="invisible" />
+
+
+            <TextView android:id="@+id/genderLabel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="200dp" android:layout_marginTop="250dp" android:text="性別" android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <RadioGroup android:id="@+id/genderRadioGroup" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginLeft="250dp" android:layout_marginTop="250dp" android:layout_x="40dp">
+            
+	            <RadioButton android:id="@+id/genderRadioButton1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="10dp" android:text="男" />
+	            
+	            <RadioButton android:id="@+id/genderRadioButton2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="40dp" android:text="女" />
+	      	</RadioGroup>
+            
+            <TextView android:id="@+id/ageLabel" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="200dp" android:layout_marginTop="360dp" android:text="年齡" android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView android:id="@+id/ageLabel_1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="350dp" android:layout_marginTop="360dp" android:text="歲" android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <NumberPicker android:id="@+id/agePicker" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="260dp" android:layout_marginTop="280dp" />
+
+            <ImageView android:id="@+id/submitBtn" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="285dp" android:layout_marginTop="585dp" android:src="@drawable/login_check" />
+            
+        </RelativeLayout>
 
 </FrameLayout>
+

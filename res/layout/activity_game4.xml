@@ -4,7 +4,8 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF" >
     
-    <RelativeLayout
+    <view
+        class="com.example.playpalpengame.DrawableRelativeLayout"
         android:id="@+id/Game4RelativeLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -35,12 +36,7 @@
             android:layout_marginTop="340dp"
             android:src="@drawable/game4_dough1" />
          
-         <ImageView
-            android:id="@+id/Game4_ladle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-          	android:src="@drawable/game4_ladle" 
-          	android:visibility="invisible"/>
+         
          
 <!-- dough -->
 		<ImageView
@@ -183,8 +179,8 @@
             android:layout_marginLeft="374dp"
             android:layout_marginTop="61dp"
             android:src="@drawable/progress_mark"
-            android:visibility="visible" />
+            android:visibility="visible" /><ImageView android:id="@+id/Game4_ladle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/game4_ladle" android:visibility="invisible" />
          
                       
-	</RelativeLayout>
+	</view>
 </FrameLayout>

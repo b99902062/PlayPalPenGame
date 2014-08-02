@@ -68,7 +68,7 @@ public class Game2Activity extends Activity {
 	protected ImageView fishView2;
 	protected ImageView fishView3;
 	protected ImageView fishView4;
-	protected RelativeLayout game2RelativeLayout;
+	protected DrawableRelativeLayout game2RelativeLayout;
 	protected TextView testProgressCountText;
 	
 	protected int progressCount;
@@ -135,7 +135,7 @@ public class Game2Activity extends Activity {
 		
 		testProgressCountText = (TextView)findViewById(R.id.testProgressCount2);
 		
-		game2RelativeLayout = (RelativeLayout)findViewById(R.id.Game2RelativeLayout);
+		game2RelativeLayout = (DrawableRelativeLayout)findViewById(R.id.Game2RelativeLayout);
 		PlayPalUtility.registerLineGesture(game2RelativeLayout, this, new Callable<Integer>() {
 			@Override
 			public Integer call() throws Exception {
@@ -151,9 +151,14 @@ public class Game2Activity extends Activity {
             public boolean onHover(View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_HOVER_ENTER:
+                    	PlayPalUtility.curEntry = new RecordEntry(
+    							new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_START);
+                    	PenRecorder.forceRecord();
                     	netView.setVisibility(ImageView.VISIBLE);
                         break;
                     case MotionEvent.ACTION_HOVER_MOVE:
+                    	PlayPalUtility.curEntry = new RecordEntry(
+    							new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_MOVE);
                     	RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
                     	params.setMargins((int)event.getX() - 200, (int)event.getY() - 200 , 0, 0);
                     	if(canPutInBasket) {
@@ -182,6 +187,9 @@ public class Game2Activity extends Activity {
                     	netView.setLayoutParams(params);
                         break;
                     case MotionEvent.ACTION_HOVER_EXIT:
+                    	PlayPalUtility.curEntry = new RecordEntry(
+    							new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_END);
+                    	PenRecorder.forceRecord();
                     	netView.setVisibility(ImageView.INVISIBLE);
                     	if(canPutInBasket) {
                     		PlayPalUtility.setLineGesture(true);
@@ -217,6 +225,10 @@ public class Game2Activity extends Activity {
 	    PlayPalUtility.clearGestureSets();
 	    
 	    isReady = false;
+	}
+	
+	@Override
+	public void onBackPressed() {
 	}
 	
 	protected void setHomeListener(View targetView) {

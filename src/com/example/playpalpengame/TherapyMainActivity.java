@@ -492,13 +492,17 @@ class DrawCanvasView extends View {
 					continue;
 				p.setColor(Color.WHITE);
 			}
-			else
+			else if(pnt.state == RecordEntry.STATE_TOUCH_START
+				||  pnt.state == RecordEntry.STATE_TOUCH_MOVE
+				||  pnt.state == RecordEntry.STATE_TOUCH_END)
 				p.setColor(Color.RED);
+			else
+				p.setColor(Color.GREEN);
 			int newX = pnt.point.x * 8/10;
 			int newY = pnt.point.y * 8/10;
 			canvas.drawCircle(newX, newY, 5, p);
 			if(isLineUp) {
-				if(preX >= 0 && preStatus != RecordEntry.STATE_HOVER_END && preStatus != RecordEntry.STATE_TOUCH_END)
+				if(preX >= 0 && preStatus != RecordEntry.STATE_HOVER_END && preStatus != RecordEntry.STATE_TOUCH_END && preStatus != RecordEntry.STATE_HOVER_BTN_END)
 					canvas.drawLine(preX, preY, newX, newY, p);
 				preX = newX;
 				preY = newY;
