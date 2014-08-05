@@ -13,11 +13,14 @@ import android.widget.RelativeLayout;
 
 public class LoadingActivity extends Activity {
 	
-	String mUserName = null;
-	int gameIndex;
-	Timer timer = new Timer(true);
-	int[] stallResIdArray = {0, R.drawable.main_stall_1, R.drawable.main_stall_2, R.drawable.main_stall_3, R.drawable.main_stall_4};
-	int[] monsterResIdArray = {0, R.drawable.main_monster_1, R.drawable.main_monster_2, R.drawable.main_monster_3, R.drawable.main_monster_4};
+	private String mUserName = null;
+	private int gameIndex;
+	private int badge;
+	private int highScore;
+	private int winCount;
+	private Timer timer = new Timer(true);
+	private int[] stallResIdArray = {0, R.drawable.main_stall_1, R.drawable.main_stall_2, R.drawable.main_stall_3, R.drawable.main_stall_4};
+	private int[] monsterResIdArray = {0, R.drawable.main_monster_1, R.drawable.main_monster_2, R.drawable.main_monster_3, R.drawable.main_monster_4};
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +34,10 @@ public class LoadingActivity extends Activity {
 		Bundle bundle = getIntent().getExtras();
 		gameIndex = bundle.getInt("GameIndex");
 		mUserName = bundle.getString("userName");
-				
+		badge = bundle.getInt("GameBadges");
+		highScore = bundle.getInt("GameHighScore");
+		winCount = bundle.getInt("GameWinCount");
+
 		ImageView stallView = (ImageView)findViewById(R.id.stallView);
 		stallView.setImageResource(stallResIdArray[gameIndex]);
 		
@@ -56,6 +62,9 @@ public class LoadingActivity extends Activity {
 	    		return;
 			Bundle bundle = new Bundle();
 			bundle.putString("userName", mUserName);
+			bundle.putInt("GameBadges", badge);
+			bundle.putInt("GameHighScore", highScore);
+			bundle.putInt("GameWinCount", winCount);
             newAct.putExtras(bundle);
             startActivityForResult(newAct ,0);
             LoadingActivity.this.finish();

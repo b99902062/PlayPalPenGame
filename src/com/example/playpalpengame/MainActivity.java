@@ -1,12 +1,14 @@
 package com.example.playpalpengame;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.List;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -26,6 +28,7 @@ public class MainActivity extends Activity {
 	
 	private static int[] badges = new int[4];
 	private static int[] highScores = new int[4];
+	private static int[] winCount = new int[4];
 	
 	private static String mUserName = null;
 	
@@ -69,6 +72,9 @@ public class MainActivity extends Activity {
 				Bundle bundle = new Bundle();
 				bundle.putInt("GameIndex", gameIndex);
 				bundle.putString("userName", mUserName);
+				bundle.putInt("GameBadges", badges[gameIndex-1]);
+				bundle.putInt("GameHighScore", highScores[gameIndex-1]);
+				bundle.putInt("GameWinCount", winCount[gameIndex-1]);
 	            newAct.putExtras(bundle);
 	            startActivityForResult(newAct ,0);
 	            MainActivity.this.finish();
@@ -78,22 +84,28 @@ public class MainActivity extends Activity {
 	
 	public static ArrayList<RecordMessage> loadRecord() {
 		try {
+			File f = new File("/sdcard/Android/data/com.example.playpalgame/record.json");
+			if(!f.exists()) {
+				String newStr = "[]";
+				try {
+					File newTextFile = new File("/sdcard/Android/data/com.example.playpalgame/record.json");
+					FileWriter fileWriter = new FileWriter(newTextFile);
+		            fileWriter.write(newStr);
+		            fileWriter.close();
+				} catch (FileNotFoundException e1) {
+					e1.printStackTrace();
+				}
+			}
 			FileInputStream input = new FileInputStream("/sdcard/Android/data/com.example.playpalgame/record.json");
-			
 			JsonReader reader = new JsonReader(new InputStreamReader(input, "UTF-8"));
 		    ArrayList<RecordMessage> returnList = readMessagesArray(reader);
 			reader.close();
 			
 			for(RecordMessage msg : returnList) {
-				Log.d("jsonTest", String.format("Name: %s", msg.userName));
-				for(int i=0; i<4; i++) {
-					Log.d("jsonTest", String.format("GameBadge_%d: %d", i+1, msg.badges[i]));
-					Log.d("jsonTest", String.format("GameHS_%d: %d", i+1, msg.highScores[i]));
-				}
-				
 				if(msg.userName.equals(mUserName)) {
 					badges = msg.badges;
 					highScores = msg.highScores;
+					winCount = msg.winCount;
 				}
 			}
 			return returnList;
@@ -135,6 +147,7 @@ public class MainActivity extends Activity {
 		String userName = null;
 		int[] badges = new int[4];
 		int[] highScores = new int[4];
+		int[] winCount = new int[4];
 		
 		reader.beginObject();
 	    while (reader.hasNext()) {
@@ -153,12 +166,18 @@ public class MainActivity extends Activity {
 	    			   highScores[i-1] = reader.nextInt(); 
 	    	   }
 	       }
+	       else if (name.contains("gameWinCount")) {
+	    	   for(int i=1; i<=4; i++) {
+	    		   if(name.contains(Integer.toString(i)))
+	    			   winCount[i-1] = reader.nextInt(); 
+	    	   }
+	       }
 	       else {
 	         reader.skipValue();
 	       }
 	     }
 	     reader.endObject();
-	     return new RecordMessage(userName, badges, highScores);
+	     return new RecordMessage(userName, badges, highScores, winCount);
 	 }
 	
 	public static String[] getAllNames(ArrayList<RecordMessage> targetList) {
@@ -176,12 +195,14 @@ class RecordMessage {
 	public String userName;
 	public int[] badges = new int[4];
 	public int[] highScores = new int[4];
+	public int[] winCount = new int[4];
 	
-	public RecordMessage(String userName, int[] badges, int[] highScores) {
+	public RecordMessage(String userName, int[] badges, int[] highScores, int[] winCount) {
 		this.userName = userName;
 		for(int i=0; i<4; i++) {
 			this.badges[i] = badges[i];
 			this.highScores[i] = highScores[i];
+			this.winCount[i] = winCount[i];
 		}
 	}
 }

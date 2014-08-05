@@ -15,12 +15,20 @@
          android:fitsSystemWindows.
     -->
 	    
-    <RelativeLayout
+    <view
+        class="com.example.playpalpengame.DrawableRelativeLayout"
         android:id="@+id/Game2RelativeLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/background" >
 
+        <ImageView
+            android:id="@+id/failFeedbackView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/fail_feedback"
+            android:visibility="invisible" />
+        
         <ImageView
             android:id="@+id/homeBtn"
             android:layout_width="wrap_content"
@@ -327,6 +335,6 @@
             android:src="@drawable/game2_net"
             android:visibility="invisible" />
 
-    </RelativeLayout>
+    </view>
 
 </FrameLayout>

@@ -19,7 +19,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.example.playpalpengame.BeginActivity"
+            android:name="com.example.playpalpengame.WelcomeActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
             android:theme="@style/FullscreenTheme" 
@@ -29,6 +29,11 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity 
+            android:name="com.example.playpalpengame.BeginActivity"
+            android:theme="@style/FullscreenTheme" 
+            android:screenOrientation="landscape" >
         </activity>
         <activity 
             android:name="com.example.playpalpengame.MainActivity"

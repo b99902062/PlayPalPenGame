@@ -51,10 +51,14 @@ public class Game1Activity extends Activity {
 	protected boolean isFoodCanTouch;
 	protected boolean isDoneDropFood;
 	protected int progressCount;
+	private int score = 0;
 	
 	protected Game1Activity self;
 	
 	private String mUserName = null;
+	private int mBadges = 0;
+	private int mHighScore = 0;
+	private int mWinCount = 0;
 	protected ArrayList<View> foodInPot;
 
 	protected ImageView currentFoodView;
@@ -65,7 +69,7 @@ public class Game1Activity extends Activity {
 	protected ImageView fireView;
 	protected ImageView knifeView;
 	protected RelativeLayout board2Layout;
-	protected RelativeLayout game1RelativeLayout;
+	protected DrawableRelativeLayout game1RelativeLayout;
 	
 	protected TextView progressCountText;
 
@@ -98,17 +102,26 @@ public class Game1Activity extends Activity {
 		
 		Bundle bundle = getIntent().getExtras();
 		mUserName = bundle.getString("userName");
+		mBadges = bundle.getInt("GameBadges");
+		mHighScore = bundle.getInt("GameHighScore");
+		mWinCount = bundle.getInt("GameWinCount");
 		
 		doInitial();
 		
 		PlayPalUtility.registerProgressBar((ProgressBar)findViewById(R.id.progressBarRed), (ImageView)findViewById(R.id.progressMark), (ImageView)findViewById(R.id.progressBar), new Callable<Integer>() {
 			public Integer call() {
+				clearAll();
+				
 				Intent newAct = new Intent();
 				newAct.setClass(Game1Activity.this, AnimationActivity.class);
 				Bundle bundle = new Bundle();
 				bundle.putInt("GameIndex", 1);
 				bundle.putBoolean("isWin", false);
 				bundle.putString("userName", mUserName);
+				bundle.putInt("GameBadges", mBadges);
+				bundle.putInt("GameHighScore", mHighScore);
+				bundle.putInt("GameWinCount", mWinCount);
+				bundle.putInt("NewScore", -1);
 	            newAct.putExtras(bundle);
 				startActivityForResult(newAct, 0);
 				Game1Activity.this.finish();
@@ -122,19 +135,22 @@ public class Game1Activity extends Activity {
             public boolean onHover(View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_HOVER_ENTER:
-                    	PlayPalUtility.curEntry = new RecordEntry(new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_START);
-                    	PenRecorder.startRecorder();
+    					PlayPalUtility.curEntry = new RecordEntry(
+    							new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_START);
+    					PenRecorder.forceRecord();
                     	knifeView.setVisibility(ImageView.VISIBLE);
                         break;
                     case MotionEvent.ACTION_HOVER_MOVE:
-                    	PlayPalUtility.curEntry = new RecordEntry(new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_MOVE);
+                    	PlayPalUtility.curEntry = new RecordEntry(
+    							new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_MOVE);
                     	RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
                     	params.setMargins((int)event.getX(), (int)event.getY() , 0, 0);
                     	knifeView.setLayoutParams(params);
                         break;
                     case MotionEvent.ACTION_HOVER_EXIT:
-                    	PlayPalUtility.curEntry = new RecordEntry(new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_END);
-                    	PenRecorder.startRecorder();
+                    	PlayPalUtility.curEntry = new RecordEntry(
+    							new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_END);
+                    	PenRecorder.forceRecord();
                     	knifeView.setVisibility(ImageView.INVISIBLE);
                         break;
                 }
@@ -147,7 +163,8 @@ public class Game1Activity extends Activity {
 				return handleLineAction();
 			}
 		});
-		PlayPalUtility.setHoverTarget(true, knifeView, game1RelativeLayout);
+		PlayPalUtility.registerFailFeedback((ImageView)findViewById(R.id.failFeedbackView));
+		PlayPalUtility.setHoverTarget(true, knifeView);
 		PlayPalUtility.setLineGesture(true);
 		Point beginPnt = new Point(foodOffsetX + carrotCutBeginPointArray[progressCount].x, foodOffsetY + carrotCutBeginPointArray[progressCount].y);
 		Point endPnt = new Point(foodOffsetX + carrotCutEndPointArray[progressCount].x, foodOffsetY + carrotCutEndPointArray[progressCount].y);
@@ -161,7 +178,19 @@ public class Game1Activity extends Activity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		PlayPalUtility.killTimeBar();
+		clearAll();
+	}
+	
+	@Override
+	public void onBackPressed() {
+	}
+	
+	private void clearAll() {
+		score += PlayPalUtility.killTimeBar();
+		PlayPalUtility.setLineGesture(false);
+		PlayPalUtility.unregisterLineGesture(game1RelativeLayout);
+		PlayPalUtility.unregisterFailFeedback();
+		PlayPalUtility.clearGestureSets();
 		PlayPalUtility.clearDrawView();
 	}
 	
@@ -195,16 +224,14 @@ public class Game1Activity extends Activity {
 		
 		cucumberView = (ImageView) findViewById(R.id.cucumberView);
 		
-		game1RelativeLayout = (RelativeLayout) findViewById(R.id.game1RelativeLayout);
+		game1RelativeLayout = (DrawableRelativeLayout) findViewById(R.id.game1RelativeLayout);
 	}
 
 	protected void setHomeListener(View targetView) {
 		targetView.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View view, MotionEvent event) {
-				PlayPalUtility.setLineGesture(false);
-	            PlayPalUtility.clearGestureSets();
-				PlayPalUtility.unregisterLineGesture(game1RelativeLayout);
+				clearAll();
 				
 				Intent newAct = new Intent();
 				newAct.setClass(Game1Activity.this, MainActivity.class);
@@ -232,7 +259,7 @@ public class Game1Activity extends Activity {
 		potDropAnim.start();
 
 		if (progressCount == step2TotalProgressCount) {
-			PlayPalUtility.killTimeBar();
+			score += PlayPalUtility.killTimeBar();
 			PenRecorder.outputJSON();
 			Animation boardAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTLEFT);
 			boardAnim.setAnimationListener(new AnimationListener() {
@@ -288,7 +315,7 @@ public class Game1Activity extends Activity {
 				if(event.getAction() == MotionEvent.ACTION_DOWN) { 
 					PlayPalUtility.curEntry = new RecordEntry(
 						new Point((int)event.getRawX(), (int)event.getRawY()), RecordEntry.STATE_TOUCH_START);
-					PenRecorder.startRecorder();
+					PenRecorder.forceRecord();
 				}
 				else if(event.getAction() == MotionEvent.ACTION_MOVE)
 					PlayPalUtility.curEntry = new RecordEntry(
@@ -296,7 +323,7 @@ public class Game1Activity extends Activity {
 				else {
 					PlayPalUtility.curEntry = new RecordEntry(
 							new Point((int)event.getRawX(), (int)event.getRawY()), RecordEntry.STATE_TOUCH_END);
-					PenRecorder.stopRecorder();
+					PenRecorder.forceRecord();
 				}
 					
 				int minXBoardBound = 0;
@@ -351,11 +378,10 @@ public class Game1Activity extends Activity {
 		potStirAnim.start();
 
 		if (progressCount == step3TotalProgressCount) {
-			PlayPalUtility.killTimeBar();
-			PlayPalUtility.setLineGesture(false);
-			PlayPalUtility.unregisterLineGesture(game1RelativeLayout);
-			PlayPalUtility.clearGestureSets();
+			clearAll();
 			PenRecorder.outputJSON();
+			
+			Log.d("EndTest", String.format("Game1Score: %d", score));
 			
 			Intent newAct = new Intent();
 			newAct.setClass(Game1Activity.this, AnimationActivity.class);
@@ -363,6 +389,10 @@ public class Game1Activity extends Activity {
 			bundle.putInt("GameIndex", 1);
 			bundle.putBoolean("isWin", true);
 			bundle.putString("userName", mUserName);
+			bundle.putInt("GameBadges", mBadges);
+			bundle.putInt("GameHighScore", mHighScore);
+			bundle.putInt("GameWinCount", mWinCount);
+			bundle.putInt("NewScore", score);
             newAct.putExtras(bundle);
 			startActivityForResult(newAct, 0);
 			Game1Activity.this.finish();
@@ -474,7 +504,7 @@ public class Game1Activity extends Activity {
 		} else if (progressCount == step1TotalProgressCount) {
 			isFoodCanTouch = false;
 			PlayPalUtility.clearDrawView();
-			PlayPalUtility.killTimeBar();
+			score += PlayPalUtility.killTimeBar();
 			
 			PenRecorder.outputJSON();
 

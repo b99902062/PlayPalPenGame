@@ -4,12 +4,20 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF" >
 	
-    <RelativeLayout
+    <view
+        class="com.example.playpalpengame.DrawableRelativeLayout"
         android:id="@+id/Game3RelativeLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/background" >
 
+        <ImageView
+            android:id="@+id/failFeedbackView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/fail_feedback"
+            android:visibility="invisible" />
+        
         <ImageView
             android:id="@+id/homeBtn"
             android:layout_width="wrap_content"
@@ -18,19 +26,8 @@
             android:layout_marginTop="25dp"
             android:src="@drawable/home" />
 
-         <ImageView 
-            android:id="@+id/Game3_beat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/game3_eggbeat"
-            android:visibility="invisible"/>
          
-          <ImageView 
-            android:id="@+id/Game3_squeezer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/game3_squeezer"
-            android:visibility="invisible"/>
+         
         
          <ImageView
             android:id="@+id/Game3_bowl"
@@ -193,7 +190,9 @@
             android:layout_marginLeft="350dp"
             android:layout_marginTop="40dp"
             android:src="@drawable/progress" />
+        
+        <ImageView android:id="@+id/Game3_beat" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/game3_eggbeat" android:visibility="invisible" />
             
-    </RelativeLayout>
+    </view>
 
 </FrameLayout>
