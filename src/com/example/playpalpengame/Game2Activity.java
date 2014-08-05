@@ -58,6 +58,7 @@ public class Game2Activity extends Activity {
 	private String mUserName = null;
 	private int mBadges = 0;
 	private int mHighScore = 0;
+	private int mWinCount = 0;
 	
 	private int curFishIndex;
 	protected boolean canPutInBasket = false;
@@ -101,6 +102,7 @@ public class Game2Activity extends Activity {
 		mUserName = bundle.getString("userName");
 		mBadges = bundle.getInt("GameBadges");
 		mHighScore = bundle.getInt("GameHighScore");
+		mWinCount = bundle.getInt("GameWinCount");
 		
 		progressCount = 0;
 		PlayPalUtility.registerProgressBar((ProgressBar)findViewById(R.id.progressBarRed), (ImageView)findViewById(R.id.progressMark), (ImageView)findViewById(R.id.progressBar), new Callable<Integer>() {
@@ -113,6 +115,7 @@ public class Game2Activity extends Activity {
 				bundle.putString("userName", mUserName);
 				bundle.putInt("GameBadges", mBadges);
 				bundle.putInt("GameHighScore", mHighScore);
+				bundle.putInt("GameWinCount", mWinCount);
 	            newAct.putExtras(bundle);
 	            
 				startActivityForResult(newAct, 0);
@@ -142,6 +145,7 @@ public class Game2Activity extends Activity {
 				return catchFish();
 			}
 		});
+		PlayPalUtility.registerFailFeedback((ImageView)findViewById(R.id.failFeedbackView));
 		PenRecorder.registerRecorder(game2RelativeLayout, this, mUserName, "2-1");
 		PlayPalUtility.setLineGesture(true);
 		PlayPalUtility.initDrawView(game2RelativeLayout, this);
@@ -212,7 +216,15 @@ public class Game2Activity extends Activity {
 	@Override
 	protected void onPause() {
 	    super.onPause();
-	    for(int i=0; i<fishThreadList.size(); i++) {
+	    clearAll();
+	}
+	
+	@Override
+	public void onBackPressed() {
+	}
+	
+	private void clearAll() {
+		for(int i=0; i<fishThreadList.size(); i++) {
 	    	if (fishThreadList.get(i) != null) {
 	    		fishThreadList.get(i).killThread();
 		        if (!fishThreadList.get(i).isInterrupted()) 
@@ -223,30 +235,18 @@ public class Game2Activity extends Activity {
 	    PlayPalUtility.killTimeBar();
 	    PlayPalUtility.clearDrawView();
 	    PlayPalUtility.clearGestureSets();
+	    PlayPalUtility.setLineGesture(false);
+		PlayPalUtility.unregisterLineGesture(game2RelativeLayout);
+		PlayPalUtility.unregisterFailFeedback();
 	    
 	    isReady = false;
-	}
-	
-	@Override
-	public void onBackPressed() {
 	}
 	
 	protected void setHomeListener(View targetView) {
 		targetView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				for(int i=0; i<fishThreadList.size(); i++) {
-			    	if (fishThreadList.get(i) != null) {
-			    		fishThreadList.get(i).killThread();
-			    		if (!fishThreadList.get(i).isInterrupted())  
-			    			fishThreadList.get(i).interrupt();
-			    	}
-			    }
-				
-				PlayPalUtility.setLineGesture(false);
-	            PlayPalUtility.clearGestureSets();
-				PlayPalUtility.unregisterLineGesture(game2RelativeLayout);
-				
+				clearAll();
 				Intent newAct = new Intent();
 				newAct.setClass( Game2Activity.this, MainActivity.class );
 				Bundle bundle = new Bundle();
@@ -387,9 +387,9 @@ public class Game2Activity extends Activity {
 		testProgressCountText.setText(String.format("ProgressCount: %d", progressCount));
 		if(progressCount == step2TotalProgressCount) {
 			score += PlayPalUtility.killTimeBar();
-			PlayPalUtility.setLineGesture(false);
-			PlayPalUtility.unregisterLineGesture(game2RelativeLayout);
-			PlayPalUtility.clearGestureSets();
+			
+			clearAll();
+			
 			PenRecorder.outputJSON();
 			Intent newAct = new Intent();
 			newAct.setClass(Game2Activity.this, AnimationActivity.class);
@@ -399,6 +399,7 @@ public class Game2Activity extends Activity {
 			bundle.putString("userName", mUserName);
 			bundle.putInt("GameBadges", mBadges);
 			bundle.putInt("GameHighScore", mHighScore);
+			bundle.putInt("GameWinCount", mWinCount);
 			bundle.putInt("NewScore", score);
             newAct.putExtras(bundle);
 			startActivityForResult(newAct, 0);

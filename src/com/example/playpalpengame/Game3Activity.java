@@ -93,6 +93,7 @@ public class Game3Activity extends Activity {
 	protected String userName = null;
 	private int mBadges = 0;
 	private int mHighScore = 0;
+	private int mWinCount = 0;
 	private int score = 0;
 	
 	TextView  progressCountText;
@@ -124,6 +125,7 @@ public class Game3Activity extends Activity {
 		userName = bundle.getString("userName");
 		mBadges = bundle.getInt("GameBadges");
 		mHighScore = bundle.getInt("GameHighScore");
+		mWinCount = bundle.getInt("GameWinCount");
 		
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -312,6 +314,7 @@ public class Game3Activity extends Activity {
 				bundle.putString("userName", userName);
 				bundle.putInt("GameBadges", mBadges);
 				bundle.putInt("GameHighScore", mHighScore);
+				bundle.putInt("GameWinCount", mWinCount);
 				bundle.putInt("NewScore", -1);
 	            newAct.putExtras(bundle);
 				startActivityForResult(newAct, 0);
@@ -608,6 +611,7 @@ public class Game3Activity extends Activity {
 		bundle.putString("userName", userName);
 		bundle.putInt("GameBadges", mBadges);
 		bundle.putInt("GameHighScore", mHighScore);
+		bundle.putInt("GameWinCount", mWinCount);
 		bundle.putInt("NewScore", score);
         newAct.putExtras(bundle);
 		startActivityForResult(newAct, 0);

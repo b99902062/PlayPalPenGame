@@ -31,7 +31,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -42,6 +41,7 @@ import android.widget.RelativeLayout.LayoutParams;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class TherapyMainActivity extends Activity {
@@ -54,6 +54,14 @@ public class TherapyMainActivity extends Activity {
 	public static Spinner stageSpinner = null;
 	public static Spinner recordSpinner = null;
 	public static ProgressBar loadingBar = null;
+	public static SeekBar timeBar = null;
+	public static TextView progressText = null;
+	public static SeekBar replaySpeedBar = null;
+	public static TextView replaySpeedText = null;
+	public static ImageView replayTrackBtn = null;
+	
+	public static boolean isPause = true;
+	
 	public static ArrayList<AnalysisMessage> resultList;
 	public static ArrayList<AnalysisMessage> targetPlayerList;
 	public static ArrayList<AnalysisMessage> targetStageList;
@@ -90,6 +98,11 @@ public class TherapyMainActivity extends Activity {
 		stageSpinner = (Spinner) findViewById(R.id.stageSpinner);
 		recordSpinner = (Spinner) findViewById(R.id.recordSpinner);
 		loadingBar = (ProgressBar) findViewById(R.id.loadingBar);
+		timeBar = (SeekBar) findViewById(R.id.timeBar);
+		progressText = (TextView) findViewById(R.id.progressText);
+		replaySpeedBar = (SeekBar) findViewById(R.id.replaySpeedBar);
+		replaySpeedText = (TextView) findViewById(R.id.speedLabel);
+		replayTrackBtn = (ImageView)findViewById(R.id.replayTrackBtn);
 		
 		ImageView backBtn = (ImageView) findViewById(R.id.backBtn);
 		backBtn.setOnClickListener(new OnClickListener() {
@@ -128,21 +141,36 @@ public class TherapyMainActivity extends Activity {
 		if(resultList != null) {
 			initialSpinner();
 			
-			Button replayTrackBtn = (Button)findViewById(R.id.replayTrackBtn);
 			replayTrackBtn.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					((DrawCanvasView)findViewById(R.id.canvasView)).setLimit(0);
-					setReplayTimer();
+					//((DrawCanvasView)findViewById(R.id.canvasView)).setLimit(0);
+					if(isPause) {
+						replayTrackBtn.setImageResource(R.drawable.pause_btn);
+						setReplayTimer();
+						isPause = false;
+					}
+					else {
+						if(replayTimer != null)
+							replayTimer.cancel();
+						if(replayTimerTask != null)
+							replayTimerTask.cancel();
+						replayTrackBtn.setImageResource(R.drawable.replay_btn);
+						isPause = true;
+					}
 				}
 			});
 			
-			((SeekBar)findViewById(R.id.replaySpeedBar)).setOnSeekBarChangeListener(
+			replaySpeedBar.setOnSeekBarChangeListener(
 					new OnSeekBarChangeListener() {
 						@Override
 						public void onProgressChanged(SeekBar arg0, int arg1,
 								boolean arg2) {
-							setReplayTimer();
+							float percentage = ((SeekBar)findViewById(R.id.replaySpeedBar)).getProgress() / 100.f;
+							int targetSpeed = REPLAY_SPEED + (int) (REPLAY_SPEED * 29 * (1 - percentage));
+							replaySpeedText.setText(String.format("Replay Speed: %.2fX", 30.f / targetSpeed));
+							if(!isPause)
+								setReplayTimer();
 						}
 
 						@Override
@@ -160,7 +188,7 @@ public class TherapyMainActivity extends Activity {
 	
 	public void setReplayTimer() {
 		float percentage = ((SeekBar)findViewById(R.id.replaySpeedBar)).getProgress() / 100.f;
-		int targetSpeed = REPLAY_SPEED + (int) (REPLAY_SPEED * 299 * (1 - percentage));
+		int targetSpeed = REPLAY_SPEED + (int) (REPLAY_SPEED * 29 * (1 - percentage));
 		if(replayTimer != null)
 			replayTimer.cancel();
 		if(replayTimerTask != null)
@@ -174,8 +202,11 @@ public class TherapyMainActivity extends Activity {
         public void handleMessage(Message msg) {
         	TherapyMainActivity.canvasView.addLimit();
         	TherapyMainActivity.canvasView.invalidate();
+        	timeBar.setProgress(TherapyMainActivity.canvasView.getLimit());
+        	progressText.setText(String.format("%d/%d", TherapyMainActivity.canvasView.getLimit(), timeBar.getMax()));
         	if(TherapyMainActivity.canvasView.getLimit() > TherapyMainActivity.canvasView.getPointsCount()) {
         		replayTimerTask.cancel();
+        		replayTrackBtn.setImageResource(R.drawable.replay_btn);
         	}
         }
     };
@@ -252,6 +283,8 @@ public class TherapyMainActivity extends Activity {
 						if(targetRecord == null)
 							Toast.makeText(TherapyMainActivity.this, R.string.str_target_record_not_exist, Toast.LENGTH_SHORT).show();
 						canvasView.updatePointList(targetRecord.points);
+						timeBar.setMax(targetRecord.points.size());
+						((TextView)findViewById(R.id.progressText)).setText(String.format("0/%d", timeBar.getMax()));
 						canvasView.invalidate();
 					}
 					
@@ -259,6 +292,26 @@ public class TherapyMainActivity extends Activity {
 					public void onNothingSelected(AdapterView arg0) {
 					}
 				});
+
+		timeBar.setOnSeekBarChangeListener(
+				new OnSeekBarChangeListener() {
+					@Override
+					public void onProgressChanged(SeekBar arg0, int arg1,
+							boolean arg2) {
+						TherapyMainActivity.canvasView.setLimit(arg1);
+						progressText.setText(String.format("%d/%d", TherapyMainActivity.canvasView.getLimit(), timeBar.getMax()));
+			        	TherapyMainActivity.canvasView.invalidate();
+					}
+
+					@Override
+					public void onStartTrackingTouch(SeekBar seekBar) {
+					}
+
+					@Override
+					public void onStopTrackingTouch(SeekBar seekBar) {
+					}
+				}
+		);
 	}
 	
 	public void setSrcBackground(String curStage) {
@@ -440,6 +493,7 @@ class DrawCanvasView extends View {
     	p = new Paint();
 		p.setColor(Color.WHITE);
 		p.setAntiAlias(true);
+		p.setStrokeWidth(10);
     }
     
     public void setLineUp(boolean value) {

@@ -242,12 +242,16 @@ public class BeginActivity extends Activity {
 			
 			curRecord.put("gameBadge4", 0);
 			curRecord.put("gameHighScore4", 0);
+			curRecord.put("gameWinCount4", 0);
 			curRecord.put("gameBadge3", 0);
 			curRecord.put("gameHighScore3", 0);
+			curRecord.put("gameWinCount3", 0);
 			curRecord.put("gameBadge2", 0);
 			curRecord.put("gameHighScore2", 0);
+			curRecord.put("gameWinCount2", 0);
 			curRecord.put("gameBadge1", 0);
 			curRecord.put("gameHighScore1", 0);
+			curRecord.put("gameWinCount1", 0);
 			curRecord.put("isMale", isMale);
 			curRecord.put("age", userAge);
 			curRecord.put("name", newName);

@@ -28,6 +28,7 @@ public class MainActivity extends Activity {
 	
 	private static int[] badges = new int[4];
 	private static int[] highScores = new int[4];
+	private static int[] winCount = new int[4];
 	
 	private static String mUserName = null;
 	
@@ -73,6 +74,7 @@ public class MainActivity extends Activity {
 				bundle.putString("userName", mUserName);
 				bundle.putInt("GameBadges", badges[gameIndex-1]);
 				bundle.putInt("GameHighScore", highScores[gameIndex-1]);
+				bundle.putInt("GameWinCount", winCount[gameIndex-1]);
 	            newAct.putExtras(bundle);
 	            startActivityForResult(newAct ,0);
 	            MainActivity.this.finish();
@@ -103,6 +105,7 @@ public class MainActivity extends Activity {
 				if(msg.userName.equals(mUserName)) {
 					badges = msg.badges;
 					highScores = msg.highScores;
+					winCount = msg.winCount;
 				}
 			}
 			return returnList;
@@ -144,6 +147,7 @@ public class MainActivity extends Activity {
 		String userName = null;
 		int[] badges = new int[4];
 		int[] highScores = new int[4];
+		int[] winCount = new int[4];
 		
 		reader.beginObject();
 	    while (reader.hasNext()) {
@@ -162,12 +166,18 @@ public class MainActivity extends Activity {
 	    			   highScores[i-1] = reader.nextInt(); 
 	    	   }
 	       }
+	       else if (name.contains("gameWinCount")) {
+	    	   for(int i=1; i<=4; i++) {
+	    		   if(name.contains(Integer.toString(i)))
+	    			   winCount[i-1] = reader.nextInt(); 
+	    	   }
+	       }
 	       else {
 	         reader.skipValue();
 	       }
 	     }
 	     reader.endObject();
-	     return new RecordMessage(userName, badges, highScores);
+	     return new RecordMessage(userName, badges, highScores, winCount);
 	 }
 	
 	public static String[] getAllNames(ArrayList<RecordMessage> targetList) {
@@ -185,12 +195,14 @@ class RecordMessage {
 	public String userName;
 	public int[] badges = new int[4];
 	public int[] highScores = new int[4];
+	public int[] winCount = new int[4];
 	
-	public RecordMessage(String userName, int[] badges, int[] highScores) {
+	public RecordMessage(String userName, int[] badges, int[] highScores, int[] winCount) {
 		this.userName = userName;
 		for(int i=0; i<4; i++) {
 			this.badges[i] = badges[i];
 			this.highScores[i] = highScores[i];
+			this.winCount[i] = winCount[i];
 		}
 	}
 }

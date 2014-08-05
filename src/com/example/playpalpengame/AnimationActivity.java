@@ -38,6 +38,7 @@ public class AnimationActivity extends Activity {
 	private String mUserName = null;
 	private int mBadges = 0;
 	private int mHighScore = 0;
+	private int mWinCount = 0;
 	private int gameIndex;
 	private boolean isWin;
 	private int[] starResArray = {R.drawable.star_1, R.drawable.star_2, R.drawable.star_3, R.drawable.star_4, R.drawable.star_5, R.drawable.star_6};
@@ -58,11 +59,15 @@ public class AnimationActivity extends Activity {
 		isWin = bundle.getBoolean("isWin");
 		mBadges = bundle.getInt("GameBadges");
 		mHighScore = bundle.getInt("GameHighScore");
+		mWinCount = bundle.getInt("GameWinCount");
 		int newScore = bundle.getInt("NewScore");
 		monsterView = (ImageView)findViewById(R.id.monsterView);
 		ImageView replayBtn = (ImageView)findViewById(R.id.replayBtn);
 		
 		setHomeListener(findViewById(R.id.homeBtn));
+		
+		if(isWin)
+			mWinCount++;
 		
 		if(isWin && newScore >= mHighScore * 1.1) {
 			if(mHighScore == 0)
@@ -94,6 +99,11 @@ public class AnimationActivity extends Activity {
 					return true;
 				}
 			});
+		}
+		else if(isWin) {
+			mHighScore -= 5;
+			updateRecordJson();
+			setEndAnim();
 		}
 		else 
 			setEndAnim();
@@ -134,15 +144,15 @@ public class AnimationActivity extends Activity {
 			while ((line = reader.readLine()) != null)
 			    recordJson = recordJson.concat(line);
 			JSONArray recordArray = new JSONArray(recordJson);
-			Log.d("EndTest", String.valueOf(recordArray.length()));
 			for(int i=0; i<recordArray.length(); i++) {
 				JSONObject singleRecord = recordArray.getJSONObject(i);
 				if(singleRecord.getString("name").equals(mUserName)) {
-					Log.d("EndTest", "FInded!!!");
 					String badgeKey = "gameBadge".concat(String.valueOf(gameIndex));
 					String scoreKey = "gameHighScore".concat(String.valueOf(gameIndex));
+					String winKey = "gameWinCount".concat(String.valueOf(gameIndex));
 					singleRecord.put(badgeKey, mBadges);
 					singleRecord.put(scoreKey, mHighScore);
+					singleRecord.put(winKey, mWinCount);
 					break;
 				}
 			}

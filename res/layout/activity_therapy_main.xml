@@ -51,7 +51,7 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/home" 
                 android:layout_marginLeft="50dp" 
-                android:layout_marginTop="600dp"/>
+                android:layout_marginTop="650dp"/>
 
             <TextView
                 android:id="@+id/nameLabel"
@@ -82,63 +82,6 @@
                 android:layout_marginLeft="24dp"
                 android:layout_marginTop="235dp"
                 android:text="Record:" />
-
-            <TextView
-                android:id="@+id/speedLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginLeft="24dp"
-                android:layout_marginTop="335dp"
-                android:text="Replay Speed:" />
-            
-            <SeekBar
-                android:id="@+id/replaySpeedBar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="550dp"
-                android:layout_marginTop="350dp"
-                android:max="100" />
-
-            <CheckBox
-                android:id="@+id/isLineUpCheckbox"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="550dp"
-                android:layout_marginTop="390dp"
-                android:text="Line Up" />
-            
-            <CheckBox
-                android:id="@+id/isShowHoverCheckbox"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="550dp"
-                android:layout_marginTop="430dp"
-                android:text="Show Hover" />
-            
-            <Button
-                android:id="@+id/replayTrackBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="550dp"
-                android:layout_marginTop="530dp"
-                android:text="Replay" />
-
-            
-
         </RelativeLayout>
 
         <RelativeLayout
@@ -150,7 +93,7 @@
             android:layout_marginBottom="80dp"
             android:layout_marginLeft="200dp"
             android:layout_marginRight="56dp"
-            android:layout_marginTop="80dp"
+            android:layout_marginTop="30dp"
             android:orientation="vertical" >
 
             <view
@@ -168,6 +111,65 @@
                 android:alpha="0.5"
                 android:src="@drawable/background" />
 
+            <CheckBox
+                android:id="@+id/isLineUpCheckbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="100dp"
+                android:layout_marginTop="10dp"
+                android:text="Line Up" />
+            
+            <CheckBox
+                android:id="@+id/isShowHoverCheckbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="300dp"
+                android:layout_marginTop="10dp"
+                android:text="Show Hover" />
+            
+            <TextView
+                android:id="@+id/speedLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginRight="260dp"
+                android:layout_marginTop="10dp"
+                android:text="Replay Speed: 1X" />
+            
+            <SeekBar
+                android:id="@+id/replaySpeedBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginRight="20dp"
+                android:layout_marginLeft="800dp"
+                android:layout_marginTop="10dp"
+                android:max="100" />
+            
+            <SeekBar
+                android:id="@+id/timeBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="600dp"
+                android:max="100" />
+
+            <ImageView
+                android:id="@+id/replayTrackBtn"
+                android:src="@+drawable/replay_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="650dp" />
+            
             <ProgressBar
                 android:id="@+id/loadingBar"
                 style="?android:attr/progressBarStyleLarge"
@@ -178,6 +180,16 @@
                 android:layout_marginLeft="457dp" />
 
         </RelativeLayout>
+
+        <TextView
+            android:id="@+id/progressText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="30dp"
+            android:layout_marginRight="70dp"
+            android:text="0/0" />
 
     </RelativeLayout>
 

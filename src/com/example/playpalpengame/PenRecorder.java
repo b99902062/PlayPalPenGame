@@ -86,7 +86,7 @@ public class PenRecorder{
 	private static String playerName;
 	private static String stageName;
 	protected static Context context;
-	protected static int passedTime;
+	protected static long passedTime;
 	private static boolean isRecording = false;
 	private static DrawableRelativeLayout drLayout = null;
 	
@@ -153,7 +153,7 @@ public class PenRecorder{
 			SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
 			String date = df.format(Calendar.getInstance().getTime());
 			curRecord.put("date",date);
-			curRecord.put("time",passedTime);
+			curRecord.put("time",(int)passedTime);
 			 
 			JSONArray pointJSONArray = new JSONArray();
 			 
@@ -182,13 +182,15 @@ public class PenRecorder{
 
 class RecordTimerTask extends TimerTask{
 	private DrawableRelativeLayout drLayout = null;
+	private long startTime;
 	
 	public RecordTimerTask(DrawableRelativeLayout layout) {
 		drLayout = layout;
+		startTime = System.currentTimeMillis();
 	}
 	
 	public void run(){
-		 PenRecorder.passedTime++;
+		 PenRecorder.passedTime = System.currentTimeMillis() - startTime;
 		 if(PlayPalUtility.curEntry != null) { 
 			 PenRecorder.posArray.add(PlayPalUtility.curEntry);
 			 if(PlayPalUtility.curEntry.state == RecordEntry.STATE_TOUCH_END)
@@ -248,7 +250,7 @@ class DrawableRelativeLayout extends RelativeLayout {
     	
     	p = new Paint();
 		p.setColor(Color.DKGRAY);
-		p.setStrokeWidth(5);
+		p.setStrokeWidth(10);
 		p.setAntiAlias(true);
 		
 		setWillNotDraw(false);

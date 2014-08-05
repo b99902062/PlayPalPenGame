@@ -60,6 +60,8 @@ public class PlayPalUtility {
 	protected static DrawView drawview;
 	protected static Timer timer;
 	protected static TimeBarTask timerTask;
+	
+	protected static ImageView feedbackView;
 
 	private static Callable<Integer> failFunc;
 	private static int totalProgress = 0;
@@ -121,18 +123,26 @@ public class PlayPalUtility {
 		return newAnim;
 	}
 	
+	protected static void setAlphaAnimation(View view, boolean isIn, int duration) {
+		setAlphaAnimation(view, isIn, null, duration);
+	}
+	
 	protected static void setAlphaAnimation(View view, boolean isIn) {
-		setAlphaAnimation(view, isIn, null);
+		setAlphaAnimation(view, isIn, null, 2000);
 	}
 	
 	protected static void setAlphaAnimation(View view, boolean isIn, final Callable<Integer> func) {
+		setAlphaAnimation(view, isIn, func, 2000);
+	}
+	
+	protected static void setAlphaAnimation(View view, boolean isIn, final Callable<Integer> func, int duration) {
 		Animation fade;
 		if(isIn) 
 			fade = new AlphaAnimation(0, 1);
 		else
 			fade = new AlphaAnimation(1, 0);
 		fade.setInterpolator(new DecelerateInterpolator());
-		fade.setDuration(2000);
+		fade.setDuration(duration);
 		if(func != null) {
 			fade.setAnimationListener(new AnimationListener() {
 				@Override
@@ -391,6 +401,34 @@ public class PlayPalUtility {
 		registerLineGesture(view, context, func, null);
 	}
 	
+	protected static void registerFailFeedback(ImageView view) {
+		feedbackView = view;
+	}
+	
+	protected static void unregisterFailFeedback() {
+		feedbackView = null;
+	}
+	
+	protected static void doFailFeedback() {
+		Log.d("EndTest", "doFailFeedback()");
+		if(feedbackView == null)
+			return;
+		feedbackView.setVisibility(View.VISIBLE);
+		setAlphaAnimation(feedbackView, true, new Callable<Integer>() {
+			@Override
+			public Integer call() throws Exception {
+				setAlphaAnimation(feedbackView, false, new Callable<Integer>() {
+					@Override
+					public Integer call() throws Exception {
+						feedbackView.setVisibility(View.INVISIBLE);
+						return 0;
+					}
+				}, 300);
+				return 0;
+			}
+		}, 300);
+	}
+	
 	protected static void registerLineGesture(View view, Context context, final Callable<Integer> func, final Callable<Integer> func2 ){
 		targetView = view;
 		targetContext = context;
@@ -423,6 +461,7 @@ public class PlayPalUtility {
 				
 				if(!isLineGestureOn)
 					return false;
+				boolean isTrigger = false;
 				for(int setIndex=0; setIndex<gestureSetList.size(); setIndex++) {
 					if(!gestureSetList.get(setIndex).isValid)
 						continue;
@@ -498,6 +537,7 @@ public class PlayPalUtility {
 							if(pointPassedList.size() >= curSet.pointList.size()) {
 								lastTriggerSetIndex = setIndex;
 								try {
+									isTrigger = true;
 									func.call();
 								} catch(Exception ex) {
 									ex.printStackTrace();
@@ -507,6 +547,8 @@ public class PlayPalUtility {
 							break;
 					}
 				}
+				if(!isTrigger && event.getAction() == MotionEvent.ACTION_UP)
+					doFailFeedback();
 				return true;
 			}
 		});

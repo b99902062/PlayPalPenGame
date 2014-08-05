@@ -58,6 +58,7 @@ public class Game1Activity extends Activity {
 	private String mUserName = null;
 	private int mBadges = 0;
 	private int mHighScore = 0;
+	private int mWinCount = 0;
 	protected ArrayList<View> foodInPot;
 
 	protected ImageView currentFoodView;
@@ -103,6 +104,7 @@ public class Game1Activity extends Activity {
 		mUserName = bundle.getString("userName");
 		mBadges = bundle.getInt("GameBadges");
 		mHighScore = bundle.getInt("GameHighScore");
+		mWinCount = bundle.getInt("GameWinCount");
 		
 		doInitial();
 		
@@ -118,6 +120,7 @@ public class Game1Activity extends Activity {
 				bundle.putString("userName", mUserName);
 				bundle.putInt("GameBadges", mBadges);
 				bundle.putInt("GameHighScore", mHighScore);
+				bundle.putInt("GameWinCount", mWinCount);
 				bundle.putInt("NewScore", -1);
 	            newAct.putExtras(bundle);
 				startActivityForResult(newAct, 0);
@@ -160,6 +163,7 @@ public class Game1Activity extends Activity {
 				return handleLineAction();
 			}
 		});
+		PlayPalUtility.registerFailFeedback((ImageView)findViewById(R.id.failFeedbackView));
 		PlayPalUtility.setHoverTarget(true, knifeView);
 		PlayPalUtility.setLineGesture(true);
 		Point beginPnt = new Point(foodOffsetX + carrotCutBeginPointArray[progressCount].x, foodOffsetY + carrotCutBeginPointArray[progressCount].y);
@@ -185,6 +189,7 @@ public class Game1Activity extends Activity {
 		score += PlayPalUtility.killTimeBar();
 		PlayPalUtility.setLineGesture(false);
 		PlayPalUtility.unregisterLineGesture(game1RelativeLayout);
+		PlayPalUtility.unregisterFailFeedback();
 		PlayPalUtility.clearGestureSets();
 		PlayPalUtility.clearDrawView();
 	}
@@ -386,6 +391,7 @@ public class Game1Activity extends Activity {
 			bundle.putString("userName", mUserName);
 			bundle.putInt("GameBadges", mBadges);
 			bundle.putInt("GameHighScore", mHighScore);
+			bundle.putInt("GameWinCount", mWinCount);
 			bundle.putInt("NewScore", score);
             newAct.putExtras(bundle);
 			startActivityForResult(newAct, 0);
