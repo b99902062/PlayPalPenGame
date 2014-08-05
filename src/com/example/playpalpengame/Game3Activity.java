@@ -168,7 +168,7 @@ public class Game3Activity extends Activity {
             		hoverItem = squeezerView;
             	
             	
-            	PlayPalUtility.setHoverTarget(true, hoverItem);
+            	PlayPalUtility.setHoverTarget(true, hoverItem, game3RelativeLayout);
             	
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_HOVER_ENTER:

@@ -287,7 +287,7 @@ public class Game4Activity extends Activity {
             	//else
             	//	hoverItem = stickView;//others
             	
-            	PlayPalUtility.setHoverTarget(true, hoverItem);
+            	PlayPalUtility.setHoverTarget(true, hoverItem, game4RelativeLayout);
             	
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_HOVER_ENTER:

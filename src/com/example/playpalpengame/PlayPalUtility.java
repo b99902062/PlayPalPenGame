@@ -480,9 +480,15 @@ public class PlayPalUtility {
 		});
 	}
 
-	protected static void setHoverTarget(boolean value, ImageView view) {
+	protected static void setHoverTarget(boolean value, ImageView view, RelativeLayout layout) {
 		isNeedHover = value;
 		hoverTarget = view;
+		
+		if(hoverTarget != null){
+			hoverTarget.bringToFront();
+			layout.invalidate();
+		}
+		
 	}
 	
 	

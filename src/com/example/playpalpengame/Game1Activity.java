@@ -122,14 +122,19 @@ public class Game1Activity extends Activity {
             public boolean onHover(View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_HOVER_ENTER:
+                    	PlayPalUtility.curEntry = new RecordEntry(new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_START);
+                    	PenRecorder.startRecorder();
                     	knifeView.setVisibility(ImageView.VISIBLE);
                         break;
                     case MotionEvent.ACTION_HOVER_MOVE:
+                    	PlayPalUtility.curEntry = new RecordEntry(new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_MOVE);
                     	RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
                     	params.setMargins((int)event.getX(), (int)event.getY() , 0, 0);
                     	knifeView.setLayoutParams(params);
                         break;
                     case MotionEvent.ACTION_HOVER_EXIT:
+                    	PlayPalUtility.curEntry = new RecordEntry(new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_END);
+                    	PenRecorder.startRecorder();
                     	knifeView.setVisibility(ImageView.INVISIBLE);
                         break;
                 }
@@ -142,7 +147,7 @@ public class Game1Activity extends Activity {
 				return handleLineAction();
 			}
 		});
-		PlayPalUtility.setHoverTarget(true, knifeView);
+		PlayPalUtility.setHoverTarget(true, knifeView, game1RelativeLayout);
 		PlayPalUtility.setLineGesture(true);
 		Point beginPnt = new Point(foodOffsetX + carrotCutBeginPointArray[progressCount].x, foodOffsetY + carrotCutBeginPointArray[progressCount].y);
 		Point endPnt = new Point(foodOffsetX + carrotCutEndPointArray[progressCount].x, foodOffsetY + carrotCutEndPointArray[progressCount].y);

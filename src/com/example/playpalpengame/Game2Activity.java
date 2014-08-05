@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.concurrent.Callable;
 
+import com.samsung.spensdk.applistener.SPenHoverListener;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Point;
@@ -136,6 +138,9 @@ public class Game2Activity extends Activity {
 		PenRecorder.registerRecorder(game2RelativeLayout, this, mUserName, "2-1");
 		PlayPalUtility.setLineGesture(true);
 		PlayPalUtility.initDrawView(game2RelativeLayout, this);
+		
+		
+		
 		
 		game2RelativeLayout.setOnHoverListener(new View.OnHoverListener() {
             @Override
