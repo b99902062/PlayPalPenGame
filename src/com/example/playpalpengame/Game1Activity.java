@@ -276,8 +276,10 @@ public class Game1Activity extends Activity {
 					fireAnim.setVisible(true, true);
 					fireAnim.start();
 					
-					potView.setBackgroundResource(R.anim.pot_stir_animation);
-					potStirAnim = (AnimationDrawable) potView.getBackground();
+					//potView.setBackgroundResource(R.anim.pot_stir_animation);
+					//potStirAnim = (AnimationDrawable) potView.getBackground();
+					
+					
 					
 					PlayPalUtility.registerLineGesture(game1RelativeLayout, self, new Callable<Integer>() {
 						public Integer call() {
@@ -374,8 +376,11 @@ public class Game1Activity extends Activity {
 		progressCountText.setText("ProgressCount: " + new String("" + progressCount));
 		//PlayPalUtility.doProgress();
 		
-		potStirAnim.setVisible(true, true);
-		potStirAnim.start();
+		//potStirAnim.setVisible(true, true);
+		//potStirAnim.start();
+		FramesSequenceAnimation anim = AnimationsContainer.getInstance().createGame1PotStirAnim(potView);
+		anim.start();
+		
 
 		if (progressCount == step3TotalProgressCount) {
 			clearAll();

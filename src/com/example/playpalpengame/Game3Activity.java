@@ -29,12 +29,10 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathEffect;
 import android.graphics.Point;
-import android.graphics.RectF;
 import android.graphics.drawable.AnimationDrawable;
 
 import com.samsung.spen.lib.input.SPenEventLibrary;
 import com.samsung.spensdk.applistener.SPenHoverListener;
-
 
 public class Game3Activity extends Activity {
 	
@@ -78,8 +76,8 @@ public class Game3Activity extends Activity {
 	protected final int SMALL_CREAM_SIZE = 50;
 	protected final int LARGE_CREAM_SIZE = 150;
 	
-	protected final int MIX_PROGRESS_FIRST = 3;
-	protected final int MIX_PROGRESS_SECOND = 6;
+	protected final int MIX_PROGRESS_START = 1;
+	protected final int MIX_PROGRESS_HALF  = 5;
 	protected final int MIX_PROGRESS_END = 10;
 	protected final int CREAM_PROGRESS_END = 17;
 	
@@ -98,10 +96,9 @@ public class Game3Activity extends Activity {
 	
 	TextView  progressCountText;
 	ImageView bowlView;
-	ImageView mixView;
-	ImageView mixView2;
-	ImageView ovenView;
-	ImageView ovenView2;
+	
+	ImageView mixView, mixView2;
+	ImageView ovenView, ovenView2;
 	ImageView cakeView;
 	ImageView cakeDottedLineView;
 	ImageView cakeCreamView;
@@ -141,7 +138,7 @@ public class Game3Activity extends Activity {
 		
 		progressCountText = (TextView)findViewById(R.id.testProgressCount);
 		bowlView = (ImageView)findViewById(R.id.Game3_bowl);
-		mixView =  (ImageView)findViewById(R.id.Game3_mix);
+		mixView  =  (ImageView)findViewById(R.id.Game3_mix);
 		mixView2 =  (ImageView)findViewById(R.id.Game3_mix2);
 		ovenView = (ImageView)findViewById(R.id.Game3_oven);
 		ovenView2 = (ImageView)findViewById(R.id.Game3_oven2);
@@ -152,9 +149,6 @@ public class Game3Activity extends Activity {
 		cakeStrawberryView = (ImageView)findViewById(R.id.Game3_cakeStrawberry);
 		helicalView = (ImageView)findViewById(R.id.Game3_helicalView);
 		cakeCreamHintView = (ImageView)findViewById(R.id.Game3_cakeCreamHintView);
-		
-		mixView.setBackgroundResource(R.anim.game3_mix_stir_animation);
-		mixStirAnim = (AnimationDrawable) mixView.getBackground();
 		
 		game3RelativeLayout = (DrawableRelativeLayout) findViewById(R.id.Game3RelativeLayout);
 		game3RelativeLayout.setOnHoverListener(new View.OnHoverListener() {
@@ -444,21 +438,26 @@ public class Game3Activity extends Activity {
 	}
 		
 	protected Integer handleStirring(View view){
+		FramesSequenceAnimation anim = null;
 		curProgress++;
 		progressCountText.setText("ProgressCount: " + new String("" + curProgress));
-		Log.d("PenPalGame","curProgress "+curProgress);
-				
-		if( curProgress == MIX_PROGRESS_SECOND){
-			mixView2.setBackgroundResource(R.anim.game3_mix_stir_animation2);
-			mixStirAnim = (AnimationDrawable) mixView2.getBackground();
-			mixStirAnim.setVisible(true,true);
-			mixStirAnim.start();
-			
+		
+		
+		if(curProgress < MIX_PROGRESS_HALF){
+			setFoodListener(mixView);
+			anim = AnimationsContainer.getInstance().createGame3StirAnim(mixView,1);
+		}
+		else if(curProgress == MIX_PROGRESS_HALF){
+			setFoodListener(mixView2);
 			PlayPalUtility.setAlphaAnimation(mixView, false);
 			PlayPalUtility.setAlphaAnimation(mixView2, true);
 			
 			mixView.setVisibility(ImageView.GONE);
-			setFoodListener(mixView2);
+			anim = AnimationsContainer.getInstance().createGame3StirAnim(mixView2,2);
+		}
+		else if(curProgress < MIX_PROGRESS_END){
+			mixView.setVisibility(ImageView.GONE);
+			anim = AnimationsContainer.getInstance().createGame3StirAnim(mixView2,2);
 		}
 		else if( curProgress == MIX_PROGRESS_END){
 			helicalView.setVisibility(ImageView.GONE);
@@ -517,8 +516,7 @@ public class Game3Activity extends Activity {
 			bowlAnim.startNow();
 			
 			canTouchOven = true;
-			
-			
+
 			PlayPalUtility.clearDrawView();
 			PlayPalUtility.setLineGesture(false);
             PlayPalUtility.clearGestureSets();
@@ -526,12 +524,13 @@ public class Game3Activity extends Activity {
 			
 			PenRecorder.outputJSON();
 			PenRecorder.registerRecorder(game3RelativeLayout, this, userName, "3-2");
-		}
-		else{
-			mixStirAnim.setVisible(true,true);
-			mixStirAnim.start();
+			
+			anim = null;
 		}
 		
+		if(anim != null)
+			anim.start();
+		game3RelativeLayout.invalidate();
 		return 1;	
 	}
 	

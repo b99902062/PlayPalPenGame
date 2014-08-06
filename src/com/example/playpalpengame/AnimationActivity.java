@@ -388,6 +388,10 @@ class AnimationsContainer {
     private int[] mStarAnimFrames = {R.drawable.star_ani_01, R.drawable.star_ani_02, R.drawable.star_ani_03, R.drawable.star_ani_04, R.drawable.star_ani_05, R.drawable.star_ani_06, R.drawable.star_ani_07, R.drawable.star_ani_08, R.drawable.star_ani_09, R.drawable.star_ani_10, R.drawable.star_ani_11, R.drawable.star_ani_12, R.drawable.star_ani_13, R.drawable.star_ani_14, R.drawable.star_ani_15, R.drawable.star_ani_16, R.drawable.star_ani_17};
     private int[] mWelcomeAnimFrames = {R.drawable.welcome_ani_01, R.drawable.welcome_ani_02, R.drawable.welcome_ani_03, R.drawable.welcome_ani_04, R.drawable.welcome_ani_05_x5, R.drawable.welcome_ani_06, R.drawable.welcome_ani_06_2, R.drawable.welcome_ani_07, R.drawable.welcome_ani_07_2, R.drawable.welcome_ani_08, R.drawable.welcome_ani_09, R.drawable.welcome_ani_10, R.drawable.welcome_ani_11, R.drawable.welcome_ani_12, R.drawable.welcome_ani_13, R.drawable.welcome_ani_14, R.drawable.welcome_ani_15, R.drawable.welcome_ani_16, R.drawable.welcome_ani_17, R.drawable.welcome_ani_18, R.drawable.welcome_ani_19, R.drawable.welcome_ani_20, R.drawable.welcome_ani_21, R.drawable.welcome_ani_22, R.drawable.welcome_ani_23, R.drawable.welcome_ani_24, R.drawable.welcome_ani_24_2, R.drawable.welcome_ani_25, R.drawable.welcome_ani_25_2, R.drawable.welcome_ani_26, R.drawable.welcome_ani_26_2, R.drawable.welcome_ani_27, R.drawable.welcome_ani_27_2, R.drawable.welcome_ani_28, R.drawable.welcome_ani_28_2, R.drawable.welcome_ani_29, R.drawable.welcome_ani_29_2, R.drawable.welcome_ani_30, R.drawable.welcome_ani_30_2, R.drawable.welcome_ani_31, R.drawable.welcome_ani_31_2, R.drawable.welcome_ani_32 };
     
+    private int[] mGame1PotStirAnimFrams = {R.drawable.game1_pot_3, R.drawable.game1_pot_4, R.drawable.game1_pot_5, R.drawable.game1_pot_6};
+    private int[] mGame3MixAnimFrames  = {R.drawable.game3_mix2, R.drawable.game3_mix3, R.drawable.game3_mix4, R.drawable.game3_mix5};
+    private int[] mGame3MixAnimFrames2 = {R.drawable.game3_mix6, R.drawable.game3_mix7, R.drawable.game3_mix8, R.drawable.game3_mix9};
+    
     public FramesSequenceAnimation createStarAnim(ImageView imageView) {
     	return new FramesSequenceAnimation(imageView, mStarAnimFrames, FPS, true);
     }
@@ -395,6 +399,22 @@ class AnimationsContainer {
     public FramesSequenceAnimation createWelcomeAnim(ImageView imageView) {
     	return new FramesSequenceAnimation(imageView, mWelcomeAnimFrames, FPS, false);
     } 
+    
+    public FramesSequenceAnimation createGame3StirAnim(ImageView imageView, int stirIdx){
+    	if(stirIdx == 1)
+    		return new FramesSequenceAnimation(imageView, mGame3MixAnimFrames, FPS);
+    	else if(stirIdx ==2)
+    		return new FramesSequenceAnimation(imageView, mGame3MixAnimFrames2, FPS);
+    	else{
+    		Log.e("AnimationActivity","error idx when newing striAnim");
+    		return null;
+    	}
+    }
+    
+    public FramesSequenceAnimation createGame1PotStirAnim(ImageView imageView){
+    	return new FramesSequenceAnimation(imageView, mGame1PotStirAnimFrams, FPS);
+    }
+    
     	
     /**
      * @param imageView
