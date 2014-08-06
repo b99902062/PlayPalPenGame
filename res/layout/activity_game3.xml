@@ -43,7 +43,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="190dp"
-            android:background="@drawable/game3_mix1"
+            android:src="@drawable/game3_mix1"
             android:visibility="visible"/>
         
         <ImageView
@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="190dp"
-            android:visibility="visible"/>
+            android:visibility="invisible"/>
         
         <ImageView
             android:id="@+id/Game3_oven"
