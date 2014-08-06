@@ -1,0 +1,25 @@
+<FrameLayout xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    tools:context=".WelcomeActivity" xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <RelativeLayout
+        android:id="@+id/jarRelativeLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="490dp"
+        android:layout_marginRight="490dp"
+        android:layout_marginTop="150dp"
+        android:background="@drawable/background" >
+
+		<ImageView
+		    android:id="@+id/jarView"
+		    android:src="@drawable/jar"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:visibility="visible" />
+
+    </RelativeLayout>
+
+</FrameLayout>

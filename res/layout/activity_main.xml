@@ -13,6 +13,26 @@
            android:layout_height="match_parent"
            android:background="@drawable/background" >
 
+           <ImageView
+	            android:id="@+id/therapyIcon"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_alignParentLeft="true"
+	            android:layout_alignParentTop="true"
+	            android:layout_marginLeft="38dp"
+	            android:layout_marginTop="30dp"
+	            android:src="@drawable/therapy_icon" />
+           
+           <ImageView
+	            android:id="@+id/jarIcon"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_alignParentLeft="true"
+	            android:layout_alignParentTop="true"
+	            android:layout_marginLeft="38dp"
+	            android:layout_marginTop="80dp"
+	            android:src="@drawable/jar_icon" />
+           
            <RelativeLayout
                android:layout_width="wrap_content"
                android:layout_height="match_parent"

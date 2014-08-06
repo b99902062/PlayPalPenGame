@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.View.OnClickListener;
 import android.widget.ImageView;
 
 public class MainActivity extends Activity {
@@ -60,6 +61,33 @@ public class MainActivity extends Activity {
 		setStallListener(playBtn3, 3);
 		View playBtn4 = findViewById(R.id.mainPlayBtn4);
 		setStallListener(playBtn4, 4);
+		
+		ImageView therapyIcon = (ImageView)findViewById(R.id.therapyIcon);
+		therapyIcon.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				Intent newAct = new Intent();
+				newAct.setClass( MainActivity.this, TherapyMainActivity.class );
+				newAct.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	            startActivityForResult(newAct ,0);
+	            MainActivity.this.finish();
+			}
+		});
+		
+		ImageView jarIcon = (ImageView)findViewById(R.id.jarIcon);
+		jarIcon.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				Intent newAct = new Intent();
+				newAct.setClass( MainActivity.this, JarActivity.class );
+				newAct.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				Bundle bundle = new Bundle();
+				bundle.putIntArray("GameWinCountArray", winCount);
+	            newAct.putExtras(bundle);
+				startActivityForResult(newAct ,0);
+	            MainActivity.this.finish();
+			}
+		});
 	}
 	
 	protected void setStallListener(View targetView, final int gameIndex) {

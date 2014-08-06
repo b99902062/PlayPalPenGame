@@ -111,6 +111,17 @@
                 android:alpha="0.5"
                 android:src="@drawable/background" />
 
+            <TextView
+                android:id="@+id/recordNameTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="50dp"
+                android:text=""
+                android:textSize="30dp" />
+            
             <CheckBox
                 android:id="@+id/isLineUpCheckbox"
                 android:layout_width="wrap_content"
@@ -187,10 +198,20 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
-            android:layout_marginBottom="30dp"
+            android:layout_marginBottom="160dp"
             android:layout_marginRight="70dp"
             android:text="0/0" />
 
+        <TextView
+            android:id="@+id/totalTimeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="120dp"
+            android:layout_marginRight="80dp"
+            android:text="Total time: " />
+        
     </RelativeLayout>
 
 </FrameLayout>

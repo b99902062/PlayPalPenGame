@@ -45,8 +45,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class TherapyMainActivity extends Activity {
-	private static final int REPLAY_SPEED = 1;
-	
+	private static final int REPLAY_SPEED = 32;
+	public final static int[] speedArr = {1, 2, 4, 8, 16, 32};
 	private Timer replayTimer;
 	private static ReplayTimerTask replayTimerTask;
 	public static DrawCanvasView canvasView;
@@ -146,6 +146,8 @@ public class TherapyMainActivity extends Activity {
 				public void onClick(View v) {
 					//((DrawCanvasView)findViewById(R.id.canvasView)).setLimit(0);
 					if(isPause) {
+						if(timeBar.getProgress() == timeBar.getMax())
+							timeBar.setProgress(0);
 						replayTrackBtn.setImageResource(R.drawable.pause_btn);
 						setReplayTimer();
 						isPause = false;
@@ -167,8 +169,9 @@ public class TherapyMainActivity extends Activity {
 						public void onProgressChanged(SeekBar arg0, int arg1,
 								boolean arg2) {
 							float percentage = ((SeekBar)findViewById(R.id.replaySpeedBar)).getProgress() / 100.f;
-							int targetSpeed = REPLAY_SPEED + (int) (REPLAY_SPEED * 29 * (1 - percentage));
-							replaySpeedText.setText(String.format("Replay Speed: %.2fX", 30.f / targetSpeed));
+							int targetSpeed = (int) (percentage * speedArr.length);
+							targetSpeed = targetSpeed == speedArr.length ? targetSpeed-1 : targetSpeed;
+							replaySpeedText.setText(String.format("Replay Speed: %dX", speedArr[targetSpeed]));
 							if(!isPause)
 								setReplayTimer();
 						}
@@ -188,14 +191,16 @@ public class TherapyMainActivity extends Activity {
 	
 	public void setReplayTimer() {
 		float percentage = ((SeekBar)findViewById(R.id.replaySpeedBar)).getProgress() / 100.f;
-		int targetSpeed = REPLAY_SPEED + (int) (REPLAY_SPEED * 29 * (1 - percentage));
+		int targetSpeed = (int) (percentage * speedArr.length);
+		targetSpeed = targetSpeed == speedArr.length ? targetSpeed-1 : targetSpeed;
+		
 		if(replayTimer != null)
 			replayTimer.cancel();
 		if(replayTimerTask != null)
 			replayTimerTask.cancel();
 		replayTimer = new Timer(true);
 		replayTimerTask = new ReplayTimerTask();
-		replayTimer.schedule(replayTimerTask, 0, targetSpeed);
+		replayTimer.schedule(replayTimerTask, 0, 32 / speedArr[targetSpeed]);
 	}
 	
 	public static Handler replayTimerHandler = new Handler() {
@@ -207,6 +212,7 @@ public class TherapyMainActivity extends Activity {
         	if(TherapyMainActivity.canvasView.getLimit() > TherapyMainActivity.canvasView.getPointsCount()) {
         		replayTimerTask.cancel();
         		replayTrackBtn.setImageResource(R.drawable.replay_btn);
+        		isPause = true;
         	}
         }
     };
@@ -277,6 +283,8 @@ public class TherapyMainActivity extends Activity {
 						if(replayTimerTask != null)
 							replayTimerTask.cancel();
 						
+						((TextView)findViewById(R.id.recordNameTitle)).setText(adapterView.getSelectedItem().toString());
+						
 						canvasView.setLimit(-1);
 						
 						targetRecord = getTargetRecord(adapterView.getSelectedItem().toString(), targetStageList);
@@ -285,6 +293,7 @@ public class TherapyMainActivity extends Activity {
 						canvasView.updatePointList(targetRecord.points);
 						timeBar.setMax(targetRecord.points.size());
 						((TextView)findViewById(R.id.progressText)).setText(String.format("0/%d", timeBar.getMax()));
+						((TextView)findViewById(R.id.totalTimeText)).setText(String.format("Total time: %.3f sec", targetRecord.time/1000.f));
 						canvasView.invalidate();
 					}
 					
