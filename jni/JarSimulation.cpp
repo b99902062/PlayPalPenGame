@@ -1,6 +1,8 @@
 #include <jni.h>
 #include <Box2D/Box2D.h>
 
+void init();
+
 int main(int argc, char* argv[]) {
 
 	B2_NOT_USED(argc);
