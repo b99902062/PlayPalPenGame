@@ -30,7 +30,7 @@ void init() {
 		// The extents are the half-widths of the box.
 		groundBox.SetAsBox(50.0f, 10.0f);
 
-		// Add the ground fixture to the ground body.
+		// Add the ground fixture to the ground body.i
 		groundBody->CreateFixture(&groundBox, 0.0f);
 
 		// Define the dynamic body. We set its position and call the body factory.
