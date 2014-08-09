@@ -11,6 +11,8 @@ LOCAL_SRC_FILES := JarSimulation.cpp
 LOCAL_C_INCLUDES := $(LOCAL_PATH) 
 
 LOCAL_STATIC_LIBRARIES := box2d_static
+
+LOCAL_LDLIBS := -llog
             
 include $(BUILD_SHARED_LIBRARY)
 
