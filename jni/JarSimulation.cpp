@@ -4,14 +4,16 @@
 #include <stdio.h>
 #include <vector>
 
-#define PTM_Ratio 40
+#define PTM_Ratio 100.f
+#define FPS 60.f
+#define Star_Size 200.f
 
 b2World* m_world;
 std::vector< b2Body* > starBodies;
 std::vector< b2Body* > starBodies2;
 
 b2Body* generateStarBody(int pos_x, int pos_y){
-	int radius = 0.01;//10cm
+	float radius = Star_Size/PTM_Ratio/2;
 	int body_num = 2;
 	int vertex_num = 3;
 	b2Body* bodies[2];
@@ -25,14 +27,16 @@ b2Body* generateStarBody(int pos_x, int pos_y){
 		b2BodyDef starBodyDef;
 		starBodyDef.type = b2_dynamicBody;
 		starBodyDef.position.Set(pos_x, pos_y);
+		starBodyDef.allowSleep = false;
 
 		b2PolygonShape starShape;
 		starShape.Set(vertices, vertex_num);
 
 		b2FixtureDef starFixtureDef;
 		starFixtureDef.shape = &starShape;
-		starFixtureDef.density = 1;
-		//starFixtureDef.friction = 0.3f;
+		starFixtureDef.density = 10;
+		starFixtureDef.friction = 0.3f;
+		starFixtureDef.restitution = 0.2f;
 
 		bodies[i] = m_world->CreateBody(&starBodyDef);
 		bodies[i]->CreateFixture(&starFixtureDef);
@@ -52,7 +56,7 @@ b2Body* generateStarBody(int pos_x, int pos_y){
 }
 
 void init() {
-	b2Vec2 gravity(0.0f, -10.0f);
+	b2Vec2 gravity(0.0f, -100.0f);
 	m_world = new b2World(gravity);
 
 	b2BodyDef groundBodyDef;
@@ -61,8 +65,12 @@ void init() {
 	b2PolygonShape polygonShape;
 
 	groundBodyDef.type = b2_staticBody;
+	groundFixtureDef.friction = 0.2f;
+	groundFixtureDef.restitution = 0.2f;
 	groundFixtureDef.shape = &edgeShape;
 
+	edgeShape.Set( b2Vec2(0/PTM_Ratio,1000/PTM_Ratio), b2Vec2(600/PTM_Ratio,1000/PTM_Ratio) );
+	m_world->CreateBody(&groundBodyDef)->CreateFixture(&groundFixtureDef);
 
 	edgeShape.Set( b2Vec2(0/PTM_Ratio,0/PTM_Ratio), b2Vec2(600/PTM_Ratio,0/PTM_Ratio) );
 	m_world->CreateBody(&groundBodyDef)->CreateFixture(&groundFixtureDef);
@@ -90,18 +98,27 @@ extern "C"
 jboolean Java_com_example_playpalpengame_JarActivity_putIntoJar (
 		JNIEnv* env, jobject thiz, jint objIndex) {
 
-	generateStarBody(300/PTM_Ratio, 1000/PTM_Ratio);
+	generateStarBody(300/PTM_Ratio, 700/PTM_Ratio);
 	return true;
 }
 
 jboolean Java_com_example_playpalpengame_JarActivity_updateAngle (
-		JNIEnv* env, jobject thiz, jfloat xVal, jfloat yVal, jfloat zVal) {
+		JNIEnv* env, jobject thiz, jfloat _xVal, jfloat _yVal, jfloat zVal) {
+
+	float xVal = _xVal;
+	float yVal = _yVal;
 	m_world->SetGravity(b2Vec2(xVal,yVal));
+
+/*
+	char s[100];
+	sprintf(s,"%f %f\n",xVal,yVal);
+	__android_log_write(ANDROID_LOG_DEBUG, "gravity", s);
+*/
 
 	return true;
 }
 
-void Java_com_example_playpalpengame_JarActivity_initWorld(void){
+void Java_com_example_playpalpengame_JarActivity_initWorld(JNIEnv* env, jobject thiz){
 	init();
 	return;
 }
@@ -123,7 +140,7 @@ jfloatArray Java_com_example_playpalpengame_JarActivity_getPosition(JNIEnv* env,
 }
 
 void Java_com_example_playpalpengame_JarActivity_worldStep(void){
-	float32 timeStep = 1.0f / 100.0f;
+	float32 timeStep = 1.0f / FPS;
 	int32 velocityIterations = 6;
 	int32 positionIterations = 2;
 	m_world->Step(timeStep, velocityIterations, positionIterations);

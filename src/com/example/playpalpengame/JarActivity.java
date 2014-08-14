@@ -3,8 +3,10 @@ package com.example.playpalpengame;
 import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.lang.Math;
 
 import android.app.Activity;
+import android.graphics.Matrix;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -16,6 +18,7 @@ import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
@@ -35,8 +38,10 @@ public class JarActivity extends Activity implements SensorEventListener {
 	public native boolean updateAngle(float x, float y, float z);
 	public native float[] getPosition(int idx);
 	public native void worldStep();
-	public static final int PTM_Ratio = 40;
-	public static final int Star_Size = 100;
+	
+	public static final int Star_Size = 200;
+	public static final float PTM_Ratio = 100;
+	public static final int FPS = 100;
 	
 	TextView Coor;		
 	
@@ -82,34 +87,33 @@ public class JarActivity extends Activity implements SensorEventListener {
 
 		timer = new Timer(true);
 		timerTask = new UpdateTask();
-		timer.schedule(timerTask, 0, 10);//1/60sec
+		timer.schedule(timerTask, 0, 1000/FPS);//1/60sec
 	}
 	
 	public static Handler starHandler = new Handler() {
 		public void handleMessage(Message msg) {
-			Log.d("Handler",""+starArr.size());
 			int id    = msg.getData().getInt("ID");
-			int xPos  = msg.getData().getInt("XPos");
-			int yPos  = msg.getData().getInt("YPos");
+			float xPos  = msg.getData().getFloat("XPos");
+			float yPos  = msg.getData().getFloat("YPos");
+			float angle = msg.getData().getFloat("Angle");
+			ImageView starImg = starArr.get(id).view;
+			
+			if(id==0)
+				Log.d("starHandler","ID:"+id+" X:"+xPos+" Y:"+yPos);
 			
 			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-			params.setMargins(xPos-Star_Size/2, yPos-Star_Size/2, 0, 0);
+			params.setMargins((int)(xPos-Star_Size/2), (int)(yPos-Star_Size/2), 0, 0);
 			params.width = Star_Size;
 			params.height = Star_Size;
-        	starArr.get(id).view.setLayoutParams(params);
+			starImg.setRotation(-angle*180/(float)Math.PI);
+        	starImg.setLayoutParams(params);
         	
-			/*
-			for(int i=0; i<idArray.length; i++) {
-				for(int j=0; j<starArr.size(); j++) {
-					if(idArray[i] == starArr.get(j).ID) {
-						RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-	                	params.setMargins((int)xArray[i], (int)yArray[i], 0, 0);
-	                	starArr.get(j).view.setLayoutParams(params);
-						break;
-					}
-				}
-			}
-			*/
+        	/*
+        	Matrix matrix=new Matrix();
+        	starImg.setScaleType(ScaleType.MATRIX);   //required
+        	matrix.postRotate((float) angle, starImg.getDrawable().getBounds().width()/2, starImg.getDrawable().getBounds().height()/2);
+        	starImg.setImageMatrix(matrix);
+        	*/
 		}
 	};
 
@@ -125,17 +129,16 @@ public class JarActivity extends Activity implements SensorEventListener {
 			updateAngle(-x,-y,z);
 			
 			Coor.setText("X: "+x+"Y: "+y+"Z: "+z);
-
-			float accelerationSquareRoot = (x * x + y * y + z * z) / 
-                                                   (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
+			/*
+			float accelerationSquareRoot = (x * x + y * y + z * z) / (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
 			long actualTime = System.currentTimeMillis();
-
 			if (accelerationSquareRoot >= 2)  {
 				if (actualTime - lastUpdate < 200)  return;
 
 				lastUpdate = actualTime;
 				Toast.makeText(this, "Device was shaken", Toast.LENGTH_SHORT).show();	
 			}
+			*/
 		}
 		
 	}
@@ -147,10 +150,11 @@ public class JarActivity extends Activity implements SensorEventListener {
 	}
 	
 	@Override
-	protected void onPause() {					// unregister listener
+	protected void onPause() {					
 		sensorManager.unregisterListener( this );
 		super.onStop();
 	}
+	
 	
 	class UpdateTask extends TimerTask{
 		public void run() {
@@ -161,8 +165,9 @@ public class JarActivity extends Activity implements SensorEventListener {
 				Message msg = new Message();
 		    	Bundle dataBundle = new Bundle();
 		    	dataBundle.putInt("ID", (int)id);
-		    	dataBundle.putInt("XPos", (int)(pos[0]*PTM_Ratio));
-		    	dataBundle.putInt("YPos", (int)(1000-pos[1]*PTM_Ratio));
+		    	dataBundle.putFloat("XPos", (int)(pos[0]*PTM_Ratio));
+		    	dataBundle.putFloat("YPos", (int)(1000-pos[1]*PTM_Ratio));
+		    	dataBundle.putFloat("Angle", pos[2]);
 		    	//transform from box2D's coord. system to android corrd. system
 		    	msg.setData(dataBundle);
 		    	JarActivity.starHandler.sendMessage(msg);
