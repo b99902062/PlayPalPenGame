@@ -4,9 +4,14 @@
 #include <stdio.h>
 #include <vector>
 
-#define PTM_Ratio 100.f
+#define PTM_Ratio 500.f
 #define FPS 60.f
-#define Star_Size 200.f
+#define Star_Size 150.f
+
+#define U_Boundary 1000
+#define D_Boundary 0
+#define L_Boundary 0
+#define R_Boundary 600
 
 b2World* m_world;
 std::vector< b2Body* > starBodies;
@@ -98,7 +103,7 @@ extern "C"
 jboolean Java_com_example_playpalpengame_JarActivity_putIntoJar (
 		JNIEnv* env, jobject thiz, jint objIndex) {
 
-	generateStarBody(300/PTM_Ratio, 700/PTM_Ratio);
+	generateStarBody(300/PTM_Ratio, 500/PTM_Ratio);
 	return true;
 }
 
@@ -127,6 +132,17 @@ jfloatArray Java_com_example_playpalpengame_JarActivity_getPosition(JNIEnv* env,
 	int len = 3;
 	b2Body* curBody = starBodies.at(idx);
 	b2Body* curBody2 = starBodies2.at(idx);
+
+	float xPos = (curBody->GetWorldCenter().x + curBody2->GetWorldCenter().x)/2;
+	float yPos = (curBody->GetWorldCenter().y + curBody2->GetWorldCenter().y)/2;
+	if(xPos<L_Boundary || xPos>R_Boundary){
+		curBody->SetTransform(b2Vec2(300/PTM_Ratio, curBody->GetWorldCenter().x),curBody->GetAngle());
+		curBody2->SetTransform(b2Vec2(300/PTM_Ratio, curBody2->GetWorldCenter().x),curBody2->GetAngle());
+	}
+	if(yPos<D_Boundary || yPos>U_Boundary){
+		curBody->SetTransform(b2Vec2(curBody->GetWorldCenter().x,500/PTM_Ratio),curBody->GetAngle());
+		curBody2->SetTransform(b2Vec2(curBody2->GetWorldCenter().x,500/PTM_Ratio),curBody2->GetAngle());
+	}
 
 	jfloatArray ret = env->NewFloatArray(len);
 	jfloat *body = new jfloat[len];

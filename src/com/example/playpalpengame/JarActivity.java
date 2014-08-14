@@ -40,8 +40,8 @@ public class JarActivity extends Activity implements SensorEventListener {
 	public native void worldStep();
 	
 	public static final int Star_Size = 200;
-	public static final float PTM_Ratio = 100;
-	public static final int FPS = 100;
+	public static final float PTM_Ratio = 500;
+	public static final int FPS = 60;
 	
 	TextView Coor;		
 	
