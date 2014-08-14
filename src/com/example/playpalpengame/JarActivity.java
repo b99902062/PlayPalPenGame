@@ -39,9 +39,11 @@ public class JarActivity extends Activity implements SensorEventListener {
 	public native float[] getPosition(int idx);
 	public native void worldStep();
 	
+	public static final int Num_Layers = 5;
 	public static final int Star_Size = 200;
-	public static final float PTM_Ratio = 500;
+	public static final float PTM_Ratio = 1000;
 	public static final int FPS = 60;
+	
 	
 	TextView Coor;		
 	
@@ -74,7 +76,7 @@ public class JarActivity extends Activity implements SensorEventListener {
 			for(int j=0; j<mWinCount[i]; j++) {
 				ImageView newStar = new ImageView(this);
 				newStar.setImageResource(starResArray[i]);
-				putIntoJar(i * 10000 + j);
+				putIntoJar((int)(Math.random()*Num_Layers));
 				starArr.add(new StarStat(i * 10000 + j, newStar));
 				
 				RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
@@ -98,8 +100,7 @@ public class JarActivity extends Activity implements SensorEventListener {
 			float angle = msg.getData().getFloat("Angle");
 			ImageView starImg = starArr.get(id).view;
 			
-			if(id==0)
-				Log.d("starHandler","ID:"+id+" X:"+xPos+" Y:"+yPos);
+			//Log.d("starHandler","ID:"+id+" X:"+xPos+" Y:"+yPos);
 			
 			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 			params.setMargins((int)(xPos-Star_Size/2), (int)(yPos-Star_Size/2), 0, 0);

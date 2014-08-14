@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <vector>
 
-#define PTM_Ratio 500.f
+#define PTM_Ratio 1000.f
 #define FPS 60.f
 #define Star_Size 150.f
 
@@ -13,51 +13,86 @@
 #define L_Boundary 0
 #define R_Boundary 600
 
-b2World* m_world;
-std::vector< b2Body* > starBodies;
-std::vector< b2Body* > starBodies2;
 
-b2Body* generateStarBody(int pos_x, int pos_y){
-	float radius = Star_Size/PTM_Ratio/2;
-	int body_num = 2;
-	int vertex_num = 3;
+class Star{
+	public:
+
 	b2Body* bodies[2];
 
-	for(int i=0; i<body_num; i++){
-		b2Vec2 vertices[3];
-		for(int j=0; j<vertex_num; j++){
-			vertices[j].Set(radius*cos((j+0.5*i) * 2 * M_PI / vertex_num), radius*sin((j+0.5*i) * 2 * M_PI / vertex_num));
+	Star(b2World* m_world, float xPos, float yPos, float radius, uint16 groupBits){
+		int body_num = 2;
+		int vertex_num = 3;
+
+		for(int i=0; i<body_num; i++){
+			b2Vec2 vertices[3];
+			for(int j=0; j<vertex_num; j++){
+				vertices[j].Set(radius*cos((j+0.5*i) * 2 * M_PI / vertex_num), radius*sin((j+0.5*i) * 2 * M_PI / vertex_num));
+			}
+
+			b2BodyDef starBodyDef;
+			starBodyDef.type = b2_dynamicBody;
+			starBodyDef.position.Set(xPos, yPos);
+			starBodyDef.allowSleep = false;
+
+			b2PolygonShape starShape;
+			starShape.Set(vertices, vertex_num);
+
+			b2FixtureDef starFixtureDef;
+			starFixtureDef.shape = &starShape;
+			starFixtureDef.density = 10;
+			starFixtureDef.friction = 0.1f;
+			starFixtureDef.restitution = 0.2f;
+			starFixtureDef.filter.categoryBits = groupBits;
+			starFixtureDef.filter.maskBits = groupBits;
+
+			bodies[i] = m_world->CreateBody(&starBodyDef);
+			bodies[i]->CreateFixture(&starFixtureDef);
 		}
 
-		b2BodyDef starBodyDef;
-		starBodyDef.type = b2_dynamicBody;
-		starBodyDef.position.Set(pos_x, pos_y);
-		starBodyDef.allowSleep = false;
-
-		b2PolygonShape starShape;
-		starShape.Set(vertices, vertex_num);
-
-		b2FixtureDef starFixtureDef;
-		starFixtureDef.shape = &starShape;
-		starFixtureDef.density = 10;
-		starFixtureDef.friction = 0.3f;
-		starFixtureDef.restitution = 0.2f;
-
-		bodies[i] = m_world->CreateBody(&starBodyDef);
-		bodies[i]->CreateFixture(&starFixtureDef);
+		b2WeldJointDef jointDef;
+		jointDef.bodyA = bodies[0];
+		jointDef.bodyB = bodies[1];
+		jointDef.localAnchorA = bodies[0]->GetLocalCenter();
+		jointDef.localAnchorB = bodies[1]->GetLocalCenter();
+		b2RevoluteJoint* joint = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
 	}
 
-	b2WeldJointDef jointDef;
+	b2Vec2 getPosition(){
+		float xPos = (bodies[0]->GetWorldCenter().x + bodies[1]->GetWorldCenter().x)/2;
+		float yPos = (bodies[0]->GetWorldCenter().y + bodies[1]->GetWorldCenter().y)/2;
 
-	jointDef.bodyA = bodies[0];
-	jointDef.bodyB = bodies[1];
-	jointDef.localAnchorA = bodies[0]->GetLocalCenter();
-	jointDef.localAnchorB = bodies[1]->GetLocalCenter();
+		if(xPos<L_Boundary || xPos>R_Boundary){
+			bodies[0]->SetTransform(b2Vec2(300/PTM_Ratio, bodies[0]->GetWorldCenter().x), bodies[0]->GetAngle());
+			bodies[1]->SetTransform(b2Vec2(300/PTM_Ratio, bodies[1]->GetWorldCenter().x), bodies[1]->GetAngle());
+		}
+		if(yPos<D_Boundary || yPos>U_Boundary){
+			bodies[0]->SetTransform(b2Vec2(bodies[0]->GetWorldCenter().x,500/PTM_Ratio), bodies[0]->GetAngle());
+			bodies[1]->SetTransform(b2Vec2(bodies[1]->GetWorldCenter().x,500/PTM_Ratio), bodies[1]->GetAngle());
+		}
 
-	b2RevoluteJoint* joint = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
-	starBodies.push_back(bodies[0]);
-	starBodies2.push_back(bodies[1]);
-	return bodies[0];
+		xPos = (bodies[0]->GetWorldCenter().x + bodies[1]->GetWorldCenter().x)/2;
+		yPos = (bodies[0]->GetWorldCenter().y + bodies[1]->GetWorldCenter().y)/2;
+
+		return b2Vec2(xPos,yPos);
+	}
+
+	float getAngle(){
+		return (bodies[0]->GetAngle() + bodies[1]->GetAngle())/2;
+	}
+
+};
+
+
+uint16 Group[5] = {0x0001, 0x0002, 0x0004, 0x0008, 0x0010};
+
+b2World* m_world;
+std::vector< Star* > starBodies;
+
+void generateStarBody(int _x, int _y, int _g){
+
+	Star* newStar = new Star(m_world, _x, _y, Star_Size/PTM_Ratio/2, Group[_g]);
+	starBodies.push_back(newStar);
+	return;
 }
 
 void init() {
@@ -70,9 +105,10 @@ void init() {
 	b2PolygonShape polygonShape;
 
 	groundBodyDef.type = b2_staticBody;
-	groundFixtureDef.friction = 0.2f;
+	groundFixtureDef.friction = 0.1f;
 	groundFixtureDef.restitution = 0.2f;
 	groundFixtureDef.shape = &edgeShape;
+	groundFixtureDef.filter.categoryBits = Group[0] | Group[1] | Group[2] | Group[3] | Group[4];
 
 	edgeShape.Set( b2Vec2(0/PTM_Ratio,1000/PTM_Ratio), b2Vec2(600/PTM_Ratio,1000/PTM_Ratio) );
 	m_world->CreateBody(&groundBodyDef)->CreateFixture(&groundFixtureDef);
@@ -101,9 +137,9 @@ int main(int argc, char* argv[]) {
 
 extern "C"
 jboolean Java_com_example_playpalpengame_JarActivity_putIntoJar (
-		JNIEnv* env, jobject thiz, jint objIndex) {
+		JNIEnv* env, jobject thiz, jint layerIndex) {
 
-	generateStarBody(300/PTM_Ratio, 500/PTM_Ratio);
+	generateStarBody(300/PTM_Ratio, 500/PTM_Ratio, layerIndex);
 	return true;
 }
 
@@ -130,26 +166,18 @@ void Java_com_example_playpalpengame_JarActivity_initWorld(JNIEnv* env, jobject 
 
 jfloatArray Java_com_example_playpalpengame_JarActivity_getPosition(JNIEnv* env, jobject thiz, jint idx){
 	int len = 3;
-	b2Body* curBody = starBodies.at(idx);
-	b2Body* curBody2 = starBodies2.at(idx);
-
-	float xPos = (curBody->GetWorldCenter().x + curBody2->GetWorldCenter().x)/2;
-	float yPos = (curBody->GetWorldCenter().y + curBody2->GetWorldCenter().y)/2;
-	if(xPos<L_Boundary || xPos>R_Boundary){
-		curBody->SetTransform(b2Vec2(300/PTM_Ratio, curBody->GetWorldCenter().x),curBody->GetAngle());
-		curBody2->SetTransform(b2Vec2(300/PTM_Ratio, curBody2->GetWorldCenter().x),curBody2->GetAngle());
-	}
-	if(yPos<D_Boundary || yPos>U_Boundary){
-		curBody->SetTransform(b2Vec2(curBody->GetWorldCenter().x,500/PTM_Ratio),curBody->GetAngle());
-		curBody2->SetTransform(b2Vec2(curBody2->GetWorldCenter().x,500/PTM_Ratio),curBody2->GetAngle());
-	}
-
 	jfloatArray ret = env->NewFloatArray(len);
 	jfloat *body = new jfloat[len];
 
-	body[0] = (curBody->GetWorldCenter().x + curBody2->GetWorldCenter().x)/2;
-	body[1] = (curBody->GetWorldCenter().y + curBody2->GetWorldCenter().y)/2;
-	body[2] = (curBody->GetAngle() + curBody2->GetAngle())/2;
+	Star* curStar = starBodies.at(idx);
+	b2Vec2 curPos = curStar->getPosition();
+	float xPos = curPos.x;
+	float yPos = curPos.y;
+	float angle = curStar->getAngle();
+
+	body[0] = xPos;
+	body[1] = yPos;
+	body[2] = angle;
 
 	env->SetFloatArrayRegion(ret,0,len,body);
 	return ret;
