@@ -96,8 +96,11 @@ void generateStarBody(int _x, int _y, int _g){
 }
 
 void init() {
+
 	b2Vec2 gravity(0.0f, -100.0f);
 	m_world = new b2World(gravity);
+	starBodies.clear();
+
 
 	b2BodyDef groundBodyDef;
 	b2EdgeShape edgeShape;

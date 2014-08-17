@@ -6,6 +6,7 @@ import java.util.TimerTask;
 import java.lang.Math;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Matrix;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -15,6 +16,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -32,6 +35,7 @@ public class JarActivity extends Activity implements SensorEventListener {
 	private TimerTask timerTask = null;
 	private long lastUpdate;
 	private SensorManager sensorManager;
+	private String mUserName;
 	
 	public native void initWorld();
 	public native boolean putIntoJar(int index);
@@ -52,44 +56,22 @@ public class JarActivity extends Activity implements SensorEventListener {
 		super.onCreate(savedInstanceState);
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		
-		setContentView(R.layout.activity_jar);
-		
-		System.loadLibrary("JarSimulation");
-		starArr = new LinkedList<StarStat>();
-		
-		Bundle bundle = getIntent().getExtras();
-		mWinCount = bundle.getIntArray("GameWinCountArray");
-		
-		RelativeLayout jarLayout = (RelativeLayout)findViewById(R.id.jarRelativeLayout);
-		Coor=(TextView)findViewById(R.id.coor);
-
-		sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-		sensorManager.registerListener( this,
-				sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-				SensorManager.SENSOR_DELAY_NORMAL);
-		
-		
-		initWorld();
-		
-		for(int i=0; i<mWinCount.length; i++) {
-			for(int j=0; j<mWinCount[i]; j++) {
-				ImageView newStar = new ImageView(this);
-				newStar.setImageResource(starResArray[i]);
-				putIntoJar((int)(Math.random()*Num_Layers));
-				starArr.add(new StarStat(i * 10000 + j, newStar));
-				
-				RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-            	params.setMargins(0, 0, 0, 0);
-            	newStar.setLayoutParams(params);
-				
-				jarLayout.addView(newStar);
+	}
+	
+	protected void setHomeListener(View targetView) {
+		targetView.setOnTouchListener(new View.OnTouchListener() {
+			@Override
+			public boolean onTouch(View view, MotionEvent event) {				
+				Intent newAct = new Intent();
+				newAct.setClass(JarActivity.this, MainActivity.class);
+				Bundle bundle = new Bundle();
+				bundle.putString("userName", mUserName);
+	            newAct.putExtras(bundle);
+				startActivityForResult(newAct, 0);
+				JarActivity.this.finish();
+				return true;
 			}
-		}
-
-		timer = new Timer(true);
-		timerTask = new UpdateTask();
-		timer.schedule(timerTask, 0, 1000/FPS);//1/60sec
+		});
 	}
 	
 	public static Handler starHandler = new Handler() {
@@ -100,21 +82,17 @@ public class JarActivity extends Activity implements SensorEventListener {
 			float angle = msg.getData().getFloat("Angle");
 			ImageView starImg = starArr.get(id).view;
 			
-			//Log.d("starHandler","ID:"+id+" X:"+xPos+" Y:"+yPos);
+			if(id == 1)
+				Log.d("starHandler","ID:"+id+" X:"+xPos+" Y:"+yPos);
 			
 			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-			params.setMargins((int)(xPos-Star_Size/2), (int)(yPos-Star_Size/2), 0, 0);
+			params.setMargins((int)(xPos-Star_Size/2+980), (int)(yPos-Star_Size/2+300), 0, 0);
 			params.width = Star_Size;
 			params.height = Star_Size;
 			starImg.setRotation(-angle*180/(float)Math.PI);
-        	starImg.setLayoutParams(params);
+			starImg.setVisibility(ImageView.VISIBLE);
+			starImg.setLayoutParams(params);
         	
-        	/*
-        	Matrix matrix=new Matrix();
-        	starImg.setScaleType(ScaleType.MATRIX);   //required
-        	matrix.postRotate((float) angle, starImg.getDrawable().getBounds().width()/2, starImg.getDrawable().getBounds().height()/2);
-        	starImg.setImageMatrix(matrix);
-        	*/
 		}
 	};
 
@@ -130,16 +108,6 @@ public class JarActivity extends Activity implements SensorEventListener {
 			updateAngle(-x,-y,z);
 			
 			Coor.setText("X: "+x+"Y: "+y+"Z: "+z);
-			/*
-			float accelerationSquareRoot = (x * x + y * y + z * z) / (SensorManager.GRAVITY_EARTH * SensorManager.GRAVITY_EARTH);
-			long actualTime = System.currentTimeMillis();
-			if (accelerationSquareRoot >= 2)  {
-				if (actualTime - lastUpdate < 200)  return;
-
-				lastUpdate = actualTime;
-				Toast.makeText(this, "Device was shaken", Toast.LENGTH_SHORT).show();	
-			}
-			*/
 		}
 		
 	}
@@ -151,11 +119,60 @@ public class JarActivity extends Activity implements SensorEventListener {
 	}
 	
 	@Override
-	protected void onPause() {					
+	protected void onPause() {
+		super.onPause();
+		Log.d("onpause","here");
 		sensorManager.unregisterListener( this );
-		super.onStop();
+		timer.cancel();
 	}
 	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		Log.d("onResume","here");
+		
+		setContentView(R.layout.activity_jar);
+		setHomeListener(findViewById(R.id.homeBtn));
+		
+		System.loadLibrary("JarSimulation");
+		
+		Bundle bundle = getIntent().getExtras();
+		mUserName = bundle.getString("userName");
+		mWinCount = bundle.getIntArray("GameWinCountArray");
+		
+		
+		RelativeLayout jarLayout = (RelativeLayout)findViewById(R.id.jarRelativeLayout);
+		Coor=(TextView)findViewById(R.id.coor);
+
+		initWorld();
+		starArr = new LinkedList<StarStat>();
+		for(int i=0; i<mWinCount.length; i++) {
+			for(int j=0; j<mWinCount[i]; j++) {
+				ImageView newStar = new ImageView(this);
+				newStar.setImageResource(starResArray[i]);
+				putIntoJar((int)(Math.random()*Num_Layers));
+				starArr.add(new StarStat(i * 10000 + j, newStar));
+				
+				RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+            	params.setMargins(0, 0, 0, 0);
+            	newStar.setVisibility(ImageView.INVISIBLE);
+            	newStar.setLayoutParams(params);
+				
+				jarLayout.addView(newStar);
+			}
+		}
+		
+		
+		sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+		sensorManager.registerListener( this,
+				sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+				SensorManager.SENSOR_DELAY_NORMAL);
+
+		
+		timer = new Timer(true);
+		timerTask = new UpdateTask();
+		timer.schedule(timerTask, 0, 1000/FPS);
+	}
 	
 	class UpdateTask extends TimerTask{
 		public void run() {

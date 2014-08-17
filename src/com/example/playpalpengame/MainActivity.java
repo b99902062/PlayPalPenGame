@@ -82,6 +82,7 @@ public class MainActivity extends Activity {
 				newAct.setClass( MainActivity.this, JarActivity.class );
 				newAct.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				Bundle bundle = new Bundle();
+				bundle.putString("userName", mUserName);
 				bundle.putIntArray("GameWinCountArray", winCount);
 	            newAct.putExtras(bundle);
 				startActivityForResult(newAct ,0);

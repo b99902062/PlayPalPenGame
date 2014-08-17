@@ -5,29 +5,38 @@
     tools:context=".WelcomeActivity" 
     android:background="@drawable/background">
     
-<RelativeLayout
+    <RelativeLayout
+		android:id="@+id/jarRelativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        
+		<TextView
+	        android:id="@+id/coor"
+	        android:layout_width="wrap_content"
+	        android:layout_height="38dp"
+	        android:text="TextView" />
     
-        android:id="@+id/jarRelativeLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="490dp"
-        android:layout_marginRight="490dp"
-        android:layout_marginTop="150dp" >
-
+		<ImageView
+            android:id="@+id/homeBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="25dp"
+            android:layout_marginTop="25dp"
+            android:src="@drawable/home" />
+		
 		<ImageView
 		    android:id="@+id/jarView"
 		    android:src="@drawable/jar"
 		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
-		    android:visibility="visible" />
+		    android:visibility="visible"
+		    android:layout_marginLeft="490dp"
+        	android:layout_marginRight="490dp"
+        	android:layout_marginTop="150dp" />
 
 
      </RelativeLayout>
 
-    <TextView
-        android:id="@+id/coor"
-        android:layout_width="wrap_content"
-        android:layout_height="38dp"
-        android:text="TextView" />
+   
 
 </FrameLayout>
