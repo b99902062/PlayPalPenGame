@@ -26,12 +26,12 @@
 		
 		<ImageView
 		    android:id="@+id/jarView"
-		    android:src="@drawable/jar"
+		    android:src="@drawable/jar_bottle"
 		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
 		    android:visibility="visible"
-		    android:layout_marginLeft="490dp"
-        	android:layout_marginRight="490dp"
+		    android:layout_marginLeft="470dp"
+        	android:layout_marginRight="470dp"
         	android:layout_marginTop="150dp" />
 
 
