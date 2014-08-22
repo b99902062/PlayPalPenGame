@@ -1,6 +1,8 @@
 package com.example.playpalpengame;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -11,6 +13,9 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -21,6 +26,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.NumberPicker;
@@ -34,6 +40,7 @@ public class BeginActivity extends Activity {
 	private boolean isRightPanelOn = false;
 	private static boolean isMale = true;
 	private static int userAge = 0;
+	private static Bitmap picData;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +51,34 @@ public class BeginActivity extends Activity {
 		setContentView(R.layout.activity_begin);
 
 		isTheFirstRecord = false;
+		
+		((Spinner)findViewById(R.id.userNameSpinner)).setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView adapterView,
+					View view, int position, long id) {
+				try {
+					String headFileName = "/sdcard/Android/data/com.example.playpalgame/" + adapterView.getSelectedItem().toString() + ".png";
+					File f = new File(headFileName);
+					if(f.exists()) {
+						Bitmap bMap = BitmapFactory.decodeFile(headFileName);
+						((ImageView)findViewById(R.id.loginHeadView)).setImageBitmap(bMap);;
+					}
+					else {
+						((ImageView)findViewById(R.id.loginHeadView)).setImageResource(R.drawable.login_head);
+					}
+				} catch(Exception ex) {
+				}
+				/*
+				targetPlayerList = getTargetPlayerList(adapterView.getSelectedItem().toString(), resultList);
+				String[] stageStrArr = getAllStages(targetPlayerList);
+				connectSource(TherapyMainActivity.this, stageSpinner, stageStrArr);
+				*/
+			}
+			
+			@Override
+			public void onNothingSelected(AdapterView arg0) {
+			}
+		});
 		
 		ImageView therapyIcon = (ImageView)findViewById(R.id.therapyIcon);
 		therapyIcon.setOnClickListener(new OnClickListener() {
@@ -84,6 +119,26 @@ public class BeginActivity extends Activity {
 		else {
 			Log.d("EndTest", "ResultList in BeginActivity is null.");
 		}
+		
+		((ImageView)findViewById(R.id.takePicBtn)).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				Intent intentCamera = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+			    startActivityForResult(intentCamera, 0);
+			}
+		});
+	}
+	
+	 @Override
+	 protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	      ImageView iv = (ImageView)findViewById(R.id.loginHeadView);
+	      if (resultCode == RESULT_OK) {
+	    	  Bundle extras = data.getExtras();
+	          Bitmap bmp = (Bitmap) extras.get("data");
+	          picData = bmp;
+	          iv.setImageBitmap(bmp);
+	      }
+	      super.onActivityResult(requestCode, resultCode, data);
 	}
 	
 	private void setLoginBtn() {
@@ -101,6 +156,7 @@ public class BeginActivity extends Activity {
 				findViewById(R.id.ageLabel).setVisibility(View.INVISIBLE);
 				findViewById(R.id.ageLabel_1).setVisibility(View.INVISIBLE);
 				findViewById(R.id.agePicker).setVisibility(View.INVISIBLE);
+				findViewById(R.id.takePicBtn).setVisibility(View.INVISIBLE);
 				
 				if(!isRightPanelOn) {
 					Animation rightPanelAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_OUTRIGHT_TO_CUR, 1000);
@@ -137,6 +193,7 @@ public class BeginActivity extends Activity {
 				rightPanel.setVisibility(View.VISIBLE);
 				findViewById(R.id.userNameSpinner).setVisibility(View.INVISIBLE);
 				findViewById(R.id.userNameText).setVisibility(View.VISIBLE);
+				findViewById(R.id.takePicBtn).setVisibility(View.VISIBLE);
 				
 				NumberPicker agePicker = (NumberPicker)findViewById(R.id.agePicker);
 				agePicker.setMaxValue(18);
@@ -234,6 +291,17 @@ public class BeginActivity extends Activity {
 	        	fWriter.flush();
 	        	fWriter.close();
 			}
+
+			// Write to 
+			File f = new File("/sdcard/Android/data/com.example.playpalgame/" + newName + ".png");
+			f.createNewFile();
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			picData.compress(CompressFormat.PNG, 0, bos);
+			byte[] bitmapdata = bos.toByteArray();
+			FileOutputStream fos = new FileOutputStream(f);
+			fos.write(bitmapdata);
+			fos.flush();
+			fos.close();
 	
 			analysisFile = new RandomAccessFile(filePath, "rw");
 			analysisFile.seek(analysisFile.length()-1); 

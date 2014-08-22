@@ -18,6 +18,7 @@ public class LoadingActivity extends Activity {
 	private int badge;
 	private int highScore;
 	private int winCount;
+	private boolean isPlayBtn;
 	private Timer timer = new Timer(true);
 	private int[] stallResIdArray = {0, R.drawable.main_stall_1, R.drawable.main_stall_2, R.drawable.main_stall_3, R.drawable.main_stall_4};
 	private int[] monsterResIdArray = {0, R.drawable.main_monster_1, R.drawable.main_monster_2, R.drawable.main_monster_3, R.drawable.main_monster_4};
@@ -34,6 +35,7 @@ public class LoadingActivity extends Activity {
 		Bundle bundle = getIntent().getExtras();
 		gameIndex = bundle.getInt("GameIndex");
 		mUserName = bundle.getString("userName");
+		isPlayBtn = bundle.getBoolean("isPlayBtn");
 		badge = bundle.getInt("GameBadges");
 		highScore = bundle.getInt("GameHighScore");
 		winCount = bundle.getInt("GameWinCount");
@@ -50,16 +52,30 @@ public class LoadingActivity extends Activity {
 	public class timerTask extends TimerTask {
 	    public void run() {
 	    	Intent newAct = new Intent();
-	    	if(gameIndex == 1)
-	    		newAct.setClass( LoadingActivity.this, Game1Activity.class );
-	    	else if(gameIndex == 2)
-	    		newAct.setClass( LoadingActivity.this, Game2Activity.class );
-	    	else if(gameIndex == 3)
-	    		newAct.setClass( LoadingActivity.this, Game3Activity.class );
-	    	else if(gameIndex == 4)
-	    		newAct.setClass( LoadingActivity.this, Game4Activity.class );
-	    	else
-	    		return;
+	    	if(isPlayBtn) {
+		    	if(gameIndex == 1)
+		    		newAct.setClass( LoadingActivity.this, Game1Activity.class );
+		    	else if(gameIndex == 2)
+		    		newAct.setClass( LoadingActivity.this, Game2Activity.class );
+		    	else if(gameIndex == 3)
+		    		newAct.setClass( LoadingActivity.this, Game3Activity.class );
+		    	else if(gameIndex == 4)
+		    		newAct.setClass( LoadingActivity.this, Game4Activity.class );
+		    	else
+		    		return;
+	    	}
+	    	else {
+	    		if(gameIndex == 1)
+		    		newAct.setClass( LoadingActivity.this, Practice1Activity.class );
+		    	else if(gameIndex == 2)
+		    		newAct.setClass( LoadingActivity.this, Practice2Activity.class );
+		    	else if(gameIndex == 3)
+		    		newAct.setClass( LoadingActivity.this, Practice3Activity.class );
+		    	else if(gameIndex == 4)
+		    		newAct.setClass( LoadingActivity.this, Practice4Activity.class );
+		    	else
+		    		return;
+	    	}
 			Bundle bundle = new Bundle();
 			bundle.putString("userName", mUserName);
 			bundle.putInt("GameBadges", badge);

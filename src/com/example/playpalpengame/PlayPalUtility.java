@@ -61,6 +61,7 @@ public class PlayPalUtility {
 	protected static Timer timer;
 	protected static TimeBarTask timerTask;
 	
+	private static boolean isPlayFeedback;
 	protected static ImageView feedbackView;
 
 	private static Callable<Integer> failFunc;
@@ -413,6 +414,7 @@ public class PlayPalUtility {
 		Log.d("EndTest", "doFailFeedback()");
 		if(feedbackView == null)
 			return;
+		isPlayFeedback = true;
 		feedbackView.setVisibility(View.VISIBLE);
 		setAlphaAnimation(feedbackView, true, new Callable<Integer>() {
 			@Override
@@ -421,6 +423,7 @@ public class PlayPalUtility {
 					@Override
 					public Integer call() throws Exception {
 						feedbackView.setVisibility(View.INVISIBLE);
+						isPlayFeedback = false;
 						return 0;
 					}
 				}, 300);
@@ -439,7 +442,6 @@ public class PlayPalUtility {
 				if(event.getAction() == MotionEvent.ACTION_DOWN) {
 					curEntry = new RecordEntry(
 						new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_TOUCH_START);
-					//PenRecorder.startRecorder();
 					PenRecorder.forceRecord();
 				}
 				else if(event.getAction() == MotionEvent.ACTION_MOVE)
@@ -449,7 +451,6 @@ public class PlayPalUtility {
 					curEntry = new RecordEntry(
 						new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_TOUCH_END);
 					PenRecorder.forceRecord();
-					//PenRecorder.stopRecorder();
 				}
 				if(func2 != null){
 					try {
@@ -547,7 +548,7 @@ public class PlayPalUtility {
 							break;
 					}
 				}
-				if(!isTrigger && event.getAction() == MotionEvent.ACTION_UP)
+				if(!isTrigger && event.getAction() == MotionEvent.ACTION_UP && !isPlayFeedback)
 					doFailFeedback();
 				return true;
 			}
@@ -736,15 +737,18 @@ public class PlayPalUtility {
 	}
 	
 	protected static void pauseProgress() {
-		timerTask.pause();
+		if(timerTask != null)
+			timerTask.pause();
 	}
 	
 	protected static void resumeProgress() {
-		timerTask.resume();
+		if(timerTask != null)
+			timerTask.resume();
 	}
 	
 	protected static int killTimeBar() {
-		timerTask.cancel();
+		if(timerTask != null)
+			timerTask.cancel();
 		return curProgress;
 	}
 	

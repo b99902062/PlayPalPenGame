@@ -53,14 +53,14 @@ public class MainActivity extends Activity {
 		if(resultList != null)
 			UpdateBadges();
 		
-		View playBtn1 = findViewById(R.id.mainPlayBtn1);
-		setStallListener(playBtn1, 1);	
-		View playBtn2 = findViewById(R.id.mainPlayBtn2);
-		setStallListener(playBtn2, 2);
-		View playBtn3 = findViewById(R.id.mainPlayBtn3);
-		setStallListener(playBtn3, 3);
-		View playBtn4 = findViewById(R.id.mainPlayBtn4);
-		setStallListener(playBtn4, 4);
+		setStallListener(findViewById(R.id.mainPlayBtn1), 1, true);
+		setStallListener(findViewById(R.id.mainPlayBtn2), 2, true);
+		setStallListener(findViewById(R.id.mainPlayBtn3), 3, true);
+		setStallListener(findViewById(R.id.mainPlayBtn4), 4, true);
+		setStallListener(findViewById(R.id.mainPracticeBtn1), 1, false);
+		setStallListener(findViewById(R.id.mainPracticeBtn2), 2, false);
+		setStallListener(findViewById(R.id.mainPracticeBtn3), 3, false);
+		setStallListener(findViewById(R.id.mainPracticeBtn4), 4, false);
 		
 		ImageView therapyIcon = (ImageView)findViewById(R.id.therapyIcon);
 		therapyIcon.setOnClickListener(new OnClickListener() {
@@ -91,7 +91,7 @@ public class MainActivity extends Activity {
 		});
 	}
 	
-	protected void setStallListener(View targetView, final int gameIndex) {
+	protected void setStallListener(View targetView, final int gameIndex, final boolean isPlayBtn) {
 		targetView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -101,6 +101,7 @@ public class MainActivity extends Activity {
 				Bundle bundle = new Bundle();
 				bundle.putInt("GameIndex", gameIndex);
 				bundle.putString("userName", mUserName);
+				bundle.putBoolean("isPlayBtn", isPlayBtn);
 				bundle.putInt("GameBadges", badges[gameIndex-1]);
 				bundle.putInt("GameHighScore", highScores[gameIndex-1]);
 				bundle.putInt("GameWinCount", winCount[gameIndex-1]);
