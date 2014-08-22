@@ -218,7 +218,8 @@ public class TherapyMainActivity extends Activity {
         	TherapyMainActivity.canvasView.addLimit();
         	TherapyMainActivity.canvasView.invalidate();
         	timeBar.setProgress(TherapyMainActivity.canvasView.getLimit());
-        	progressText.setText(String.format("%d/%d", TherapyMainActivity.canvasView.getLimit(), timeBar.getMax()));
+        	int limit = TherapyMainActivity.canvasView.getLimit() > timeBar.getMax() ? timeBar.getMax() : TherapyMainActivity.canvasView.getLimit();  
+        	progressText.setText(String.format("%d/%d", limit, timeBar.getMax()));
         	if(TherapyMainActivity.canvasView.getLimit() > TherapyMainActivity.canvasView.getPointsCount()) {
         		replayTimerTask.cancel();
         		replayTrackBtn.setImageResource(R.drawable.replay_btn);
@@ -338,7 +339,8 @@ public class TherapyMainActivity extends Activity {
 					public void onProgressChanged(SeekBar arg0, int arg1,
 							boolean arg2) {
 						TherapyMainActivity.canvasView.setLimit(arg1);
-						progressText.setText(String.format("%d/%d", TherapyMainActivity.canvasView.getLimit(), timeBar.getMax()));
+						int limit = TherapyMainActivity.canvasView.getLimit() > timeBar.getMax() ? timeBar.getMax() : TherapyMainActivity.canvasView.getLimit();  
+			        	progressText.setText(String.format("%d/%d", limit, timeBar.getMax()));
 			        	TherapyMainActivity.canvasView.invalidate();
 					}
 
@@ -366,12 +368,15 @@ public class TherapyMainActivity extends Activity {
 		}
 	}
 	
-	public static void connectSource(Context context, Spinner spinner, String[] srcStrArr) {
+	public static void connectSource(Context context, Spinner spinner, String[] srcStrArr, int styleResId) {
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(context,
 				android.R.layout.simple_spinner_dropdown_item, srcStrArr);
-		adapter
-				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		adapter.setDropDownViewResource(styleResId);
 		spinner.setAdapter(adapter);
+	}
+	
+	public static void connectSource(Context context, Spinner spinner, String[] srcStrArr) {
+		connectSource(context, spinner, srcStrArr, android.R.layout.simple_spinner_dropdown_item);
 	}
 
 	public static  String[] getAllNames(ArrayList<AnalysisMessage> targetList) {

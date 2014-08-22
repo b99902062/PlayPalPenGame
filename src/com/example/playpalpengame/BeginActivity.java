@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,12 +31,13 @@ import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 
 public class BeginActivity extends Activity {
 	private static boolean isTheFirstRecord = false;
@@ -44,6 +46,8 @@ public class BeginActivity extends Activity {
 	private static boolean isMale = true;
 	private static int userAge = 0;
 	private static Bitmap picData;
+	private ListView userListView;
+	private String tmpUserName = null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +59,8 @@ public class BeginActivity extends Activity {
 
 		isTheFirstRecord = false;
 		
+		userListView = (ListView)findViewById(R.id.userListView);
+		
 		((EditText)findViewById(R.id.userNameText)).setOnFocusChangeListener(new OnFocusChangeListener() {
 			public void onFocusChange(View v, boolean hasFocus){
 		        if(v.getId() == R.id.userNameText && !hasFocus) {
@@ -64,26 +70,22 @@ public class BeginActivity extends Activity {
 		    }
 		});
 		
-		((Spinner)findViewById(R.id.userNameSpinner)).setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
+		userListView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
-			public void onItemSelected(AdapterView adapterView,
-					View view, int position, long id) {
-				try {
-					String headFileName = "/sdcard/Android/data/com.example.playpalgame/" + adapterView.getSelectedItem().toString() + ".png";
-					File f = new File(headFileName);
-					if(f.exists()) {
-						Bitmap bMap = BitmapFactory.decodeFile(headFileName);
-						((ImageView)findViewById(R.id.loginHeadView)).setImageBitmap(bMap);;
-					}
-					else {
-						((ImageView)findViewById(R.id.loginHeadView)).setImageResource(R.drawable.login_head);
-					}
-				} catch(Exception ex) {
+			public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
+				HashMap<String, Object> obj = (HashMap<String, Object>)userListView.getItemAtPosition(position);
+				tmpUserName = obj.get("itemUserName").toString();
+				Log.d("EndTest", obj.get("itemUserName").toString());
+				
+				String headFileName = "/sdcard/Android/data/com.example.playpalgame/" + tmpUserName + ".png";
+				File f = new File(headFileName);
+				if(f.exists()) {
+					Bitmap bMap = BitmapFactory.decodeFile(headFileName);
+					((ImageView)findViewById(R.id.loginHeadView)).setImageBitmap(bMap);;
 				}
-			}
-			
-			@Override
-			public void onNothingSelected(AdapterView arg0) {
+				else {
+					((ImageView)findViewById(R.id.loginHeadView)).setImageResource(R.drawable.login_head);
+				}
 			}
 		});
 		
@@ -120,8 +122,22 @@ public class BeginActivity extends Activity {
 			String[] nameList = MainActivity.getAllNames(resultList);
 			if(nameList.length == 0)
 				isTheFirstRecord = true;
-			Spinner nameSpinner = (Spinner)findViewById(R.id.userNameSpinner);
-			TherapyMainActivity.connectSource(this, nameSpinner, nameList);
+			
+			ArrayList<HashMap<String, Object>> item = new ArrayList<HashMap<String, Object>>();
+			for(int i=0; i<resultList.size(); i++) {
+				HashMap<String, Object> map = new HashMap<String, Object>();
+				map.put("itemHeadImage", "/sdcard/Android/data/com.example.playpalgame/" + resultList.get(i).userName + ".png");
+				map.put("itemUserName", resultList.get(i).userName);
+				String genderStr = resultList.get(i).isMale ? "Male" : "Female";
+				map.put("itemMoreInfo", genderStr + " ( " + resultList.get(i).age + " )");
+				item.add(map);
+			}
+
+			CustomAdapter customAdapter = new CustomAdapter( this, item, R.layout.user_list_layout,
+					new String[] {"itemHeadImage","itemUserName", "itemMoreInfo"},
+					new int[] {R.id.itemHeadImage, R.id.itemUserName,R.id.itemMoreInfo}
+			);
+			userListView.setAdapter(customAdapter);
 		}
 		else {
 			Log.d("EndTest", "ResultList in BeginActivity is null.");
@@ -156,7 +172,7 @@ public class BeginActivity extends Activity {
 				isRightPanelOn = true;
 				rightPanel.setVisibility(View.VISIBLE);
 				
-				findViewById(R.id.userNameSpinner).setVisibility(View.VISIBLE);
+				findViewById(R.id.userListView).setVisibility(View.VISIBLE);
 				findViewById(R.id.userNameText).setVisibility(View.INVISIBLE);
 				findViewById(R.id.genderLabel).setVisibility(View.INVISIBLE);
 				findViewById(R.id.genderRadioGroup).setVisibility(View.INVISIBLE);
@@ -180,8 +196,7 @@ public class BeginActivity extends Activity {
 						newAct.setClass( BeginActivity.this, MainActivity.class );
 						newAct.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 						Bundle bundle = new Bundle();
-						String userName = ((Spinner)findViewById(R.id.userNameSpinner)).getSelectedItem().toString();
-						bundle.putString("userName", userName);
+						bundle.putString("userName", tmpUserName);
 			            newAct.putExtras(bundle);
 			            startActivityForResult(newAct ,0);
 			            BeginActivity.this.finish();
@@ -198,7 +213,7 @@ public class BeginActivity extends Activity {
 			public void onClick(View arg0) {
 				isRightPanelOn = true;
 				rightPanel.setVisibility(View.VISIBLE);
-				findViewById(R.id.userNameSpinner).setVisibility(View.INVISIBLE);
+				findViewById(R.id.userListView).setVisibility(View.INVISIBLE);
 				findViewById(R.id.userNameText).setVisibility(View.VISIBLE);
 				findViewById(R.id.takePicBtn).setVisibility(View.VISIBLE);
 				
