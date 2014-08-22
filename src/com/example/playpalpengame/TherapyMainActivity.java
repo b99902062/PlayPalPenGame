@@ -1,5 +1,6 @@
 package com.example.playpalpengame;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -13,6 +14,8 @@ import java.util.TimerTask;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -59,9 +62,13 @@ public class TherapyMainActivity extends Activity {
 	public static SeekBar replaySpeedBar = null;
 	public static TextView replaySpeedText = null;
 	public static ImageView replayTrackBtn = null;
+	public static TextView genderLabel = null;
+	public static TextView ageLabel = null;
+	public static ImageView headImage = null;
 	
 	public static boolean isPause = true;
 	
+	public static ArrayList<RecordMessage> userInfoList;
 	public static ArrayList<AnalysisMessage> resultList;
 	public static ArrayList<AnalysisMessage> targetPlayerList;
 	public static ArrayList<AnalysisMessage> targetStageList;
@@ -103,6 +110,9 @@ public class TherapyMainActivity extends Activity {
 		replaySpeedBar = (SeekBar) findViewById(R.id.replaySpeedBar);
 		replaySpeedText = (TextView) findViewById(R.id.speedLabel);
 		replayTrackBtn = (ImageView)findViewById(R.id.replayTrackBtn);
+		genderLabel = (TextView) findViewById(R.id.genderLabel);
+		ageLabel = (TextView) findViewById(R.id.ageLabel);
+		headImage = (ImageView) findViewById(R.id.headImage);
 		
 		ImageView backBtn = (ImageView) findViewById(R.id.backBtn);
 		backBtn.setOnClickListener(new OnClickListener() {
@@ -246,6 +256,26 @@ public class TherapyMainActivity extends Activity {
 					@Override
 					public void onItemSelected(AdapterView adapterView,
 							View view, int position, long id) {
+						for(int i=0; i<userInfoList.size(); i++) {
+							if(userInfoList.get(i).userName.equals(adapterView.getSelectedItem().toString())) {
+								if(userInfoList.get(i).isMale)
+									TherapyMainActivity.genderLabel.setText("Gender: Male");
+								else
+									TherapyMainActivity.genderLabel.setText("Gender: Female");
+								TherapyMainActivity.ageLabel.setText("Age: " + userInfoList.get(i).age);
+								
+								String headFileName = "/sdcard/Android/data/com.example.playpalgame/" + adapterView.getSelectedItem().toString() + ".png";
+								File f = new File(headFileName);
+								if(f.exists()) {
+									Bitmap bMap = BitmapFactory.decodeFile(headFileName);
+									TherapyMainActivity.headImage.setImageBitmap(bMap);;
+								}
+								else 
+									((ImageView)findViewById(R.id.loginHeadView)).setImageResource(R.drawable.login_head);
+								
+							}
+						}
+						
 						targetPlayerList = getTargetPlayerList(adapterView.getSelectedItem().toString(), resultList);
 						String[] stageStrArr = getAllStages(targetPlayerList);
 						connectSource(TherapyMainActivity.this, stageSpinner, stageStrArr);
@@ -615,6 +645,7 @@ class RecordLoader extends AsyncTask<Void, Integer, Boolean> {
 	@Override
 	protected Boolean doInBackground(Void... arg0) {
 		TherapyMainActivity.resultList = TherapyMainActivity.loadRecord();
+		TherapyMainActivity.userInfoList = MainActivity.loadRecord();
 		return true;
 	}
 	

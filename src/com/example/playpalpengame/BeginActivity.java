@@ -12,6 +12,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
@@ -21,11 +22,13 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
 import android.view.View.OnTouchListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -52,6 +55,15 @@ public class BeginActivity extends Activity {
 
 		isTheFirstRecord = false;
 		
+		((EditText)findViewById(R.id.userNameText)).setOnFocusChangeListener(new OnFocusChangeListener() {
+			public void onFocusChange(View v, boolean hasFocus){
+		        if(v.getId() == R.id.userNameText && !hasFocus) {
+		            InputMethodManager imm =  (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+		            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+		        }
+		    }
+		});
+		
 		((Spinner)findViewById(R.id.userNameSpinner)).setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView adapterView,
@@ -68,11 +80,6 @@ public class BeginActivity extends Activity {
 					}
 				} catch(Exception ex) {
 				}
-				/*
-				targetPlayerList = getTargetPlayerList(adapterView.getSelectedItem().toString(), resultList);
-				String[] stageStrArr = getAllStages(targetPlayerList);
-				connectSource(TherapyMainActivity.this, stageSpinner, stageStrArr);
-				*/
 			}
 			
 			@Override
@@ -217,7 +224,6 @@ public class BeginActivity extends Activity {
 				submitBtn.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View arg0) {
-						// Add gender and something~~~
 						String userName = ((EditText)findViewById(R.id.userNameText)).getText().toString();
 						if(userName.equals(""))
 							return;

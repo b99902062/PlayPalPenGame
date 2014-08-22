@@ -175,6 +175,8 @@ public class MainActivity extends Activity {
 
 	public static RecordMessage readMessage(JsonReader reader) throws IOException {
 		String userName = null;
+		boolean isMale = false;
+		int age = 0;
 		int[] badges = new int[4];
 		int[] highScores = new int[4];
 		int[] winCount = new int[4];
@@ -202,12 +204,16 @@ public class MainActivity extends Activity {
 	    			   winCount[i-1] = reader.nextInt(); 
 	    	   }
 	       }
+	       else if (name.equals("isMale")) 
+	    	   isMale = reader.nextBoolean();
+	       else if (name.equals("age")) 
+	    	   age = reader.nextInt();
 	       else {
 	         reader.skipValue();
 	       }
 	     }
 	     reader.endObject();
-	     return new RecordMessage(userName, badges, highScores, winCount);
+	     return new RecordMessage(userName, badges, highScores, winCount, isMale, age);
 	 }
 	
 	public static String[] getAllNames(ArrayList<RecordMessage> targetList) {
@@ -223,12 +229,16 @@ public class MainActivity extends Activity {
 
 class RecordMessage {
 	public String userName;
+	public boolean isMale;
+	public int age;
 	public int[] badges = new int[4];
 	public int[] highScores = new int[4];
 	public int[] winCount = new int[4];
 	
-	public RecordMessage(String userName, int[] badges, int[] highScores, int[] winCount) {
+	public RecordMessage(String userName, int[] badges, int[] highScores, int[] winCount, boolean isMale, int age) {
 		this.userName = userName;
+		this.isMale = isMale;
+		this.age = age;
 		for(int i=0; i<4; i++) {
 			this.badges[i] = badges[i];
 			this.highScores[i] = highScores[i];
