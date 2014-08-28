@@ -45,7 +45,7 @@ public class JarActivity extends Activity implements SensorEventListener {
 	
 	public static final int Num_Layers = 3;
 	public static final int Star_Size = 100;
-	public static final float PTM_Ratio = 500;
+	public static final float PTM_Ratio = 1500;
 	public static final int FPS = 60;
 	
 	

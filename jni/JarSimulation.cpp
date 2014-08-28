@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <vector>
 
-#define PTM_Ratio 500.f
+#define PTM_Ratio 1500.f
 #define FPS 60.f
 #define Star_Size 90.f
 
