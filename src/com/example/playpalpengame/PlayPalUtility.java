@@ -5,9 +5,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Callable;
 
-import com.samsung.spen.lib.input.SPenEventLibrary;
-import com.samsung.spensdk.applistener.SPenHoverListener;
-
+import junit.framework.Test;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -17,6 +15,8 @@ import android.graphics.Paint.Style;
 import android.graphics.Path;
 import android.graphics.PathEffect;
 import android.graphics.Point;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Handler;
 import android.os.Message;
 import android.util.FloatMath;
@@ -34,7 +34,12 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 
+import com.samsung.spen.lib.input.SPenEventLibrary;
+import com.samsung.spensdk.applistener.SPenHoverListener;
+
 public class PlayPalUtility {
+	protected final static int SOUND_ID_TEST = 0;
+	
 	protected final static int FROM_OUTLEFT_TO_CUR = 1;
 	protected final static int FROM_CUR_TO_OUTRIGHT = 2;
 	protected final static int FROM_OUTRIGHT_TO_CUR = 3;
@@ -75,6 +80,8 @@ public class PlayPalUtility {
 	
 	protected static ArrayList<GestureSet> gestureSetList = new ArrayList<GestureSet>();
 	protected static ArrayList<StrokeSet> strokeSetList = new ArrayList<StrokeSet>();
+	
+	private static int[] soundRes = {R.raw.test_sound};
 	
 	protected static boolean butterSqueezing = false;
 	protected static SPenEventLibrary mSPenEventLibrary = new SPenEventLibrary();
@@ -413,10 +420,11 @@ public class PlayPalUtility {
 		feedbackView = null;
 	}
 	
-	protected static void doFailFeedback() {
+	protected static void doFailFeedback(Context context) {
 		Log.d("EndTest", "doFailFeedback()");
 		if(feedbackView == null)
 			return;
+		playSoundEffect(PlayPalUtility.SOUND_ID_TEST, context);
 		isPlayFeedback = true;
 		feedbackView.setVisibility(View.VISIBLE);
 		setAlphaAnimation(feedbackView, true, new Callable<Integer>() {
@@ -552,7 +560,7 @@ public class PlayPalUtility {
 					}
 				}
 				if(!isTrigger && event.getAction() == MotionEvent.ACTION_UP && !isPlayFeedback)
-					doFailFeedback();
+					doFailFeedback(targetContext);
 				return true;
 			}
 		});
@@ -668,6 +676,17 @@ public class PlayPalUtility {
 	
 	protected static void setLineGesture(boolean value) {
 		isLineGestureOn = value;
+	}
+	
+	protected static void playSoundEffect(int soundID, Context context) {
+		MediaPlayer mp = MediaPlayer.create(context, soundRes[soundID]);
+        mp.setOnCompletionListener(new OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                mp.release();
+            }
+        });   
+        mp.start();
 	}
 	
 	protected static void registerProgressBar(ProgressBar barView, ImageView markView, ImageView progressBackView) {

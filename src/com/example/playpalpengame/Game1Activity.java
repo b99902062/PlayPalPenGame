@@ -252,6 +252,7 @@ public class Game1Activity extends Activity {
 	protected void RemoveFromBoard(View view) {
 		progressCount++;
 		progressCountText.setText("ProgressCount: " + new String("" + progressCount));
+		PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_ID_TEST, this);
 		//PlayPalUtility.doProgress();
 		
 		view.setVisibility(ImageView.GONE);
@@ -374,6 +375,7 @@ public class Game1Activity extends Activity {
 	protected Integer doPotStir() {
 		progressCount++;
 		progressCountText.setText("ProgressCount: " + new String("" + progressCount));
+		PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_ID_TEST, this);
 		//PlayPalUtility.doProgress();
 		
 		//potStirAnim.setVisible(true, true);
@@ -430,6 +432,7 @@ public class Game1Activity extends Activity {
 			return 0;
 		progressCount++;
 		progressCountText.setText("ProgressCount: " + new String("" + progressCount));
+		PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_ID_TEST, this);
 		//PlayPalUtility.doProgress();
 		
 		Point beginPnt = new Point(0, 0);

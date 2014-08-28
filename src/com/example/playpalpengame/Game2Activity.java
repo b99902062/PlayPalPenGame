@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.concurrent.Callable;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.PointF;
@@ -70,6 +71,8 @@ public class Game2Activity extends Activity {
 	protected DrawableRelativeLayout game2RelativeLayout;
 	protected TextView testProgressCountText;
 	
+	private Context self;
+	
 	protected int progressCount;
 	protected static LinkedList<FishHandlerThread> fishThreadList;
 	
@@ -89,6 +92,7 @@ public class Game2Activity extends Activity {
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
+		self = this;
 		isReady = false;
 		
 		setContentView(R.layout.activity_game2);
@@ -174,6 +178,7 @@ public class Game2Activity extends Activity {
                     			
                     			progressCount++;
                     			testProgressCountText.setText(String.format("ProgressCount: %d", progressCount));
+                    			PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_ID_TEST, self);
                     			if(progressCount == step1TotalProgressCount) {
                     				score += PlayPalUtility.killTimeBar();
                     				PenRecorder.outputJSON();
@@ -275,6 +280,7 @@ public class Game2Activity extends Activity {
 		
 		if(canPutInBasket) /** To avoid race condition */
 			return 0;
+		
 		curFishIndex = index;
 		canPutInBasket = true;
 		PlayPalUtility.setLineGesture(false);
@@ -284,6 +290,8 @@ public class Game2Activity extends Activity {
 		fishThreadList.get(index).fishView.setVisibility(ImageView.INVISIBLE);
 		netView.setImageResource(R.drawable.game2_net2);
 
+		PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_ID_TEST, this);
+		
 		return 0;
 	}
 	
@@ -343,6 +351,8 @@ public class Game2Activity extends Activity {
 			ImageView cutView = (ImageView)findViewById(fishCutIdArray[lastTriggerIndex]);
 			cutView.setVisibility(ImageView.VISIBLE);
 			isFishCutArray[lastTriggerIndex] = true;
+			
+			PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_ID_TEST, this);
 			
 			final int baseIndex = lastTriggerIndex/4;
 			if(isFishCutArray[baseIndex * 4]
