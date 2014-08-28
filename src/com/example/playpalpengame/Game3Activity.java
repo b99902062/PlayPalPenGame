@@ -72,8 +72,9 @@ public class Game3Activity extends Activity {
 	
 	
 	
+	protected final int INIT_CREAM_RATIO = 10;
 	protected final int CREAM_MAX_RATIO = 20;
-	protected final int SMALL_CREAM_SIZE = 50;
+	protected final int SMALL_CREAM_SIZE = 75;
 	protected final int LARGE_CREAM_SIZE = 150;
 	
 	protected final int MIX_PROGRESS_START = 1;
@@ -187,7 +188,7 @@ public class Game3Activity extends Activity {
 		mSPenEventLibrary.setSPenHoverListener(cakeView, new SPenHoverListener(){
 			Point startPoint;
 			ImageView curButterView;
-			int ratio = 0;
+			int ratio = INIT_CREAM_RATIO;
 			int w = 50;
 			int h = 50;
 					

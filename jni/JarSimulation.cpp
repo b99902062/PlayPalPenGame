@@ -4,14 +4,18 @@
 #include <stdio.h>
 #include <vector>
 
-#define PTM_Ratio 1000.f
+#define PTM_Ratio 500.f
 #define FPS 60.f
-#define Star_Size 150.f
+#define Star_Size 90.f
 
-#define U_Boundary 1000
-#define D_Boundary 0
-#define L_Boundary 0
-#define R_Boundary 600
+
+#define X_middle 300
+#define Y_middle 500
+#define U_Boundary 825
+#define D_Boundary 150
+
+#define L_Boundary 20
+#define R_Boundary 580
 
 
 class Star{
@@ -61,13 +65,19 @@ class Star{
 		float xPos = (bodies[0]->GetWorldCenter().x + bodies[1]->GetWorldCenter().x)/2;
 		float yPos = (bodies[0]->GetWorldCenter().y + bodies[1]->GetWorldCenter().y)/2;
 
-		if(xPos<L_Boundary || xPos>R_Boundary){
-			bodies[0]->SetTransform(b2Vec2(300/PTM_Ratio, bodies[0]->GetWorldCenter().x), bodies[0]->GetAngle());
-			bodies[1]->SetTransform(b2Vec2(300/PTM_Ratio, bodies[1]->GetWorldCenter().x), bodies[1]->GetAngle());
+		char s[100];
+		sprintf(s,"%f %f",xPos,yPos);
+		//__android_log_write(ANDROID_LOG_DEBUG, "jar",s);
+
+		if(xPos<L_Boundary/PTM_Ratio || xPos>R_Boundary/PTM_Ratio){
+			//__android_log_write(ANDROID_LOG_DEBUG, "jar", "1:(");
+			bodies[0]->SetTransform(b2Vec2(X_middle/PTM_Ratio, bodies[0]->GetWorldCenter().y), bodies[0]->GetAngle());
+			bodies[1]->SetTransform(b2Vec2(X_middle/PTM_Ratio, bodies[1]->GetWorldCenter().y), bodies[1]->GetAngle());
 		}
-		if(yPos<D_Boundary || yPos>U_Boundary){
-			bodies[0]->SetTransform(b2Vec2(bodies[0]->GetWorldCenter().x,500/PTM_Ratio), bodies[0]->GetAngle());
-			bodies[1]->SetTransform(b2Vec2(bodies[1]->GetWorldCenter().x,500/PTM_Ratio), bodies[1]->GetAngle());
+		if(yPos<D_Boundary/PTM_Ratio || yPos>U_Boundary/PTM_Ratio){
+			//__android_log_write(ANDROID_LOG_DEBUG, "jar", "2:(");
+			bodies[0]->SetTransform(b2Vec2(bodies[0]->GetWorldCenter().x, Y_middle/PTM_Ratio), bodies[0]->GetAngle());
+			bodies[1]->SetTransform(b2Vec2(bodies[1]->GetWorldCenter().x, Y_middle/PTM_Ratio), bodies[1]->GetAngle());
 		}
 
 		xPos = (bodies[0]->GetWorldCenter().x + bodies[1]->GetWorldCenter().x)/2;
@@ -113,18 +123,42 @@ void init() {
 	groundFixtureDef.shape = &edgeShape;
 	groundFixtureDef.filter.categoryBits = Group[0] | Group[1] | Group[2] | Group[3] | Group[4];
 
-	edgeShape.Set( b2Vec2(0/PTM_Ratio,1000/PTM_Ratio), b2Vec2(600/PTM_Ratio,1000/PTM_Ratio) );
+	edgeShape.Set( b2Vec2(L_Boundary/PTM_Ratio,U_Boundary/PTM_Ratio), b2Vec2(R_Boundary/PTM_Ratio,U_Boundary/PTM_Ratio) );//U
 	m_world->CreateBody(&groundBodyDef)->CreateFixture(&groundFixtureDef);
 
-	edgeShape.Set( b2Vec2(0/PTM_Ratio,0/PTM_Ratio), b2Vec2(600/PTM_Ratio,0/PTM_Ratio) );
+	edgeShape.Set( b2Vec2(L_Boundary/PTM_Ratio,D_Boundary/PTM_Ratio), b2Vec2(R_Boundary/PTM_Ratio,D_Boundary/PTM_Ratio) );//D
 	m_world->CreateBody(&groundBodyDef)->CreateFixture(&groundFixtureDef);
 
-	edgeShape.Set( b2Vec2(0/PTM_Ratio,0/PTM_Ratio), b2Vec2(0/PTM_Ratio,1000/PTM_Ratio) );
+	edgeShape.Set( b2Vec2(L_Boundary/PTM_Ratio,D_Boundary/PTM_Ratio), b2Vec2(L_Boundary/PTM_Ratio,U_Boundary/PTM_Ratio) );//L
 	m_world->CreateBody(&groundBodyDef)->CreateFixture(&groundFixtureDef);
 
-	edgeShape.Set( b2Vec2(600/PTM_Ratio,0/PTM_Ratio), b2Vec2(600/PTM_Ratio,1000/PTM_Ratio) );
+	edgeShape.Set( b2Vec2(R_Boundary/PTM_Ratio,D_Boundary/PTM_Ratio), b2Vec2(R_Boundary/PTM_Ratio,U_Boundary/PTM_Ratio) );//R
 	m_world->CreateBody(&groundBodyDef)->CreateFixture(&groundFixtureDef);
 
+
+	b2Vec2 P[6] = { b2Vec2(L_Boundary/PTM_Ratio, (U_Boundary-150.f)/PTM_Ratio),
+					b2Vec2(120.f/PTM_Ratio, 775.f/PTM_Ratio),
+					b2Vec2(120.f/PTM_Ratio, U_Boundary/PTM_Ratio),
+					b2Vec2(480.f/PTM_Ratio, U_Boundary/PTM_Ratio),
+					b2Vec2(480.f/PTM_Ratio, 775.f/PTM_Ratio),
+					b2Vec2(R_Boundary/PTM_Ratio, (U_Boundary-150.f)/PTM_Ratio)};
+
+
+
+	for(int i=1; i<6; i++){
+		edgeShape.Set( P[i-1], P[i] );
+		m_world->CreateBody(&groundBodyDef)->CreateFixture(&groundFixtureDef);
+	}
+
+	b2Vec2 P2[4] ={	b2Vec2(L_Boundary/PTM_Ratio, 200.f/PTM_Ratio),
+					b2Vec2(120.f/PTM_Ratio, D_Boundary/PTM_Ratio),
+					b2Vec2(480.f/PTM_Ratio, D_Boundary/PTM_Ratio),
+					b2Vec2(R_Boundary/PTM_Ratio, 200.f/PTM_Ratio)};
+
+	for(int i=1; i<4; i++){
+			edgeShape.Set( P2[i-1], P2[i] );
+			m_world->CreateBody(&groundBodyDef)->CreateFixture(&groundFixtureDef);
+		}
 }
 
 int main(int argc, char* argv[]) {
@@ -142,7 +176,7 @@ extern "C"
 jboolean Java_com_example_playpalpengame_JarActivity_putIntoJar (
 		JNIEnv* env, jobject thiz, jint layerIndex) {
 
-	generateStarBody(300/PTM_Ratio, 500/PTM_Ratio, layerIndex);
+	generateStarBody(X_middle/PTM_Ratio, Y_middle/PTM_Ratio, layerIndex);
 	return true;
 }
 

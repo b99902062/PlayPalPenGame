@@ -205,9 +205,12 @@ public class PlayPalUtility {
 				for(int setIndex=0; setIndex<gestureSetList.size(); setIndex++) {
 					GestureSet curSet = gestureSetList.get(setIndex);
 					ArrayList<Integer> pointPassedList = curSet.passedList;
-
+					if(!curSet.isValid)
+						continue;
+					
 					//testing the first point 
 					if(isWithinBox(setIndex, 0, new Point((int)event.getX(), (int)event.getY()))){
+						curSet.isValid = false;
 						lastTriggerSetIndex = setIndex;
 						try {
 							func.call();

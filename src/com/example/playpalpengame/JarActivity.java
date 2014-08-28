@@ -28,7 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class JarActivity extends Activity implements SensorEventListener {
-	private static final int[] starResArray = {R.drawable.star_5, R.drawable.star_1, R.drawable.star_2, R.drawable.star_3};
+	private static final int[] starResArray = {R.drawable.jar_star_1, R.drawable.jar_star_2, R.drawable.jar_star_3, R.drawable.jar_star_4};
 	private int[] mWinCount;
 	private static LinkedList<StarStat> starArr;
 	private Timer timer = null;
@@ -43,9 +43,9 @@ public class JarActivity extends Activity implements SensorEventListener {
 	public native float[] getPosition(int idx);
 	public native void worldStep();
 	
-	public static final int Num_Layers = 5;
-	public static final int Star_Size = 200;
-	public static final float PTM_Ratio = 1000;
+	public static final int Num_Layers = 3;
+	public static final int Star_Size = 100;
+	public static final float PTM_Ratio = 500;
 	public static final int FPS = 60;
 	
 	
@@ -120,8 +120,7 @@ public class JarActivity extends Activity implements SensorEventListener {
 	
 	@Override
 	protected void onPause() {
-		super.onPause();
-		Log.d("onpause","here");
+		super.onPause();  
 		sensorManager.unregisterListener( this );
 		timer.cancel();
 	}
@@ -129,7 +128,6 @@ public class JarActivity extends Activity implements SensorEventListener {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		Log.d("onResume","here");
 		
 		setContentView(R.layout.activity_jar);
 		setHomeListener(findViewById(R.id.homeBtn));
