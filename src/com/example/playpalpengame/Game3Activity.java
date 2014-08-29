@@ -545,7 +545,7 @@ public class Game3Activity extends Activity {
 		score += PlayPalUtility.killTimeBar();
 		PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
 		
-		PlayPalUtility.registerSingleHoverPoint(game3RelativeLayout, this, new Callable<Integer>() {
+		PlayPalUtility.registerSingleHoverPoint(false,game3RelativeLayout, this, new Callable<Integer>() {
 			@Override
 			public Integer call() throws Exception {
 				return handleCream(cakeCreamView);

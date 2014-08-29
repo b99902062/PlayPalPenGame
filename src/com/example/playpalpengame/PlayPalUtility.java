@@ -198,7 +198,7 @@ public class PlayPalUtility {
 	}
 	
 	
-	protected static void registerSingleHoverPoint(View view, Context context, final Callable<Integer> func) {
+	protected static void registerSingleHoverPoint(final boolean isHovering, View view, Context context, final Callable<Integer> func) {
 		targetView = view;
 		targetContext = context;
 		
@@ -231,6 +231,28 @@ public class PlayPalUtility {
 
 			@Override
 			public boolean onHover(View arg0, MotionEvent event) {
+				if(isHovering){
+					for(int setIndex=0; setIndex<gestureSetList.size(); setIndex++) {
+						GestureSet curSet = gestureSetList.get(setIndex);
+						ArrayList<Integer> pointPassedList = curSet.passedList;
+						if(!curSet.isValid)
+							continue;
+						
+						//testing the first point 
+						if(isWithinBox(setIndex, 0, new Point((int)event.getX(), (int)event.getY()))){
+							curSet.isValid = false;
+							lastTriggerSetIndex = setIndex;
+							try {
+								func.call();
+								pointPassedList.clear();
+							} catch(Exception ex) {
+								ex.printStackTrace();
+							}
+						}
+					}
+				}
+				
+				
 				if(event.getAction()  == MotionEvent.ACTION_HOVER_ENTER) {
 					hoverTarget.setVisibility(ImageView.VISIBLE);
 					curEntry = new RecordEntry(
@@ -404,10 +426,9 @@ public class PlayPalUtility {
 		
 	}
 	
-	/* func  : called after finish line gesture
+	/* func  : called after finish line gesture finished
 	 * func2 : always called when touched (default null)
 	 * */
-	
 	protected static void registerLineGesture(View view, Context context, final Callable<Integer> func){
 		registerLineGesture(view, context, func, null);
 	}
@@ -442,7 +463,7 @@ public class PlayPalUtility {
 			}
 		}, 300);
 	}
-	
+
 	protected static void registerLineGesture(View view, Context context, final Callable<Integer> func, final Callable<Integer> func2 ){
 		targetView = view;
 		targetContext = context;
@@ -462,13 +483,6 @@ public class PlayPalUtility {
 					curEntry = new RecordEntry(
 						new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_TOUCH_END);
 					PenRecorder.forceRecord();
-				}
-				if(func2 != null){
-					try {
-						func2.call();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
 				}
 				
 				if(!isLineGestureOn)
@@ -490,6 +504,14 @@ public class PlayPalUtility {
 								for(int pointIndex = 0; pointIndex < curSet.pointList.size(); pointIndex++) {
 									if(isWithinBox(setIndex, pointIndex, new Point((int)event.getX(), (int)event.getY()))) {
 										pointPassedList.add(pointIndex);
+										//trigger func2
+										if(func2 != null){
+											try {
+												func2.call();
+											} catch (Exception e) {
+												e.printStackTrace();
+											}
+										}
 										break;
 									}
 								}
@@ -511,6 +533,14 @@ public class PlayPalUtility {
 								int lastIndex = pointPassedList.get(pointPassedList.size() - 1);
 								if(isWithinBox(setIndex, lastIndex+1, new Point((int)event.getX(), (int)event.getY()))) {
 									pointPassedList.add(lastIndex+1);
+									//trigger func2
+									if(func2 != null){
+										try {
+											func2.call();
+										} catch (Exception e) {
+											e.printStackTrace();
+										}
+									}
 									if(curSet.isContinuous
 									&& pointPassedList.size() >= curSet.pointList.size()) {
 										try {
@@ -527,6 +557,14 @@ public class PlayPalUtility {
 									if(!pointPassedList.contains(pointIndex)
 									&& isWithinBox(setIndex, pointIndex, new Point((int)event.getX(), (int)event.getY()))) {
 										pointPassedList.add(pointIndex);
+										//trigger func2
+										if(func2 != null){
+											try {
+												func2.call();
+											} catch (Exception e) {
+												e.printStackTrace();
+											}
+										}
 										if(curSet.isContinuous
 										&& pointPassedList.size() >= curSet.pointList.size()) {
 											try {
@@ -807,19 +845,26 @@ public class PlayPalUtility {
 	protected static void setStraightStroke(int setIndex, Point... points){
 		//initial strokeset
 		StrokeSet curSet = new StrokeSet();
-		strokeSetList.add(curSet);
-		curSet.isValid = true;
-		
+		curSet.isStraight = true;
 		for(Point p:points){
-			strokeSetList.get(setIndex).pointList.add (p);			
+			curSet.pointList.add (p);			
 		}
+		strokeSetList.add(curSet);
 		drawview.invalidate();
 	}
 	
 	protected static void setCircleStroke(Point o, int r){
-		drawview.isStraight = false;
-		drawview.orig = o;
-		drawview.radius = r;
+		StrokeSet curSet = new StrokeSet();
+		curSet.isStraight = false;
+		curSet.pointList.add (o);
+		
+		strokeSetList.add(curSet);
+		drawview.invalidate();
+	}
+	
+	protected static void eraseStroke(int setIndex){
+		StrokeSet curSet = strokeSetList.get(setIndex); 
+		curSet.isValid = false;
 		
 		drawview.invalidate();
 	}
@@ -843,13 +888,17 @@ class GestureSet {
 	protected boolean isValid;
 };
 
+
 class StrokeSet{
+	protected int radius;
 	protected ArrayList<Point> pointList;
 	protected boolean isValid;
-	
+	protected boolean isStraight;
 	public StrokeSet(){
 		pointList = new ArrayList<Point>();
 		isValid = true;
+		isStraight = true;
+		radius = 175 ;
 	}
 }
 
@@ -858,7 +907,6 @@ class DrawView extends View{
 	protected Point orig;
 	protected Point centralPoint = new Point(1280,800);
 	protected int radius;
-	protected boolean isStraight;
 	
 	Canvas canvas;
 	
@@ -867,12 +915,8 @@ class DrawView extends View{
 		canvas= new Canvas();
 		paint = new Paint();
         initPenEffect(paint);
+        radius = 175;
 	}
-	
-	public void setStraight(boolean straight){
-		isStraight = straight;
-	}
-
 	
 	private void initPenEffect(Paint paint){
         paint.setAntiAlias(true);    
@@ -886,7 +930,6 @@ class DrawView extends View{
 	
 	public void reset(){
 		orig = new Point(0,0);
-		radius = 0;
 		PlayPalUtility.strokeSetList = new ArrayList<StrokeSet>();			
 	}
 	
@@ -900,11 +943,16 @@ class DrawView extends View{
         	if(!curSet.isValid)
         		continue;
         	
-        	for(int i=0; i<curSet.pointList.size()-1; i++){
-        		Path path = new Path();
-        		path.moveTo(curSet.pointList.get(i).x,   curSet.pointList.get(i).y );
-        		path.lineTo(curSet.pointList.get(i+1).x, curSet.pointList.get(i+1).y );
-        		canvas.drawPath(path, paint);
+        	if(curSet.isStraight){
+	        	for(int i=0; i<curSet.pointList.size()-1; i++){
+	        		Path path = new Path();
+	        		path.moveTo(curSet.pointList.get(i).x,   curSet.pointList.get(i).y );
+	        		path.lineTo(curSet.pointList.get(i+1).x, curSet.pointList.get(i+1).y );
+	        		canvas.drawPath(path, paint);
+	        	}
+        	}
+        	else{
+        		canvas.drawCircle(curSet.pointList.get(0).x, curSet.pointList.get(0).y, radius, paint);
         	}
         }	
 	}
