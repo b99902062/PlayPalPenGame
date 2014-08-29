@@ -105,16 +105,7 @@ public class Game4Activity extends Activity {
 	};
 		
 	protected Cookie[] cookieArray = new Cookie[8]; 
-	protected Point[]  cookiePosArray = {
-		new Point(420,440),
-		new Point(420,920),
-		new Point(860,440),
-		new Point(860,920),
-		new Point(1300,440),
-		new Point(1300,920),
-		new Point(1760,440),
-		new Point(1760,920)};
-	
+
 	protected int[] cookieResArray = {
 		R.drawable.game4_cookie1,	
 		R.drawable.game4_cookie2,
@@ -181,7 +172,7 @@ public class Game4Activity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
-		PlayPalUtility.setDebugMode(true);
+		PlayPalUtility.setDebugMode(false);
 		
 		Bundle bundle = getIntent().getExtras();
 		userName = bundle.getString("userName");
