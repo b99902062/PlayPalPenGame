@@ -7,18 +7,17 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.drawable.AnimationDrawable;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -28,7 +27,7 @@ import android.widget.TextView;
 public class Game1Activity extends Activity {
 	protected final int step1MidProgressCount = 5;
 	protected final int step1TotalProgressCount = 10;
-	protected final int step2TotalProgressCount = 25;
+	protected final int step2TotalProgressCount = 	25;
 	protected final int step3TotalProgressCount = 35;
 	
 	protected final int testTotalTime = 600;
@@ -54,6 +53,8 @@ public class Game1Activity extends Activity {
 	private int score = 0;
 	
 	protected Game1Activity self;
+	
+	private MediaPlayer fireMP = null;
 	
 	private String mUserName = null;
 	private int mBadges = 0;
@@ -252,7 +253,7 @@ public class Game1Activity extends Activity {
 	protected void RemoveFromBoard(View view) {
 		progressCount++;
 		progressCountText.setText("ProgressCount: " + new String("" + progressCount));
-		PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_ID_TEST, this);
+		PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_SPLIT_POT, this);
 		//PlayPalUtility.doProgress();
 		
 		view.setVisibility(ImageView.GONE);
@@ -276,6 +277,8 @@ public class Game1Activity extends Activity {
 					fireView.setVisibility(ImageView.VISIBLE);
 					fireAnim.setVisible(true, true);
 					fireAnim.start();
+
+					fireMP = PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_STIR_POT, self, true);
 					
 					//potView.setBackgroundResource(R.anim.pot_stir_animation);
 					//potStirAnim = (AnimationDrawable) potView.getBackground();
@@ -375,7 +378,6 @@ public class Game1Activity extends Activity {
 	protected Integer doPotStir() {
 		progressCount++;
 		progressCountText.setText("ProgressCount: " + new String("" + progressCount));
-		PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_ID_TEST, this);
 		//PlayPalUtility.doProgress();
 		
 		//potStirAnim.setVisible(true, true);
@@ -385,6 +387,9 @@ public class Game1Activity extends Activity {
 		
 
 		if (progressCount == step3TotalProgressCount) {
+			if(fireMP != null)
+				fireMP.release();
+			
 			clearAll();
 			PenRecorder.outputJSON();
 			
@@ -432,7 +437,7 @@ public class Game1Activity extends Activity {
 			return 0;
 		progressCount++;
 		progressCountText.setText("ProgressCount: " + new String("" + progressCount));
-		PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_ID_TEST, this);
+		PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_CUT_FOOD, this);
 		//PlayPalUtility.doProgress();
 		
 		Point beginPnt = new Point(0, 0);

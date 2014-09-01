@@ -39,6 +39,12 @@ import com.samsung.spensdk.applistener.SPenHoverListener;
 
 public class PlayPalUtility {
 	protected final static int SOUND_ID_TEST = 0;
+	protected final static int SOUND_CUT_FOOD = 1;
+	protected final static int SOUND_SPLIT_POT = 2;
+	protected final static int SOUND_STIR_POT = 3;
+	protected final static int SOUND_HOORAY = 4;
+	protected final static int SOUND_UHOH = 5;
+	protected final static int SOUND_DRINKING = 6;
 	
 	protected final static int FROM_OUTLEFT_TO_CUR = 1;
 	protected final static int FROM_CUR_TO_OUTRIGHT = 2;
@@ -81,7 +87,7 @@ public class PlayPalUtility {
 	protected static ArrayList<GestureSet> gestureSetList = new ArrayList<GestureSet>();
 	protected static ArrayList<StrokeSet> strokeSetList = new ArrayList<StrokeSet>();
 	
-	private static int[] soundRes = {R.raw.test_sound};
+	private static int[] soundRes = {R.raw.test_sound, R.raw.game1_cutting_onion, R.raw.game1_water_drop, R.raw.game1_boiling_short, R.raw.unsorted_yayyy, R.raw.unsorted_uhoh, R.raw.game1_drinking};
 	
 	protected static boolean butterSqueezing = false;
 	protected static SPenEventLibrary mSPenEventLibrary = new SPenEventLibrary();
@@ -445,7 +451,7 @@ public class PlayPalUtility {
 		Log.d("EndTest", "doFailFeedback()");
 		if(feedbackView == null)
 			return;
-		playSoundEffect(PlayPalUtility.SOUND_ID_TEST, context);
+		playSoundEffect(PlayPalUtility.SOUND_UHOH, context);
 		isPlayFeedback = true;
 		feedbackView.setVisibility(View.VISIBLE);
 		setAlphaAnimation(feedbackView, true, new Callable<Integer>() {
@@ -714,6 +720,19 @@ public class PlayPalUtility {
 	
 	protected static void setLineGesture(boolean value) {
 		isLineGestureOn = value;
+	}
+	
+	protected static MediaPlayer playSoundEffect(int soundID, Context context, boolean isLoop) {
+		if(isLoop) {
+			MediaPlayer mp = MediaPlayer.create(context, soundRes[soundID]);
+			mp.setLooping(true);
+			mp.start();
+			return mp;
+		}
+		else {
+			playSoundEffect(soundID, context);
+			return null;
+		}
 	}
 	
 	protected static void playSoundEffect(int soundID, Context context) {

@@ -152,6 +152,19 @@ public class BeginActivity extends Activity {
 		});
 	}
 	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		BackgroundMusicHandler.recyle();
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		BackgroundMusicHandler.initMusic(this);
+		BackgroundMusicHandler.setMusicSt(true);
+	}
+	
 	 @Override
 	 protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 	      ImageView iv = (ImageView)findViewById(R.id.loginHeadView);

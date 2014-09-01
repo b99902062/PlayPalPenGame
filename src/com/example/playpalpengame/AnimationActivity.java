@@ -16,6 +16,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -44,6 +45,8 @@ public class AnimationActivity extends Activity {
 	private int[] starResArray = {R.drawable.star_1, R.drawable.star_2, R.drawable.star_3, R.drawable.star_4, R.drawable.star_5, R.drawable.star_6};
 	protected AnimationDrawable monsterAnim;
 	
+	public static Context self;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -51,6 +54,7 @@ public class AnimationActivity extends Activity {
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
+		self = this;
 		setContentView(R.layout.activity_animation);
 		
 		Bundle bundle = getIntent().getExtras();
@@ -86,6 +90,7 @@ public class AnimationActivity extends Activity {
 			
 			anim = AnimationsContainer.getInstance().createStarAnim(monsterView);
 			anim.start();
+			PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_HOORAY, this);
 			monsterView.setOnTouchListener(new OnTouchListener() {
 				private boolean isSetEnd = false;
 				@Override
@@ -253,7 +258,6 @@ class FramesSequenceAnimation {
         	else
         		return -1;
         }
-        
         return mFrames[mIndex];
     }
 
@@ -288,6 +292,7 @@ class FramesSequenceAnimation {
                     	stop();
                     	return;
                     }
+                    playSpecificSoundByFrame(imageRes);
                     if (mBitmap != null) { // so Build.VERSION.SDK_INT >= 11
                         Bitmap bitmap = null;
                         try {
@@ -333,6 +338,11 @@ class FramesSequenceAnimation {
 
 		public void setStoppedAnimListener(Callable<Integer> callable) {
 			mStopListener = callable;
+		}
+		
+		public void playSpecificSoundByFrame(int resID) {
+			if(resID == R.drawable.monster1_ani_18)
+				PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_DRINKING, AnimationActivity.self);
 		}
     }
 
