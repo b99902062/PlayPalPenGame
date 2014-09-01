@@ -192,6 +192,8 @@ public class BeginActivity extends Activity {
 				submitBtn.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View arg0) {
+						if(tmpUserName == null || tmpUserName.equals(""))
+							return;
 						Intent newAct = new Intent();
 						newAct.setClass( BeginActivity.this, MainActivity.class );
 						newAct.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
