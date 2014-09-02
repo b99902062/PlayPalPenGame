@@ -45,6 +45,8 @@ public class PlayPalUtility {
 	protected final static int SOUND_HOORAY = 4;
 	protected final static int SOUND_UHOH = 5;
 	protected final static int SOUND_DRINKING = 6;
+	protected final static int SOUND_ROAST = 7;
+	protected final static int SOUND_CARTOON = 8;
 	
 	protected final static int FROM_OUTLEFT_TO_CUR = 1;
 	protected final static int FROM_CUR_TO_OUTRIGHT = 2;
@@ -87,7 +89,7 @@ public class PlayPalUtility {
 	protected static ArrayList<GestureSet> gestureSetList = new ArrayList<GestureSet>();
 	protected static ArrayList<StrokeSet> strokeSetList = new ArrayList<StrokeSet>();
 	
-	private static int[] soundRes = {R.raw.test_sound, R.raw.game1_cutting_onion, R.raw.game1_water_drop, R.raw.game1_boiling_short, R.raw.unsorted_yayyy, R.raw.unsorted_uhoh, R.raw.game1_drinking};
+	private static int[] soundRes = {R.raw.test_sound, R.raw.game1_cutting_onion, R.raw.game1_water_drop, R.raw.game1_boiling_short, R.raw.unsorted_yayyy, R.raw.unsorted_uhoh, R.raw.game1_drinking, R.raw.game2_roast, R.raw.unsorted_cartoon};
 	
 	protected static boolean butterSqueezing = false;
 	protected static SPenEventLibrary mSPenEventLibrary = new SPenEventLibrary();

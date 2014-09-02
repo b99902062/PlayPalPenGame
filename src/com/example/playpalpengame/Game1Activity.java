@@ -180,6 +180,18 @@ public class Game1Activity extends Activity {
 	protected void onPause() {
 		super.onPause();
 		clearAll();
+		if(fireMP != null) {
+			fireMP.release();
+			fireMP = null;
+		}
+		BackgroundMusicHandler.recyle();
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		BackgroundMusicHandler.initMusic(this);
+		BackgroundMusicHandler.setMusicSt(true);
 	}
 	
 	@Override
@@ -387,8 +399,10 @@ public class Game1Activity extends Activity {
 		
 
 		if (progressCount == step3TotalProgressCount) {
-			if(fireMP != null)
+			if(fireMP != null) {
 				fireMP.release();
+				fireMP = null;
+			}
 			
 			clearAll();
 			PenRecorder.outputJSON();

@@ -279,6 +279,19 @@ public class Game4Activity extends Activity {
 	}	
 
 	@Override
+	protected void onPause() {
+	    super.onPause();
+	    BackgroundMusicHandler.recyle();
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		BackgroundMusicHandler.initMusic(this);
+		BackgroundMusicHandler.setMusicSt(true);
+	}
+	
+	@Override
 	public void onBackPressed() {
 	}
 	

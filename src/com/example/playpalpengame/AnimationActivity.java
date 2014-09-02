@@ -59,8 +59,8 @@ public class AnimationActivity extends Activity {
 		
 		Bundle bundle = getIntent().getExtras();
 		gameIndex = bundle.getInt("GameIndex");
-		mUserName = bundle.getString("userName");
 		isWin = bundle.getBoolean("isWin");
+		mUserName = bundle.getString("userName");
 		mBadges = bundle.getInt("GameBadges");
 		mHighScore = bundle.getInt("GameHighScore");
 		mWinCount = bundle.getInt("GameWinCount");
@@ -139,6 +139,24 @@ public class AnimationActivity extends Activity {
 		});
 			
     	return;
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		BackgroundMusicHandler.recyle();
+	}
+	
+	@Override
+	protected void onResume() {
+		if(mUserName == null)
+			return;
+		super.onResume();
+		if(isWin)
+			BackgroundMusicHandler.initMusic(this, BackgroundMusicHandler.MUSIC_WIN);
+		else
+			BackgroundMusicHandler.initMusic(this, BackgroundMusicHandler.MUSIC_LOSE);
+		BackgroundMusicHandler.setMusicSt(true);
 	}
 	
 	private void updateRecordJson() {
@@ -343,6 +361,8 @@ class FramesSequenceAnimation {
 		public void playSpecificSoundByFrame(int resID) {
 			if(resID == R.drawable.monster1_ani_18)
 				PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_DRINKING, AnimationActivity.self);
+			else if(resID == R.drawable.welcome_ani_19)
+				PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_HOORAY, WelcomeActivity.self);
 		}
     }
 

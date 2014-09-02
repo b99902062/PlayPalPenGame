@@ -1,6 +1,5 @@
 package com.example.playpalpengame;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.concurrent.Callable;
 
@@ -9,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -53,6 +53,8 @@ public class Game2Activity extends Activity {
 	private int score = 0;
 	
 	public static boolean isReady;
+	
+	private MediaPlayer roastMP = null;
 	
 	private String mUserName = null;
 	private int mBadges = 0;
@@ -176,9 +178,9 @@ public class Game2Activity extends Activity {
                     			PlayPalUtility.cancelGestureSet(curFishIndex);
                     			fishThreadList.get(curFishIndex).killThread();
                     			
+                    			PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_SPLIT_POT, self);             			
                     			progressCount++;
                     			testProgressCountText.setText(String.format("ProgressCount: %d", progressCount));
-                    			PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_ID_TEST, self);
                     			if(progressCount == step1TotalProgressCount) {
                     				score += PlayPalUtility.killTimeBar();
                     				PenRecorder.outputJSON();
@@ -220,6 +222,18 @@ public class Game2Activity extends Activity {
 	protected void onPause() {
 	    super.onPause();
 	    clearAll();
+	    if(roastMP != null) {
+	    	roastMP.release();
+	    	roastMP = null;
+	    }
+	    BackgroundMusicHandler.recyle();
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		BackgroundMusicHandler.initMusic(this);
+		BackgroundMusicHandler.setMusicSt(true);
 	}
 	
 	@Override
@@ -307,6 +321,8 @@ public class Game2Activity extends Activity {
 		
 		java.util.Arrays.fill(isFishCutArray, false);
 		
+		roastMP = PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_ROAST, this, true);
+		
 		PlayPalUtility.registerLineGesture(game2RelativeLayout, this, new Callable<Integer>() {
 			@Override
 			public Integer call() throws Exception {
@@ -352,7 +368,7 @@ public class Game2Activity extends Activity {
 			cutView.setVisibility(ImageView.VISIBLE);
 			isFishCutArray[lastTriggerIndex] = true;
 			
-			PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_ID_TEST, this);
+			PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_CARTOON, this);
 			
 			final int baseIndex = lastTriggerIndex/4;
 			if(isFishCutArray[baseIndex * 4]

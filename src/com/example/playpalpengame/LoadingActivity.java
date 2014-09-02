@@ -49,8 +49,23 @@ public class LoadingActivity extends Activity {
 		timer.schedule(new timerTask(), 2000);
 	}
 	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		BackgroundMusicHandler.recyle();
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		BackgroundMusicHandler.initMusic(this);
+		BackgroundMusicHandler.setMusicSt(true);
+	}
+	
 	public class timerTask extends TimerTask {
 	    public void run() {
+	    	BackgroundMusicHandler.setCanRecycle(false);
+	    	
 	    	Intent newAct = new Intent();
 	    	if(isPlayBtn) {
 		    	if(gameIndex == 1)

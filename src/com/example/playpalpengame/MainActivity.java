@@ -78,6 +78,8 @@ public class MainActivity extends Activity {
 		jarIcon.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
+				BackgroundMusicHandler.setCanRecycle(false);
+				
 				Intent newAct = new Intent();
 				newAct.setClass( MainActivity.this, JarActivity.class );
 				newAct.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -91,10 +93,25 @@ public class MainActivity extends Activity {
 		});
 	}
 	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		BackgroundMusicHandler.recyle();
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		BackgroundMusicHandler.initMusic(this);
+		BackgroundMusicHandler.setMusicSt(true);
+	}
+	
 	protected void setStallListener(View targetView, final int gameIndex, final boolean isPlayBtn) {
 		targetView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
+				BackgroundMusicHandler.setCanRecycle(false);
+				
 				Intent newAct = new Intent();
 				newAct.setClass( MainActivity.this, LoadingActivity.class );
 				newAct.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

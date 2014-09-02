@@ -10,32 +10,32 @@ import android.media.MediaPlayer;
 import android.media.SoundPool;
 
 public class BackgroundMusicHandler {
-
+	public static final int MUSIC_ORDINARY = 0;
+	public static final int MUSIC_WIN = 1;
+	public static final int MUSIC_LOSE = 2;
+	
 	private static MediaPlayer music;
-	private static boolean musicSt = true; // 音樂開關
-	private static final int[] musicId = { R.raw.background_music };
+	private static boolean musicSt = true;
+	private static boolean canRecycle = true;
+	private static final int[] musicId = { R.raw.background_music, R.raw.background_music_win, R.raw.background_music_win};
 
-	// 初始化音樂播放器
 	public static void initMusic(Context context) {
-		int r = new Random().nextInt(musicId.length);
-		music = MediaPlayer.create(context, musicId[r]);
-		music.setLooping(true);
+		initMusic(context, 0);
+	}
+	
+	public static void initMusic(Context context, int r) {
+		if(canRecycle) {
+			music = MediaPlayer.create(context, musicId[r]);
+			music.setLooping(true);
+		}
+		else
+			canRecycle = true;
 	}
 
-	/**
-	 * 獲得音樂開關狀態
-	 * 
-	 * @return
-	 */
 	public static boolean isMusicSt() {
 		return musicSt;
 	}
 
-	/**
-	 * 設置音樂開關
-	 * 
-	 * @param musicSt
-	 */
 	public static void setMusicSt(boolean musicSt) {
 		BackgroundMusicHandler.musicSt = musicSt;
 		if (musicSt)
@@ -43,12 +43,13 @@ public class BackgroundMusicHandler {
 		else
 			music.stop();
 	}
+	
+	public static void setCanRecycle(boolean value) {
+		canRecycle = value;
+	}
 
-	/**
-	 * 釋放資源
-	 */
 	public static void recyle() {
-		if (music != null)
+		if (music != null && canRecycle)
 			music.release();
 	}
 }

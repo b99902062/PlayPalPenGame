@@ -147,6 +147,7 @@ public class BeginActivity extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				Intent intentCamera = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+				
 			    startActivityForResult(intentCamera, 0);
 			}
 		});
@@ -171,6 +172,7 @@ public class BeginActivity extends Activity {
 	      if (resultCode == RESULT_OK) {
 	    	  Bundle extras = data.getExtras();
 	          Bitmap bmp = (Bitmap) extras.get("data");
+	          bmp = Bitmap.createScaledBitmap(bmp, 300, 300, false);
 	          picData = bmp;
 	          iv.setImageBitmap(bmp);
 	      }
@@ -207,6 +209,8 @@ public class BeginActivity extends Activity {
 					public void onClick(View arg0) {
 						if(tmpUserName == null || tmpUserName.equals(""))
 							return;
+						BackgroundMusicHandler.setCanRecycle(false);
+						
 						Intent newAct = new Intent();
 						newAct.setClass( BeginActivity.this, MainActivity.class );
 						newAct.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -260,6 +264,8 @@ public class BeginActivity extends Activity {
 						
 						userAge = ((NumberPicker)findViewById(R.id.agePicker)).getValue();
 						BeginActivity.createNewPlayerData(userName);
+						
+						BackgroundMusicHandler.setCanRecycle(false);
 						
 						Intent newAct = new Intent();
 						newAct.setClass( BeginActivity.this, MainActivity.class );
