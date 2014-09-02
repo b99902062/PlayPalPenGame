@@ -264,6 +264,8 @@ public class Game2Activity extends Activity {
 			@Override
 			public void onClick(View view) {
 				clearAll();
+				BackgroundMusicHandler.setCanRecycle(false);
+				
 				Intent newAct = new Intent();
 				newAct.setClass( Game2Activity.this, MainActivity.class );
 				Bundle bundle = new Bundle();

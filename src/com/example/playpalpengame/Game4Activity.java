@@ -304,6 +304,7 @@ public class Game4Activity extends Activity {
 				PlayPalUtility.unregisterLineGesture(game4RelativeLayout);
 				PlayPalUtility.clearGestureSets();
 				PlayPalUtility.clearDrawView();
+				BackgroundMusicHandler.setCanRecycle(false);
 				
 				Intent newAct = new Intent();
 				Bundle bundle = new Bundle();

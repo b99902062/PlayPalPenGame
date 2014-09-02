@@ -245,6 +245,7 @@ public class Game1Activity extends Activity {
 			@Override
 			public boolean onTouch(View view, MotionEvent event) {
 				clearAll();
+				BackgroundMusicHandler.setCanRecycle(false);
 				
 				Intent newAct = new Intent();
 				newAct.setClass(Game1Activity.this, MainActivity.class);

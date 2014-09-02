@@ -62,35 +62,6 @@ public class MainActivity extends Activity {
 		setStallListener(findViewById(R.id.mainPracticeBtn3), 3, false);
 		setStallListener(findViewById(R.id.mainPracticeBtn4), 4, false);
 		
-		ImageView therapyIcon = (ImageView)findViewById(R.id.therapyIcon);
-		therapyIcon.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				Intent newAct = new Intent();
-				newAct.setClass( MainActivity.this, TherapyMainActivity.class );
-				newAct.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	            startActivityForResult(newAct ,0);
-	            MainActivity.this.finish();
-			}
-		});
-		
-		ImageView jarIcon = (ImageView)findViewById(R.id.jarIcon);
-		jarIcon.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				BackgroundMusicHandler.setCanRecycle(false);
-				
-				Intent newAct = new Intent();
-				newAct.setClass( MainActivity.this, JarActivity.class );
-				newAct.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-				Bundle bundle = new Bundle();
-				bundle.putString("userName", mUserName);
-				bundle.putIntArray("GameWinCountArray", winCount);
-	            newAct.putExtras(bundle);
-				startActivityForResult(newAct ,0);
-	            MainActivity.this.finish();
-			}
-		});
 	}
 	
 	@Override

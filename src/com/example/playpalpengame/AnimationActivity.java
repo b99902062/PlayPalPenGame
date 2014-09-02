@@ -207,6 +207,8 @@ public class AnimationActivity extends Activity {
 		targetView.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View view, MotionEvent event) {
+				BackgroundMusicHandler.setCanRecycle(false);
+				
 				Intent newAct = new Intent();
 				newAct.setClass(AnimationActivity.this, MainActivity.class);
 				Bundle bundle = new Bundle();
@@ -453,13 +455,13 @@ class AnimationsContainer {
     public FramesSequenceAnimation createGameAnim(ImageView imageView, int gameIndex, boolean isWin) {
     	if(isWin) {
 	    	if(gameIndex == 1)
-	    		return new FramesSequenceAnimation(imageView, mGame1AnimFrames, FPS);
+	    		return new FramesSequenceAnimation(imageView, mGame1AnimFrames, FPS, true);
 	    	else if(gameIndex == 2)
-	    		return new FramesSequenceAnimation(imageView, mGame2AnimFrames, FPS);
+	    		return new FramesSequenceAnimation(imageView, mGame2AnimFrames, FPS, true);
 	    	else if(gameIndex == 3)
-	    		return new FramesSequenceAnimation(imageView, mGame3AnimFrames, FPS);
+	    		return new FramesSequenceAnimation(imageView, mGame3AnimFrames, FPS, true);
 	    	else if(gameIndex == 4)
-	    		return new FramesSequenceAnimation(imageView, mGame4AnimFrames, FPS);
+	    		return new FramesSequenceAnimation(imageView, mGame4AnimFrames, FPS, true);
 	    	else
 	    		return null;
     	} else {

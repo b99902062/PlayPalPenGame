@@ -172,7 +172,7 @@ public class BeginActivity extends Activity {
 	      if (resultCode == RESULT_OK) {
 	    	  Bundle extras = data.getExtras();
 	          Bitmap bmp = (Bitmap) extras.get("data");
-	          bmp = Bitmap.createScaledBitmap(bmp, 300, 300, false);
+	          bmp = Bitmap.createScaledBitmap(bmp, 200, 200, false);
 	          picData = bmp;
 	          iv.setImageBitmap(bmp);
 	      }

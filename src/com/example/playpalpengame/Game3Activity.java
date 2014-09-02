@@ -352,6 +352,7 @@ public class Game3Activity extends Activity {
 				PlayPalUtility.setLineGesture(false);
 				PlayPalUtility.unregisterLineGesture(game3RelativeLayout);
 				PlayPalUtility.clearGestureSets();
+				BackgroundMusicHandler.setCanRecycle(false);
 				
 				Intent newAct = new Intent();
 				Bundle bundle = new Bundle();
