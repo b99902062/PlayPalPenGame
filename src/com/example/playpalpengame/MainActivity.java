@@ -9,10 +9,19 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.JsonReader;
 import android.util.Log;
 import android.view.View;
@@ -20,8 +29,12 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.RelativeLayout.LayoutParams;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements SensorEventListener {
+	private static final int[] starResArray = {R.drawable.jar_star_1, R.drawable.jar_star_2, R.drawable.jar_star_3, R.drawable.jar_star_4};
 	private int[][] badgesID = {{R.id.mainBadges1_1, R.id.mainBadges1_2, R.id.mainBadges1_3, R.id.mainBadges1_4, R.id.mainBadges1_5, R.id.mainBadges1_6},
 								{R.id.mainBadges2_1, R.id.mainBadges2_2, R.id.mainBadges2_3, R.id.mainBadges2_4, R.id.mainBadges2_5, R.id.mainBadges2_6},
 								{R.id.mainBadges3_1, R.id.mainBadges3_2, R.id.mainBadges3_3, R.id.mainBadges3_4, R.id.mainBadges3_5, R.id.mainBadges3_6},
@@ -30,8 +43,28 @@ public class MainActivity extends Activity {
 	private static int[] badges = new int[4];
 	private static int[] highScores = new int[4];
 	private static int[] winCount = new int[4];
-	
 	private static String mUserName = null;
+	
+	private static LinkedList<StarStat> starArr;
+	private Timer timer = null;
+	private TimerTask timerTask = null;
+	
+	
+	/* jar world info */
+	private SensorManager sensorManager;
+	
+	public native void initWorld();
+	public native boolean putIntoJar(int index);
+	public native boolean updateAngle(float x, float y, float z);
+	public native float[] getPosition(int idx);
+	public native void worldStep();
+	
+	public static final int Num_Layers = 3;
+	public static final int Star_Size = 125;
+	public static final float PTM_Ratio = 1500;
+	public static final int FPS = 60;
+	
+	
 	
 	@Override
 	public void onBackPressed() {
@@ -68,6 +101,8 @@ public class MainActivity extends Activity {
 	protected void onPause() {
 		super.onPause();
 		BackgroundMusicHandler.recyle();
+		sensorManager.unregisterListener( this );
+		timer.cancel();
 	}
 	
 	@Override
@@ -75,7 +110,57 @@ public class MainActivity extends Activity {
 		super.onResume();
 		BackgroundMusicHandler.initMusic(this);
 		BackgroundMusicHandler.setMusicSt(true);
+			
+		System.loadLibrary("JarSimulation");
+		RelativeLayout jarLayout = (RelativeLayout)findViewById(R.id.jarRelativeLayout);
+
+		initWorld();
+		starArr = new LinkedList<StarStat>();
+		for(int i=0; i<winCount.length; i++) {
+			for(int j=0; j<winCount[i]; j++) {
+				ImageView newStar = new ImageView(this);
+				newStar.setImageResource(starResArray[i]);
+				putIntoJar((int)(Math.random()*Num_Layers));
+				starArr.add(new StarStat(i * 10000 + j, newStar));
+				
+				RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+            	params.setMargins(0, 0, 0, 0);
+            	newStar.setVisibility(ImageView.INVISIBLE);
+            	newStar.setLayoutParams(params);
+				
+				jarLayout.addView(newStar);
+			}
+		}
+		
+		sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+		sensorManager.registerListener( this,
+				sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+				SensorManager.SENSOR_DELAY_NORMAL);
+
+		timer = new Timer(true);
+		timerTask = new UpdateTask();
+		timer.schedule(timerTask, 0, 1000/FPS);
 	}
+	
+	@Override
+	public void onSensorChanged(SensorEvent event) {
+		if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+			float[] values = event.values;
+			float x = values[0];
+			float y = values[1];
+			float z = values[2];
+			
+			//compromized to Box2D's corrdination system
+			updateAngle(-x,-y,z);
+		}
+	}
+	
+	@Override
+	public void onAccuracyChanged(Sensor sensor, int accuracy) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 	
 	protected void setStallListener(View targetView, final int gameIndex, final boolean isPlayBtn) {
 		targetView.setOnClickListener(new View.OnClickListener() {
@@ -212,6 +297,55 @@ public class MainActivity extends Activity {
 				nameList.add(msg.userName);
 		}
 		return (String[]) nameList.toArray(new String[nameList.size()]);
+	}
+	
+	class UpdateTask extends TimerTask{
+		public void run() {
+			worldStep();
+			
+			for(int id=0; id<starArr.size(); id++){
+				float[] pos = getPosition(id);
+				Message msg = new Message();
+		    	Bundle dataBundle = new Bundle();
+		    	dataBundle.putInt("ID", (int)id);
+		    	dataBundle.putFloat("XPos", (int)(pos[0]*PTM_Ratio));
+		    	dataBundle.putFloat("YPos", (int)(1000-pos[1]*PTM_Ratio));
+		    	dataBundle.putFloat("Angle", pos[2]);
+		    	//transform from box2D's coord. system to android corrd. system
+		    	msg.setData(dataBundle);
+		    	MainActivity.starHandler.sendMessage(msg);
+			}
+		}
+	}
+	
+	public static Handler starHandler = new Handler() {
+		public void handleMessage(Message msg) {
+			int id    = msg.getData().getInt("ID");
+			float xPos  = msg.getData().getFloat("XPos");
+			float yPos  = msg.getData().getFloat("YPos");
+			float angle = msg.getData().getFloat("Angle");
+			ImageView starImg = starArr.get(id).view;
+			
+			
+			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+			params.setMargins((int)(xPos-Star_Size/2+240), (int)(yPos-Star_Size/2+300), 0, 0);
+			params.width = Star_Size;
+			params.height = Star_Size;
+			starImg.setRotation(-angle*180/(float)Math.PI);
+			starImg.setVisibility(ImageView.VISIBLE);
+			starImg.setLayoutParams(params);
+        	
+		}
+	};
+}
+
+class StarStat {
+	public int ID;
+	public ImageView view;
+	
+	public StarStat(int id, ImageView v) {
+		ID = id;
+		view = v;
 	}
 }
 

@@ -6,7 +6,7 @@
 
 #define PTM_Ratio 1500.f
 #define FPS 60.f
-#define Star_Size 90.f
+#define Star_Size 100.f
 
 
 #define X_middle 300
@@ -173,14 +173,14 @@ int main(int argc, char* argv[]) {
 
 
 extern "C"
-jboolean Java_com_example_playpalpengame_JarActivity_putIntoJar (
+jboolean Java_com_example_playpalpengame_MainActivity_putIntoJar (
 		JNIEnv* env, jobject thiz, jint layerIndex) {
 
 	generateStarBody(X_middle/PTM_Ratio, Y_middle/PTM_Ratio, layerIndex);
 	return true;
 }
 
-jboolean Java_com_example_playpalpengame_JarActivity_updateAngle (
+jboolean Java_com_example_playpalpengame_MainActivity_updateAngle (
 		JNIEnv* env, jobject thiz, jfloat _xVal, jfloat _yVal, jfloat zVal) {
 
 	float xVal = _xVal;
@@ -196,12 +196,12 @@ jboolean Java_com_example_playpalpengame_JarActivity_updateAngle (
 	return true;
 }
 
-void Java_com_example_playpalpengame_JarActivity_initWorld(JNIEnv* env, jobject thiz){
+void Java_com_example_playpalpengame_MainActivity_initWorld(JNIEnv* env, jobject thiz){
 	init();
 	return;
 }
 
-jfloatArray Java_com_example_playpalpengame_JarActivity_getPosition(JNIEnv* env, jobject thiz, jint idx){
+jfloatArray Java_com_example_playpalpengame_MainActivity_getPosition(JNIEnv* env, jobject thiz, jint idx){
 	int len = 3;
 	jfloatArray ret = env->NewFloatArray(len);
 	jfloat *body = new jfloat[len];
@@ -220,7 +220,7 @@ jfloatArray Java_com_example_playpalpengame_JarActivity_getPosition(JNIEnv* env,
 	return ret;
 }
 
-void Java_com_example_playpalpengame_JarActivity_worldStep(void){
+void Java_com_example_playpalpengame_MainActivity_worldStep(void){
 	float32 timeStep = 1.0f / FPS;
 	int32 velocityIterations = 6;
 	int32 positionIterations = 2;
@@ -229,12 +229,12 @@ void Java_com_example_playpalpengame_JarActivity_worldStep(void){
 
 
 static int registerMethods(JNIEnv* env) {
- static const char* const kClassName = "com/example/playpalpengame/JarActivity";
- static JNINativeMethod gMethods[] = {{"initWorld", "()V", 		(void*) Java_com_example_playpalpengame_JarActivity_initWorld},
-		 	 	 	 	 	 	 	 {"putIntoJar", "(I)Z",   	(void*) Java_com_example_playpalpengame_JarActivity_putIntoJar },
- 	 	 	 	 	 	 	 	 	 {"updateAngle","(FFF)Z", 	(void*) Java_com_example_playpalpengame_JarActivity_updateAngle},
- 	 	 	 	 	 	 	 	 	 {"getPosition","(I)[F",	(void*) Java_com_example_playpalpengame_JarActivity_getPosition},
- 	 	 	 	 	 	 	 	 	 {"worldStep","()V",		(void*) Java_com_example_playpalpengame_JarActivity_worldStep}};
+ static const char* const kClassName = "com/example/playpalpengame/MainActivity";
+ static JNINativeMethod gMethods[] = {{"initWorld", "()V", 		(void*) Java_com_example_playpalpengame_MainActivity_initWorld},
+		 	 	 	 	 	 	 	 {"putIntoJar", "(I)Z",   	(void*) Java_com_example_playpalpengame_MainActivity_putIntoJar },
+ 	 	 	 	 	 	 	 	 	 {"updateAngle","(FFF)Z", 	(void*) Java_com_example_playpalpengame_MainActivity_updateAngle},
+ 	 	 	 	 	 	 	 	 	 {"getPosition","(I)[F",	(void*) Java_com_example_playpalpengame_MainActivity_getPosition},
+ 	 	 	 	 	 	 	 	 	 {"worldStep","()V",		(void*) Java_com_example_playpalpengame_MainActivity_worldStep}};
  jclass clazz;
  /* look up the class */
  clazz = env->FindClass(kClassName);

@@ -12,6 +12,33 @@
            android:layout_height="match_parent"
            android:background="@drawable/background" >
            
+           <RelativeLayout 
+               android:id="@+id/jarRelativeLayout"
+               android:layout_width="wrap_content"
+               android:layout_height="match_parent"
+               android:layout_marginLeft="50dp" >
+               
+               <ImageView
+				    android:id="@+id/jarView"
+				    android:src="@drawable/jar_bottle"
+				    android:layout_width="wrap_content"
+				    android:layout_height="wrap_content"
+				    android:visibility="visible"
+		        	android:layout_marginTop="150dp" />
+	
+				<ImageView
+				    android:id="@+id/jarTop"
+				    android:layout_width="wrap_content"
+				    android:layout_height="wrap_content"
+				    android:layout_alignTop="@+id/jarView"
+				    android:layout_centerHorizontal="true"
+				    android:layout_marginTop="24dp"
+				    android:src="@drawable/jar_top"
+				    android:visibility="visible" />
+           </RelativeLayout>
+               
+           
+           
            <RelativeLayout
                android:layout_width="wrap_content"
                android:layout_height="match_parent"
