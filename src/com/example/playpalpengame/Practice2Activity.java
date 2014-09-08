@@ -16,6 +16,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -37,6 +39,9 @@ public class Practice2Activity extends Activity {
 	protected final int GESTURE_THIRD_OFFSET_Y = 0;
 	protected final int CUT_BOX_SIZE = 50;
 	
+	private final static int TEACH_HAND_OFFSET_X = 45;
+	private final static int TEACH_HAND_OFFSET_Y = 665;
+	
 	protected final int step1TotalProgressCount = 1;
 	protected final int step2TotalProgressCount = 2;
 	
@@ -50,6 +55,7 @@ public class Practice2Activity extends Activity {
 	private final Point[] cutEndOffset = {new Point(308, 438), new Point(123, 446), new Point(284, 600), new Point(134, 607)};
 
 	private int score = 0;
+	private int cutCountInOrder = 0;
 	
 	public static boolean isReady;
 	
@@ -67,6 +73,7 @@ public class Practice2Activity extends Activity {
 	protected ImageView fishView2;
 	protected ImageView fishView3;
 	protected ImageView fishView4;
+	private ImageView teachHandView;
 	protected DrawableRelativeLayout game2RelativeLayout;
 	protected TextView testProgressCountText;
 	
@@ -114,6 +121,7 @@ public class Practice2Activity extends Activity {
 		fishView2 = (ImageView)findViewById(R.id.fishView2);
 		fishView3 = (ImageView)findViewById(R.id.fishView3);
 		fishView4 = (ImageView)findViewById(R.id.fishView4);
+		teachHandView = (ImageView)findViewById(R.id.teachHandView);
 		
 		testProgressCountText = (TextView)findViewById(R.id.testProgressCount2);
 		
@@ -125,7 +133,6 @@ public class Practice2Activity extends Activity {
 			}
 		});
 		PlayPalUtility.registerFailFeedback((ImageView)findViewById(R.id.failFeedbackView));
-		PenRecorder.registerRecorder(game2RelativeLayout, this, mUserName, "2-1");
 		PlayPalUtility.setLineGesture(true);
 		PlayPalUtility.initDrawView(game2RelativeLayout, this);
 		
@@ -136,7 +143,6 @@ public class Practice2Activity extends Activity {
                     case MotionEvent.ACTION_HOVER_ENTER:
                     	PlayPalUtility.curEntry = new RecordEntry(
     							new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_START);
-                    	PenRecorder.forceRecord();
                     	netView.setVisibility(ImageView.VISIBLE);
                         break;
                     case MotionEvent.ACTION_HOVER_MOVE:
@@ -156,8 +162,10 @@ public class Practice2Activity extends Activity {
                     			progressCount++;
                     			testProgressCountText.setText(String.format("ProgressCount: %d", progressCount));
                     			if(progressCount == step1TotalProgressCount) {
+                    				teachHandView.clearAnimation();
+                    				teachHandView.setVisibility(View.INVISIBLE);
+                    				
                     				score += PlayPalUtility.killTimeBar();
-                    				PenRecorder.outputJSON();
                     				
                     				PlayPalUtility.clearGestureSets();
                     				PlayPalUtility.setLineGesture(false);
@@ -172,7 +180,6 @@ public class Practice2Activity extends Activity {
                     case MotionEvent.ACTION_HOVER_EXIT:
                     	PlayPalUtility.curEntry = new RecordEntry(
     							new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_END);
-                    	PenRecorder.forceRecord();
                     	netView.setVisibility(ImageView.INVISIBLE);
                     	if(canPutInBasket) {
                     		PlayPalUtility.setLineGesture(true);
@@ -189,6 +196,7 @@ public class Practice2Activity extends Activity {
         });
 		
 		createFish();
+		teachHandView.setVisibility(View.VISIBLE);
 		isReady = true;
 	}
 	
@@ -219,6 +227,21 @@ public class Practice2Activity extends Activity {
 		PlayPalUtility.unregisterFailFeedback();
 	    
 	    isReady = false;
+	}
+	
+	private void setTeachHandLinear(int bX, int bY, int xOffset, int yOffset) {
+		teachHandView.setVisibility(View.VISIBLE);
+		
+		LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT,
+				LayoutParams.WRAP_CONTENT);
+		params.setMargins(bX, bY, 0, 0);
+		teachHandView.setLayoutParams(params);
+		
+		Animation am = new TranslateAnimation(0, xOffset, 0, yOffset);
+		am.setDuration(2000);
+		am.setRepeatCount(-1);
+		
+		teachHandView.startAnimation(am);
 	}
 	
 	protected void setHomeListener(View targetView) {
@@ -264,6 +287,8 @@ public class Practice2Activity extends Activity {
 		//fishThreadList.get(index).killThread();
 		fishThreadList.get(index).fishView.setVisibility(ImageView.INVISIBLE);
 		netView.setImageResource(R.drawable.game2_net2);
+		
+		setTeachHandLinear(500 - TEACH_HAND_OFFSET_X, 500 - TEACH_HAND_OFFSET_Y, 1800, 0);
 
 		return 0;
 	}
@@ -274,9 +299,6 @@ public class Practice2Activity extends Activity {
 		basketView.setVisibility(ImageView.GONE);
 		grillView.setVisibility(ImageView.VISIBLE);
 		fishView1.setVisibility(ImageView.VISIBLE);
-		fishView2.setVisibility(ImageView.VISIBLE);
-		fishView3.setVisibility(ImageView.VISIBLE);
-		fishView4.setVisibility(ImageView.VISIBLE);
 		
 		java.util.Arrays.fill(isFishCutArray, false);
 		
@@ -286,7 +308,7 @@ public class Practice2Activity extends Activity {
 				return performCross();
 			}
 		});
-		for(int fishIndex=0; fishIndex<4; fishIndex++) {
+		for(int fishIndex=0; fishIndex<1; fishIndex++) {
 			for(int cutIndex = 0; cutIndex<4; cutIndex++) {
 				Point pnt1 = new Point(fishOffset[fishIndex].x + cutBeginOffset[cutIndex].x, fishOffset[fishIndex].y + cutBeginOffset[cutIndex].y);
 				Point pnt2 = new Point(fishOffset[fishIndex].x + cutEndOffset[cutIndex].x, fishOffset[fishIndex].y + cutEndOffset[cutIndex].y);
@@ -297,10 +319,7 @@ public class Practice2Activity extends Activity {
 		}
 		
 		PlayPalUtility.setAlphaAnimation(grillView, true);
-		PlayPalUtility.setAlphaAnimation(fishView1, true);
-		PlayPalUtility.setAlphaAnimation(fishView2, true);
-		PlayPalUtility.setAlphaAnimation(fishView3, true);
-		PlayPalUtility.setAlphaAnimation(fishView4, true, new Callable<Integer>() {
+		PlayPalUtility.setAlphaAnimation(fishView1, true, new Callable<Integer>() {
 			@Override
 			public Integer call() throws Exception {
 				return prepareCutting();
@@ -309,20 +328,43 @@ public class Practice2Activity extends Activity {
 	}
 	
 	protected Integer prepareCutting() {
+		Point pnt1 = new Point(fishOffset[0].x + cutBeginOffset[0].x, fishOffset[0].y + cutBeginOffset[0].y);
+		Point pnt2 = new Point(fishOffset[0].x + cutEndOffset[0].x, fishOffset[0].y + cutEndOffset[0].y);
+		
+		setTeachHandLinear(pnt1.x - TEACH_HAND_OFFSET_X, pnt1.y - TEACH_HAND_OFFSET_Y, pnt2.x - pnt1.x, pnt2.y - pnt1.y);
+		
 		PlayPalUtility.setLineGesture(true);
-		PenRecorder.registerRecorder(game2RelativeLayout, this, mUserName, "2-2");
 		
 		return 0;
 	}
 	
 	protected Integer performCross() {
 		int lastTriggerIndex = PlayPalUtility.getLastTriggerSetIndex();
+		if(lastTriggerIndex % 4 != cutCountInOrder && cutCountInOrder < 4)
+			return -1;
+		
 		PlayPalUtility.cancelGestureSet(lastTriggerIndex);
-		Log.d("LastTrigger", String.format("LastTrigger: %d", lastTriggerIndex));
+		
 		if(lastTriggerIndex < fishCutIdArray.length) {
+			
 			ImageView cutView = (ImageView)findViewById(fishCutIdArray[lastTriggerIndex]);
 			cutView.setVisibility(ImageView.VISIBLE);
 			isFishCutArray[lastTriggerIndex] = true;
+			
+			cutCountInOrder++;
+			teachHandView.clearAnimation();
+			teachHandView.setVisibility(View.INVISIBLE);
+			
+			if(cutCountInOrder < 4) {
+				Point pnt1 = new Point(fishOffset[0].x + cutBeginOffset[cutCountInOrder].x, fishOffset[0].y + cutBeginOffset[cutCountInOrder].y);
+				Point pnt2 = new Point(fishOffset[0].x + cutEndOffset[cutCountInOrder].x, fishOffset[0].y + cutEndOffset[cutCountInOrder].y);
+				
+				setTeachHandLinear(pnt1.x - TEACH_HAND_OFFSET_X, pnt1.y - TEACH_HAND_OFFSET_Y, pnt2.x - pnt1.x, pnt2.y - pnt1.y);
+			}
+			else {
+				teachHandView.clearAnimation();
+				teachHandView.setVisibility(View.INVISIBLE);
+			}
 			
 			final int baseIndex = lastTriggerIndex/4;
 			if(isFishCutArray[baseIndex * 4]
@@ -367,8 +409,6 @@ public class Practice2Activity extends Activity {
 			score += PlayPalUtility.killTimeBar();
 			
 			clearAll();
-			
-			PenRecorder.outputJSON();
 
 			Intent newAct = new Intent();
 			newAct.setClass(Practice2Activity.this, MainActivity.class);
@@ -430,8 +470,8 @@ public class Practice2Activity extends Activity {
 			fishView.setImageResource(R.drawable.game2_fish_1);
 			LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT,
 					LayoutParams.WRAP_CONTENT);
-			curX = (int)(FISH_BOUND_LEFT + Math.random()*(FISH_BOUND_RIGHT - FISH_BOUND_LEFT + 1));
-			curY = (int)(FISH_BOUND_UP + Math.random()*(FISH_BOUND_DOWN - FISH_BOUND_UP + 1));
+			curX = 500;
+			curY = 500;
 			params.setMargins(curX, curY, 0, 0);
 			fishView.setLayoutParams(params);
 

@@ -130,7 +130,7 @@
             android:layout_marginTop="190dp"
             android:src="@drawable/game1_helical"
             android:visibility="invisible" />
-        
+
         <RelativeLayout
             android:id="@+id/board2RelativeLayout"
             android:layout_width="wrap_content"
@@ -164,6 +164,16 @@
             android:src="@drawable/game1_knife"
             android:visibility="invisible" />
 
+        
+        <ImageView
+            android:id="@+id/teachHandView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:src="@drawable/teach_hand1" 
+            android:visibility="invisible" />
+        
     </view>
 
 </FrameLayout>

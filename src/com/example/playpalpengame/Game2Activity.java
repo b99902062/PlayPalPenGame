@@ -41,7 +41,7 @@ public class Game2Activity extends Activity {
 	protected final int step1TotalProgressCount = 10;
 	protected final int step2TotalProgressCount = 14;
 	
-	protected final int testTotalTime = 500;
+	protected final int testTotalTime = 1500;
 	
 	private final static int fishW =  140;
 	private final static int fishH = 80;

@@ -5,7 +5,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Callable;
 
-import junit.framework.Test;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -28,6 +27,7 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Transformation;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -997,3 +997,63 @@ class TimeBarTask extends TimerTask {
     	isPause = false;
     }
 };
+
+class CircularTranslateAnimation extends Animation {
+
+    private View view;
+    private float cx, cy;           // center x,y position of circular path
+    private float prevX, prevY;     // previous x,y position of image during animation
+    private float r;                // radius of circle
+
+
+    /**
+     * @param view - View that will be animated
+     * @param r - radius of circular path
+     */
+    public CircularTranslateAnimation(View view, float r){
+        this.view = view;
+        this.r = r;
+    }
+
+    @Override
+    public boolean willChangeBounds() {
+        return true;
+    }
+
+    @Override
+    public void initialize(int width, int height, int parentWidth, int parentHeight) {
+        // calculate position of image center
+        int cxImage = width / 2;
+        int cyImage = height / 2;
+        cx = view.getLeft() + cxImage;
+        cy = view.getTop() + cyImage;
+
+        // set previous position to center
+        prevX = cx;
+        prevY = cy;
+    }
+
+    @Override
+    protected void applyTransformation(float interpolatedTime, Transformation t) {
+        if(interpolatedTime == 0){
+            // I ran into some issue where interpolated would be
+            return;
+        }
+
+        float angleDeg = (interpolatedTime * 360f + 90) % 360;
+        float angleRad = (float) Math.toRadians(angleDeg);
+
+        // r = radius, cx and cy = center point, a = angle (radians)
+        float x = (float) (cx + r * Math.cos(angleRad));
+        float y = (float) (cy + r * Math.sin(angleRad));
+
+
+        float dx = prevX - x;
+        float dy = prevY - y;
+
+        prevX = x;
+        prevY = y;
+
+        t.getMatrix().setTranslate(dx, dy);
+    }
+}

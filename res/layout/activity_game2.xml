@@ -334,7 +334,17 @@
             android:layout_height="wrap_content"
             android:src="@drawable/game2_net"
             android:visibility="invisible" />
-
+        
+		<ImageView
+            android:id="@+id/teachHandView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="227dp"
+            android:layout_marginTop="-82dp"
+            android:src="@drawable/teach_hand2" 
+            android:visibility="invisible" />
     </view>
 
 </FrameLayout>

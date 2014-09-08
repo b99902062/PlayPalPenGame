@@ -11,16 +11,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.FrameLayout;
+import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
@@ -35,6 +33,11 @@ public class Practice1Activity extends Activity {
 	
 	private final int foodOffsetX = 380;
 	private final int foodOffsetY = 380;
+	
+	private final static int TEACH_HAND_OFFSET_X = 45;
+	private final static int TEACH_HAND_OFFSET_Y = 665;
+	private final static int HELICAL_OFFSET_X = 500;
+	private final static int HELICAL_OFFSET_Y = 500;
 	
 	protected final int originBeginCenterX = 500;
 	protected final int originBeginCenterY = 500;
@@ -68,6 +71,7 @@ public class Practice1Activity extends Activity {
 	protected ImageView potView;
 	protected ImageView fireView;
 	protected ImageView knifeView;
+	private ImageView teachHandView;
 	protected RelativeLayout board2Layout;
 	protected DrawableRelativeLayout game1RelativeLayout;
 	
@@ -111,7 +115,6 @@ public class Practice1Activity extends Activity {
                     case MotionEvent.ACTION_HOVER_ENTER:
     					PlayPalUtility.curEntry = new RecordEntry(
     							new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_START);
-    					PenRecorder.forceRecord();
                     	knifeView.setVisibility(ImageView.VISIBLE);
                         break;
                     case MotionEvent.ACTION_HOVER_MOVE:
@@ -124,7 +127,6 @@ public class Practice1Activity extends Activity {
                     case MotionEvent.ACTION_HOVER_EXIT:
                     	PlayPalUtility.curEntry = new RecordEntry(
     							new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_END);
-                    	PenRecorder.forceRecord();
                     	knifeView.setVisibility(ImageView.INVISIBLE);
                         break;
                 }
@@ -146,7 +148,8 @@ public class Practice1Activity extends Activity {
 
 		PlayPalUtility.initDrawView(game1RelativeLayout, this);
 		DrawGestureLine();
-		PenRecorder.registerRecorder(game1RelativeLayout, this, mUserName, "1-1");
+		
+		setTeachHandLinear(beginPnt.x - TEACH_HAND_OFFSET_X, beginPnt.y - TEACH_HAND_OFFSET_Y, endPnt.x - beginPnt.x, endPnt.y - beginPnt.y);
 	}
 	
 	@Override
@@ -192,6 +195,7 @@ public class Practice1Activity extends Activity {
 		setHomeListener(findViewById(R.id.homeBtn));
 
 		knifeView = (ImageView) findViewById(R.id.knifeView);
+		teachHandView = ((ImageView)findViewById(R.id.teachHandView));
 		
 		carrotView = (ImageView) findViewById(R.id.carrotView);
 		setFoodListener(carrotView);
@@ -199,6 +203,36 @@ public class Practice1Activity extends Activity {
 		cucumberView = (ImageView) findViewById(R.id.cucumberView);
 		
 		game1RelativeLayout = (DrawableRelativeLayout) findViewById(R.id.game1RelativeLayout);
+	}
+	
+	private void setTeachHandLinear(int bX, int bY, int xOffset, int yOffset) {
+		teachHandView.setVisibility(View.VISIBLE);
+		
+		LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT,
+				LayoutParams.WRAP_CONTENT);
+		params.setMargins(bX, bY, 0, 0);
+		teachHandView.setLayoutParams(params);
+		
+		Animation am = new TranslateAnimation(0, xOffset, 0, yOffset);
+		am.setDuration(2000);
+		am.setRepeatCount(-1);
+		
+		teachHandView.startAnimation(am);
+	}
+	
+	private void setTeachHandCircular(int bX, int bY, int range) {
+		teachHandView.setVisibility(View.VISIBLE);
+		
+		LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT,
+				LayoutParams.WRAP_CONTENT);
+		params.setMargins(bX, bY, 0, 0);
+		teachHandView.setLayoutParams(params);
+		
+		Animation am = new CircularTranslateAnimation(teachHandView, range);
+		am.setDuration(2000);
+		am.setRepeatCount(-1);
+		
+		teachHandView.startAnimation(am);
 	}
 
 	protected void setHomeListener(View targetView) {
@@ -233,8 +267,10 @@ public class Practice1Activity extends Activity {
 		potDropAnim.start();
 
 		if (progressCount == step2TotalProgressCount) {
+			teachHandView.clearAnimation();
+			teachHandView.setVisibility(View.INVISIBLE);
+			
 			score += PlayPalUtility.killTimeBar();
-			PenRecorder.outputJSON();
 			Animation boardAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTLEFT);
 			boardAnim.setAnimationListener(new AnimationListener() {
 				@Override
@@ -248,6 +284,7 @@ public class Practice1Activity extends Activity {
 					fireAnim.setVisible(true, true);
 					fireAnim.start();
 					
+					setTeachHandCircular(780 + HELICAL_OFFSET_X - TEACH_HAND_OFFSET_X, 380 + HELICAL_OFFSET_Y  - TEACH_HAND_OFFSET_Y, 240);
 					//potView.setBackgroundResource(R.anim.pot_stir_animation);
 					//potStirAnim = (AnimationDrawable) potView.getBackground();
 					
@@ -263,8 +300,6 @@ public class Practice1Activity extends Activity {
 					
 					ImageView helicalView = (ImageView)findViewById(R.id.helicalView);
 					helicalView.setVisibility(ImageView.VISIBLE);
-					
-					PenRecorder.registerRecorder(game1RelativeLayout, Practice1Activity.this, mUserName, "1-4");
 					
 					isDoneDropFood = true;
 				}
@@ -289,7 +324,6 @@ public class Practice1Activity extends Activity {
 				if(event.getAction() == MotionEvent.ACTION_DOWN) { 
 					PlayPalUtility.curEntry = new RecordEntry(
 						new Point((int)event.getRawX(), (int)event.getRawY()), RecordEntry.STATE_TOUCH_START);
-					PenRecorder.forceRecord();
 				}
 				else if(event.getAction() == MotionEvent.ACTION_MOVE)
 					PlayPalUtility.curEntry = new RecordEntry(
@@ -297,7 +331,6 @@ public class Practice1Activity extends Activity {
 				else {
 					PlayPalUtility.curEntry = new RecordEntry(
 							new Point((int)event.getRawX(), (int)event.getRawY()), RecordEntry.STATE_TOUCH_END);
-					PenRecorder.forceRecord();
 				}
 					
 				int minXBoardBound = 0;
@@ -355,9 +388,7 @@ public class Practice1Activity extends Activity {
 		
 
 		if (progressCount == step3TotalProgressCount) {
-			clearAll();
-			PenRecorder.outputJSON();
-			
+			clearAll();			
 			Log.d("EndTest", String.format("Game1Score: %d", score));
 			
 			Intent newAct = new Intent();
@@ -382,13 +413,13 @@ public class Practice1Activity extends Activity {
 				tmpFood.setImageResource(foodResId[(int)(Math.random()*2)]);
 				LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT,
 						LayoutParams.WRAP_CONTENT);
-				int xMargin = (int)(Math.random()*151);
-				int yMargin = (int)(Math.random()*201);
+				int xMargin = (int)(150);
+				int yMargin = (int)(200);
 				params.setMargins(i * 150 + xMargin, j * 201 + yMargin, 0, 0);
 				setFragmentListener(tmpFood);
 				board2Layout.addView(tmpFood, params);
 			}
-		}
+		}		
 	}
 	
 	protected Integer handleLineAction() {
@@ -418,8 +449,8 @@ public class Practice1Activity extends Activity {
 			// Slide the cucumber
 			isFoodCanTouch = false;
 			PlayPalUtility.clearDrawView();
-			
-			PenRecorder.outputJSON();
+			teachHandView.clearAnimation();
+			teachHandView.setVisibility(View.INVISIBLE);
 			
 			PlayPalUtility.setLineGesture(false);
 			PlayPalUtility.clearGestureSets();
@@ -439,13 +470,14 @@ public class Practice1Activity extends Activity {
 					cucumberAnim.setAnimationListener(new AnimationListener() {
 						@Override
 						public void onAnimationEnd(Animation anim) {
-							PenRecorder.registerRecorder(game1RelativeLayout, Practice1Activity.this, mUserName, "1-2");
 							
 							PlayPalUtility.setLineGesture(true);
 							Point beginPnt = new Point(foodOffsetX + cucumberCutBeginPointArray[0].x, foodOffsetY + cucumberCutBeginPointArray[0].y);
 							Point endPnt = new Point(foodOffsetX + cucumberCutEndPointArray[0].x, foodOffsetY + cucumberCutEndPointArray[0].y);
 							PlayPalUtility.initialLineGestureParams(false, false, boxSize, beginPnt, endPnt);
 							DrawGestureLine();
+							
+							setTeachHandLinear(beginPnt.x - TEACH_HAND_OFFSET_X, beginPnt.y - TEACH_HAND_OFFSET_Y, endPnt.x - beginPnt.x, endPnt.y - beginPnt.y);
 						}
 
 						@Override
@@ -473,10 +505,10 @@ public class Practice1Activity extends Activity {
 		} else if (progressCount == step1TotalProgressCount) {
 			isFoodCanTouch = false;
 			PlayPalUtility.clearDrawView();
+			teachHandView.clearAnimation();
+			teachHandView.setVisibility(View.INVISIBLE);
 			score += PlayPalUtility.killTimeBar();
 			
-			PenRecorder.outputJSON();
-
 			Animation cucumberAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTRIGHT);
 			Animation boardAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTRIGHT);
 
@@ -510,7 +542,8 @@ public class Practice1Activity extends Activity {
 
 						@Override
 						public void onAnimationEnd(Animation arg0) {
-							PenRecorder.registerRecorder(game1RelativeLayout, Practice1Activity.this, mUserName, "1-3");
+							// dirty hardcoded params :(
+							setTeachHandLinear(150 + 20 - TEACH_HAND_OFFSET_X, 200 + 380 + 20 - TEACH_HAND_OFFSET_Y, 1000, 0);
 						}
 
 						@Override
