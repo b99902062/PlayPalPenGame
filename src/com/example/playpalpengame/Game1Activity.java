@@ -180,10 +180,6 @@ public class Game1Activity extends Activity {
 	protected void onPause() {
 		super.onPause();
 		clearAll();
-		if(fireMP != null) {
-			fireMP.release();
-			fireMP = null;
-		}
 		BackgroundMusicHandler.recyle();
 	}
 	
@@ -199,6 +195,11 @@ public class Game1Activity extends Activity {
 	}
 	
 	private void clearAll() {
+		if(fireMP != null) {
+			fireMP.release();
+			fireMP = null;
+		}
+		
 		score += PlayPalUtility.killTimeBar();
 		PlayPalUtility.setLineGesture(false);
 		PlayPalUtility.unregisterLineGesture(game1RelativeLayout);
@@ -399,12 +400,7 @@ public class Game1Activity extends Activity {
 		anim.start();
 		
 
-		if (progressCount == step3TotalProgressCount) {
-			if(fireMP != null) {
-				fireMP.release();
-				fireMP = null;
-			}
-			
+		if (progressCount == step3TotalProgressCount) {			
 			clearAll();
 			PenRecorder.outputJSON();
 			

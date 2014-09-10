@@ -149,6 +149,7 @@ public class Game2Activity extends Activity {
 				return catchFish();
 			}
 		});
+		PlayPalUtility.setHoverTarget(true, netView);
 		PlayPalUtility.registerFailFeedback((ImageView)findViewById(R.id.failFeedbackView));
 		PenRecorder.registerRecorder(game2RelativeLayout, this, mUserName, "2-1");
 		PlayPalUtility.setLineGesture(true);
@@ -168,7 +169,7 @@ public class Game2Activity extends Activity {
                     	PlayPalUtility.curEntry = new RecordEntry(
     							new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_MOVE);
                     	RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-                    	params.setMargins((int)event.getX() - 200, (int)event.getY() - 200 , 0, 0);
+                    	params.setMargins((int)event.getX(), (int)event.getY() , 0, 0);
                     	if(canPutInBasket) {
                     		if(event.getX() - 200 > 1960 && event.getY() - 200 > 380 && event.getY() - 200 < 1380) {
                     			netView.setImageResource(R.drawable.game2_net);
@@ -222,10 +223,6 @@ public class Game2Activity extends Activity {
 	protected void onPause() {
 	    super.onPause();
 	    clearAll();
-	    if(roastMP != null) {
-	    	roastMP.release();
-	    	roastMP = null;
-	    }
 	    BackgroundMusicHandler.recyle();
 	}
 	
@@ -241,6 +238,11 @@ public class Game2Activity extends Activity {
 	}
 	
 	private void clearAll() {
+		if(roastMP != null) {
+	    	roastMP.release();
+	    	roastMP = null;
+	    }
+		
 		for(int i=0; i<fishThreadList.size(); i++) {
 	    	if (fishThreadList.get(i) != null) {
 	    		fishThreadList.get(i).killThread();

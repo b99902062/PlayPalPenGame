@@ -14,6 +14,7 @@ public class BackgroundMusicHandler {
 	public static final int MUSIC_WIN = 1;
 	public static final int MUSIC_LOSE = 2;
 	
+	private static int currentMusicID = 0;
 	private static MediaPlayer music;
 	private static boolean musicSt = true;
 	private static boolean canRecycle = true;
@@ -24,9 +25,10 @@ public class BackgroundMusicHandler {
 	}
 	
 	public static void initMusic(Context context, int r) {
-		if(canRecycle) {
+		if(canRecycle || currentMusicID != r) {
 			music = MediaPlayer.create(context, musicId[r]);
 			music.setLooping(true);
+			currentMusicID = r;
 		}
 		else
 			canRecycle = true;

@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.drawable.AnimationDrawable;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -57,6 +58,8 @@ public class Practice1Activity extends Activity {
 	private int score = 0;
 	
 	protected Practice1Activity self;
+	
+	private MediaPlayer fireMP = null;
 	
 	private String mUserName = null;
 	private int mBadges = 0;
@@ -156,6 +159,14 @@ public class Practice1Activity extends Activity {
 	protected void onPause() {
 		super.onPause();
 		clearAll();
+		BackgroundMusicHandler.recyle();
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		BackgroundMusicHandler.initMusic(this);
+		BackgroundMusicHandler.setMusicSt(true);
 	}
 	
 	@Override
@@ -163,6 +174,11 @@ public class Practice1Activity extends Activity {
 	}
 	
 	private void clearAll() {
+		if(fireMP != null) {
+			fireMP.release();
+			fireMP = null;
+		}
+		
 		score += PlayPalUtility.killTimeBar();
 		PlayPalUtility.setLineGesture(false);
 		PlayPalUtility.unregisterLineGesture(game1RelativeLayout);
@@ -240,6 +256,7 @@ public class Practice1Activity extends Activity {
 			@Override
 			public boolean onTouch(View view, MotionEvent event) {
 				clearAll();
+				BackgroundMusicHandler.setCanRecycle(false);
 				
 				Intent newAct = new Intent();
 				newAct.setClass(Practice1Activity.this, MainActivity.class);
@@ -260,7 +277,7 @@ public class Practice1Activity extends Activity {
 	protected void RemoveFromBoard(View view) {
 		progressCount++;
 		progressCountText.setText("ProgressCount: " + new String("" + progressCount));
-		//PlayPalUtility.doProgress();
+		PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_SPLIT_POT, this);
 		
 		view.setVisibility(ImageView.GONE);
 		potDropAnim.setVisible(true, true);
@@ -283,6 +300,8 @@ public class Practice1Activity extends Activity {
 					fireView.setVisibility(ImageView.VISIBLE);
 					fireAnim.setVisible(true, true);
 					fireAnim.start();
+					
+					fireMP = PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_STIR_POT, self, true);
 					
 					setTeachHandCircular(780 + HELICAL_OFFSET_X - TEACH_HAND_OFFSET_X, 380 + HELICAL_OFFSET_Y  - TEACH_HAND_OFFSET_Y, 240);
 					//potView.setBackgroundResource(R.anim.pot_stir_animation);
@@ -427,7 +446,7 @@ public class Practice1Activity extends Activity {
 			return 0;
 		progressCount++;
 		progressCountText.setText("ProgressCount: " + new String("" + progressCount));
-		//PlayPalUtility.doProgress();
+		PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_CUT_FOOD, this);
 		
 		Point beginPnt = new Point(0, 0);
 		Point endPnt = new Point(0, 0);
