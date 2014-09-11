@@ -69,8 +69,7 @@ public class Game3Activity extends Activity {
 		new Point(780+548, 380+690),
 		new Point(780+710, 380+512),	
 		new Point(780+588, 380+310)};
-	
-	
+		
 	
 	protected final int INIT_CREAM_RATIO = 10;
 	protected final int CREAM_MAX_RATIO = 20;
@@ -352,7 +351,9 @@ public class Game3Activity extends Activity {
 				PlayPalUtility.setLineGesture(false);
 				PlayPalUtility.unregisterLineGesture(game3RelativeLayout);
 				PlayPalUtility.clearGestureSets();
+				PlayPalUtility.clearDrawView();
 				BackgroundMusicHandler.setCanRecycle(false);
+				
 				
 				Intent newAct = new Intent();
 				Bundle bundle = new Bundle();
@@ -365,7 +366,9 @@ public class Game3Activity extends Activity {
 		});
 	}
 	
-	protected void setOvenListener(View targetView){	
+	protected void setOvenListener(View targetView){
+		PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_OVEN, this);
+		
 		setFoodListener(ovenView2);
 		targetView.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -376,7 +379,6 @@ public class Game3Activity extends Activity {
 				}
 				
 				canTouchOven = false;
-				//ovenAnimation.stop();
 				
 				Animation ovenAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTLEFT);
 				ovenAnim.setAnimationListener(new AnimationListener() {

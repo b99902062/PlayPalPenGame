@@ -14,6 +14,7 @@ import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
+import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
@@ -44,24 +45,9 @@ public class Practice3Activity extends Activity {
 		new Point(1280,1080)};
 		
 	protected Point[] dottedLineArray = {
-		new Point(780+444, 380+216),
-		new Point(780+374, 380+260),
 		new Point(780+324, 380+370),
 		new Point(780+260, 380+420),
-		new Point(780+214, 380+500),
-		new Point(780+266, 380+588),
-		new Point(780+324, 380+620),
-		new Point(780+332, 380+698),
-		new Point(780+382, 380+786),
-		new Point(780+490, 380+748),
-		new Point(780+548, 380+690),
-		new Point(780+638, 380+704),
-		new Point(780+756, 380+682),
-		new Point(780+764, 380+614),
-		new Point(780+710, 380+512),
-		new Point(780+752, 380+412),
-		new Point(780+710, 380+316),
-		new Point(780+588, 380+310)};
+		new Point(780+214, 380+500)};
 	
 	protected Point[] creamPosArray = {
 		new Point(780+324, 380+370),
@@ -70,7 +56,8 @@ public class Practice3Activity extends Activity {
 		new Point(780+710, 380+512),	
 		new Point(780+588, 380+310)};
 	
-	
+	private final static int TEACH_HAND_OFFSET_X = 45;
+	private final static int TEACH_HAND_OFFSET_Y = 665;
 	
 	protected final int INIT_CREAM_RATIO = 10;
 	protected final int CREAM_MAX_RATIO = 20;
@@ -108,6 +95,7 @@ public class Practice3Activity extends Activity {
 	ImageView helicalView;
 	ImageView currentFoodView;
 	ImageView cakeCreamHintView;
+	ImageView teachHandView;
 
 	AnimationDrawable mixStirAnim;
 	AnimationDrawable ovenAnimation;
@@ -150,6 +138,7 @@ public class Practice3Activity extends Activity {
 		cakeStrawberryView = (ImageView)findViewById(R.id.Game3_cakeStrawberry);
 		helicalView = (ImageView)findViewById(R.id.Game3_helicalView);
 		cakeCreamHintView = (ImageView)findViewById(R.id.Game3_cakeCreamHintView);
+		teachHandView = (ImageView)findViewById(R.id.Game3_teachHand);
 		
 		game3RelativeLayout = (DrawableRelativeLayout) findViewById(R.id.Game3RelativeLayout);
 		game3RelativeLayout.setOnHoverListener(new View.OnHoverListener() {
@@ -247,7 +236,6 @@ public class Practice3Activity extends Activity {
 			public void onHoverButtonDown(View arg0, MotionEvent event) {
 				PlayPalUtility.curEntry = new RecordEntry(
 						new Point((int)event.getRawX(), (int)event.getRawY()), RecordEntry.STATE_HOVER_BTN_START);
-				PenRecorder.forceRecord();
 				
 				Log.d("Penpal","pressing");
 				butterSqueezing = true;				
@@ -264,7 +252,6 @@ public class Practice3Activity extends Activity {
 			public void onHoverButtonUp(View arg0, MotionEvent event) {
 				PlayPalUtility.curEntry = new RecordEntry(
 						new Point((int)event.getRawX(), (int)event.getRawY()), RecordEntry.STATE_HOVER_BTN_END);
-				PenRecorder.forceRecord();
 				
 				Log.d("Penpal","releasing");
 				butterSqueezing = false;
@@ -276,7 +263,6 @@ public class Practice3Activity extends Activity {
 		});
 
 		PlayPalUtility.setDebugMode(false);
-		PenRecorder.registerRecorder(game3RelativeLayout, this, userName, "3-1");
 		PlayPalUtility.initDrawView(game3RelativeLayout, this);
 		setFoodListener(mixView);
 		
@@ -294,32 +280,10 @@ public class Practice3Activity extends Activity {
 				pointArray[3]);
 		
 		
-		PlayPalUtility.registerProgressBar((ProgressBar)findViewById(R.id.progressBarRed), (ImageView)findViewById(R.id.progressMark), (ImageView)findViewById(R.id.progressBar), new Callable<Integer>() {
-			public Integer call() {
-				PlayPalUtility.killTimeBar();
-				PlayPalUtility.setLineGesture(false);
-				PlayPalUtility.unregisterLineGesture(game3RelativeLayout);
-				PlayPalUtility.clearGestureSets();
-				
-				Intent newAct = new Intent();
-				newAct.setClass(Practice3Activity.this, AnimationActivity.class);
-				Bundle bundle = new Bundle();
-				bundle.putInt("GameIndex", 3);
-				bundle.putBoolean("isWin", false);
-				bundle.putString("userName", userName);
-				bundle.putInt("GameBadges", mBadges);
-				bundle.putInt("GameHighScore", mHighScore);
-				bundle.putInt("GameWinCount", mWinCount);
-				bundle.putInt("NewScore", -1);
-	            newAct.putExtras(bundle);
-				startActivityForResult(newAct, 0);
-				Practice3Activity.this.finish();
-				return 0;
-			}
-		});
-		PlayPalUtility.initialProgressBar(MIX_TIME, PlayPalUtility.TIME_MODE);
 		
 		PlayPalUtility.setHoverTarget(true, eggbeatView);
+		
+		setTeachHandCircular(centralPoint.x-TEACH_HAND_OFFSET_X, centralPoint.y-TEACH_HAND_OFFSET_Y, 240);
 	}	
 	
 	@Override
@@ -352,6 +316,7 @@ public class Practice3Activity extends Activity {
 	}
 	
 	protected void setOvenListener(View targetView){	
+		
 		setFoodListener(ovenView2);
 		targetView.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -394,7 +359,10 @@ public class Practice3Activity extends Activity {
 						eggbeatView.setImageResource(R.drawable.game3_squeezer);
 						cakeDottedLineView.setVisibility(ImageView.VISIBLE);
 						PlayPalUtility.setLineGesture(true);
-						PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
+						
+						teachHandView.setVisibility(ImageView.VISIBLE);
+						
+						//PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
 					}
 
 					@Override
@@ -415,25 +383,14 @@ public class Practice3Activity extends Activity {
 					}
 				});
 				
+				
+				
+				setTeachHandLinear(dottedLineArray[0].x-TEACH_HAND_OFFSET_X, dottedLineArray[0].y-TEACH_HAND_OFFSET_Y, dottedLineArray[2].x-dottedLineArray[0].x, dottedLineArray[2].y-dottedLineArray[0].y);
+				
 				PlayPalUtility.initialLineGestureParams(false, false, boxSize/2, 
 						dottedLineArray[0],
 						dottedLineArray[1],
-						dottedLineArray[2],
-						dottedLineArray[3],
-						dottedLineArray[4],
-						dottedLineArray[5],
-						dottedLineArray[6],
-						dottedLineArray[7],
-						dottedLineArray[8],
-						dottedLineArray[9],
-						dottedLineArray[10],
-						dottedLineArray[11],
-						dottedLineArray[12],
-						dottedLineArray[13],
-						dottedLineArray[14],
-						dottedLineArray[15],
-						dottedLineArray[16],
-						dottedLineArray[17]);
+						dottedLineArray[2]);
 			}
 		});
 	}
@@ -461,6 +418,9 @@ public class Practice3Activity extends Activity {
 			anim = AnimationsContainer.getInstance().createGame3StirAnim(mixView2,2);
 		}
 		else if( curProgress == MIX_PROGRESS_END){
+			teachHandView.clearAnimation();
+			teachHandView.setVisibility(ImageView.INVISIBLE);
+
 			helicalView.setVisibility(ImageView.GONE);
 
 			score += PlayPalUtility.killTimeBar();
@@ -522,9 +482,7 @@ public class Practice3Activity extends Activity {
 			PlayPalUtility.setLineGesture(false);
             PlayPalUtility.clearGestureSets();
 			PlayPalUtility.unregisterLineGesture(game3RelativeLayout);
-			
-			PenRecorder.outputJSON();
-			PenRecorder.registerRecorder(game3RelativeLayout, this, userName, "3-2");
+		
 			
 			anim = null;
 		}
@@ -539,11 +497,14 @@ public class Practice3Activity extends Activity {
 		curProgress++;
 		progressCountText.setText("ProgressCount: " + new String("" + curProgress));
 		
+		teachHandView.clearAnimation();
+		setTeachHandLinear(creamPosArray[4].x-TEACH_HAND_OFFSET_X, creamPosArray[4].y-TEACH_HAND_OFFSET_Y, 1, 1);
+		
 		cakeCreamHintView.setVisibility(ImageView.VISIBLE);
 		PlayPalUtility.clearGestureSets();
 		PlayPalUtility.unregisterHoverLineGesture(game3RelativeLayout);
 		score += PlayPalUtility.killTimeBar();
-		PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
+		//PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
 		
 		PlayPalUtility.registerSingleHoverPoint(false,game3RelativeLayout, this, new Callable<Integer>() {
 			@Override
@@ -556,9 +517,7 @@ public class Practice3Activity extends Activity {
 		for(int i=0; i<5; i++)
 			PlayPalUtility.initialLineGestureParams(false, false, boxSize/2, creamPosArray[i]);
 		
-		PenRecorder.outputJSON();
-		PenRecorder.registerRecorder(game3RelativeLayout, this, userName, "3-3");
-		
+	
 		return 1;
 	}
 	
@@ -570,6 +529,10 @@ public class Practice3Activity extends Activity {
 		PlayPalUtility.cancelGestureSet(idx);
 		
 		if(curProgress == CREAM_PROGRESS_END){
+			
+			teachHandView.clearAnimation();
+			setTeachHandLinear(1560-TEACH_HAND_OFFSET_X, 600-TEACH_HAND_OFFSET_Y, 1560-centralPoint.x, 600-centralPoint.y);
+			
 			cakeDottedLineView.setVisibility(ImageView.INVISIBLE);
 			cakeStrawberryView.setVisibility(ImageView.VISIBLE);
 			PlayPalUtility.setAlphaAnimation(cakeStrawberryView,true);
@@ -583,11 +546,9 @@ public class Practice3Activity extends Activity {
 				}
 			});
 			
-			PenRecorder.outputJSON();
-			PenRecorder.registerRecorder(game3RelativeLayout, this, userName, "3-4");
 			
-			PlayPalUtility.initialLineGestureParams(false, false, boxSize, new Point(1560,600) ,centralPoint,  new Point(1560,1160));
-			PlayPalUtility.setStraightStroke(new Point(1560,600) ,centralPoint,  new Point(1560,1160));
+			PlayPalUtility.initialLineGestureParams(false, false, boxSize, new Point(1560,600) ,centralPoint);
+			PlayPalUtility.setStraightStroke(new Point(1560,600) ,centralPoint);
 			
 			eggbeatView.setImageResource(R.drawable.game1_knife);
 		}
@@ -596,7 +557,6 @@ public class Practice3Activity extends Activity {
 	
 	protected Integer handleCutting(View view) {
 		//finishing game3
-		PenRecorder.outputJSON();
 		score += PlayPalUtility.killTimeBar();
 		PlayPalUtility.setLineGesture(false);
 		PlayPalUtility.unregisterLineGesture(game3RelativeLayout);
@@ -619,6 +579,36 @@ public class Practice3Activity extends Activity {
 		
 		return 1;
 	}
+	
+	
+	private void setTeachHandLinear(int bX, int bY, int xOffset, int yOffset) {
+		teachHandView.setVisibility(View.VISIBLE);
+		
+		LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		params.setMargins(bX, bY, 0, 0);
+		teachHandView.setLayoutParams(params);
+		
+		Animation am = new TranslateAnimation(0, xOffset, 0, yOffset);
+		am.setDuration(2000);
+		am.setRepeatCount(-1);
+		
+		teachHandView.startAnimation(am);
+	}
+	
+	private void setTeachHandCircular(int bX, int bY, int range) {
+		teachHandView.setVisibility(View.VISIBLE);
+		
+		LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		params.setMargins(bX, bY, 0, 0);
+		teachHandView.setLayoutParams(params);
+		
+		Animation am = new CircularTranslateAnimation(teachHandView, range);
+		am.setDuration(2000);
+		am.setRepeatCount(-1);
+		
+		teachHandView.startAnimation(am);
+	}
+
 	
 	@SuppressLint("FloatMath")
 	static float calcDistance(Point p1, Point p2){

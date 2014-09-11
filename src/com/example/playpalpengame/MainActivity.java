@@ -100,9 +100,21 @@ public class MainActivity extends Activity implements SensorEventListener {
 	@Override
 	protected void onPause() {
 		super.onPause();
+		
+		timer.cancel();
+		
+		
+		RelativeLayout jarLayout = (RelativeLayout)findViewById(R.id.jarRelativeLayout);
+		for(StarStat star:starArr){
+			jarLayout.removeView(star.view);
+		}
+		
+		
+		jarLayout.invalidate();
+		
 		BackgroundMusicHandler.recyle();
 		sensorManager.unregisterListener( this );
-		timer.cancel();
+		
 	}
 	
 	@Override
@@ -113,7 +125,8 @@ public class MainActivity extends Activity implements SensorEventListener {
 			
 		System.loadLibrary("JarSimulation");
 		RelativeLayout jarLayout = (RelativeLayout)findViewById(R.id.jarRelativeLayout);
-
+		jarLayout.invalidate();
+		
 		initWorld();
 		starArr = new LinkedList<StarStat>();
 		for(int i=0; i<winCount.length; i++) {

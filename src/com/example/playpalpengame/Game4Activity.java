@@ -46,7 +46,7 @@ public class Game4Activity extends Activity {
 	
 	protected final int DOUGH_PROGRESS_END  = 4;
 	protected final int COOKIE_PROGRESS_END = DOUGH_PROGRESS_END + 8;
-	protected final int CREAM_PROGRESS_END  = COOKIE_PROGRESS_END + 80;	
+	protected final int CREAM_PROGRESS_END  = COOKIE_PROGRESS_END + 90;	
 	
 	protected final int COOKIE_NUM = 8;
 	protected final int DOUGH_NUM = 5;
@@ -172,7 +172,7 @@ public class Game4Activity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
-		PlayPalUtility.setDebugMode(false);
+		PlayPalUtility.setDebugMode(true);
 		
 		Bundle bundle = getIntent().getExtras();
 		userName = bundle.getString("userName");
@@ -429,7 +429,7 @@ public class Game4Activity extends Activity {
 			
 			PlayPalUtility.clearGestureSets();			
 			PlayPalUtility.initialLineGestureParams(false, true, boxSize, doughPosArray[curProgress][0], doughPosArray[curProgress][1], doughPosArray[curProgress][2], doughPosArray[curProgress][3]);
-
+			
 			PlayPalUtility.clearDrawView();
 			PlayPalUtility.setStraightStroke(centerPoint,doughPosArray[curProgress][3]);
 		}
@@ -441,12 +441,18 @@ public class Game4Activity extends Activity {
 		int x,y,w,h,dxy=100;
 		ImageView curDough = (ImageView)findViewById(doughViewArray[Math.min(curProgress+1, DOUGH_NUM-1)]);
 		curDough.setVisibility(ImageView.VISIBLE);
-		Point p = PlayPalUtility.curEntry.point;
+		
+		//Log.d("game4",""+PlayPalUtility.getLastTriggerSetIndex());
+		
+		int subProgress = PlayPalUtility.getLastTriggerPointIndex();
+		Point p = doughPosArray[curProgress][subProgress+1];
+		if(subProgress == 1)
+			PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_ROLLING, this);
 		
 		switch(curProgress){
 			case 0:
 				x = centerPoint.x-dxy;
-				y = p.y; 
+				y = p.y-dxy; 
 				break;
 	
 			case 1:
@@ -455,13 +461,13 @@ public class Game4Activity extends Activity {
 				break;
 				
 			case 2:
-				x = p.x;
+				x = p.x-dxy;
 				y = centerPoint.y-dxy;
 				break;
 			
 			case 3:
-				x = p.x;
-				y = p.y;
+				x = p.x-dxy;
+				y = p.y-dxy;
 				break;
 				
 			default:

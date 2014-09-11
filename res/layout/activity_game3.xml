@@ -133,7 +133,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="190dp"
-            android:src="@drawable/helical"/>
+            android:src="@drawable/helical_2"/>
        
         <ImageView
         	android:id="@+id/Game3_cakeCreamHintView"
@@ -143,6 +143,13 @@
             android:layout_marginTop="190dp"
             android:src="@drawable/game3_cake_cream_hint"
             android:visibility="invisible"/>
+        
+        <ImageView
+            android:id="@+id/Game3_teachHand"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/teach_hand3"
+            android:visibility="invisible" />
         	
         <TextView
             android:id="@+id/testProgressCount"
@@ -181,7 +188,7 @@
             android:layout_marginLeft="374dp"
             android:layout_marginTop="61dp"
             android:src="@drawable/progress_mark"
-            android:visibility="visible" />
+            android:visibility="visible" />    
 
         <ImageView
             android:id="@+id/progressBar"

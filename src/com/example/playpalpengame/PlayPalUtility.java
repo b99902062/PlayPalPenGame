@@ -48,6 +48,14 @@ public class PlayPalUtility {
 	protected final static int SOUND_ROAST = 7;
 	protected final static int SOUND_CARTOON = 8;
 	
+	protected final static int SOUND_OVEN = 9;
+	protected final static int SOUND_ROLLING = 10;
+	/*
+	protected final static int SOUND_EGG = 9;
+	protected final static int SOUND_SQUEEZE=10;
+	protected final static int SOUND_DOUGH=11;
+	*/
+	
 	protected final static int FROM_OUTLEFT_TO_CUR = 1;
 	protected final static int FROM_CUR_TO_OUTRIGHT = 2;
 	protected final static int FROM_OUTRIGHT_TO_CUR = 3;
@@ -65,6 +73,7 @@ public class PlayPalUtility {
 	
 	protected static boolean isLineGestureOn;
 	protected static int lastTriggerSetIndex = -1;
+	protected static int lastTriggerPointIndex = -1;
 	protected static View targetView;
 	protected static Context targetContext;
 	protected static boolean isDebugMode = true;
@@ -89,7 +98,7 @@ public class PlayPalUtility {
 	protected static ArrayList<GestureSet> gestureSetList = new ArrayList<GestureSet>();
 	protected static ArrayList<StrokeSet> strokeSetList = new ArrayList<StrokeSet>();
 	
-	private static int[] soundRes = {R.raw.test_sound, R.raw.game1_cutting_onion, R.raw.game1_water_drop, R.raw.game1_boiling_short, R.raw.unsorted_yayyy, R.raw.unsorted_uhoh, R.raw.game1_drinking, R.raw.game2_roast, R.raw.unsorted_cartoon};
+	private static int[] soundRes = {R.raw.test_sound, R.raw.game1_cutting_onion, R.raw.game1_water_drop, R.raw.game1_boiling_short, R.raw.unsorted_yayyy, R.raw.unsorted_uhoh, R.raw.game1_drinking, R.raw.game2_roast, R.raw.unsorted_cartoon, R.raw.game3_oven, R.raw.game4_cartoon_rolling};
 	
 	protected static boolean butterSqueezing = false;
 	protected static SPenEventLibrary mSPenEventLibrary = new SPenEventLibrary();
@@ -217,6 +226,7 @@ public class PlayPalUtility {
 			
 			@Override
 			public void onHoverButtonUp(View v, MotionEvent event) {
+				isPressing = false;
 				for(int setIndex=0; setIndex<gestureSetList.size(); setIndex++) {
 					GestureSet curSet = gestureSetList.get(setIndex);
 					ArrayList<Integer> pointPassedList = curSet.passedList;
@@ -239,7 +249,7 @@ public class PlayPalUtility {
 
 			@Override
 			public boolean onHover(View arg0, MotionEvent event) {
-				if(isHovering){
+				if(isHovering && isPressing){
 					for(int setIndex=0; setIndex<gestureSetList.size(); setIndex++) {
 						GestureSet curSet = gestureSetList.get(setIndex);
 						ArrayList<Integer> pointPassedList = curSet.passedList;
@@ -259,6 +269,7 @@ public class PlayPalUtility {
 						}
 					}
 				}
+				
 				
 				
 				if(event.getAction()  == MotionEvent.ACTION_HOVER_ENTER) {
@@ -283,8 +294,7 @@ public class PlayPalUtility {
 
 			@Override
 			public void onHoverButtonDown(View arg0, MotionEvent arg1) {
-				// TODO Auto-generated method stub
-				
+				isPressing = true;
 			}
 		});
 	}
@@ -502,6 +512,7 @@ public class PlayPalUtility {
 					GestureSet curSet = gestureSetList.get(setIndex);
 					ArrayList<Integer> pointPassedList = curSet.passedList;
 					
+					
 					switch(event.getAction()) {
 						case MotionEvent.ACTION_DOWN:
 							if(curSet.isInOrder) {
@@ -539,6 +550,7 @@ public class PlayPalUtility {
 								if (pointPassedList.get(0) != 0) 
 									break;
 								int lastIndex = pointPassedList.get(pointPassedList.size() - 1);
+								lastTriggerPointIndex = lastIndex;
 								if(isWithinBox(setIndex, lastIndex+1, new Point((int)event.getX(), (int)event.getY()))) {
 									pointPassedList.add(lastIndex+1);
 									//trigger func2
@@ -565,6 +577,8 @@ public class PlayPalUtility {
 									if(!pointPassedList.contains(pointIndex)
 									&& isWithinBox(setIndex, pointIndex, new Point((int)event.getX(), (int)event.getY()))) {
 										pointPassedList.add(pointIndex);
+										lastTriggerPointIndex = pointIndex;
+										
 										//trigger func2
 										if(func2 != null){
 											try {
@@ -704,6 +718,13 @@ public class PlayPalUtility {
 		lastTriggerSetIndex = -1;
 		return value;
 	}
+	
+	protected static int getLastTriggerPointIndex() {
+		int value = lastTriggerPointIndex;
+		lastTriggerPointIndex = -1;
+		return value;
+	}
+	
 	
 	protected static Point getPoint(int setIndex, int index) {
 		ArrayList<Point> targetPointList = gestureSetList.get(setIndex).pointList;

@@ -221,7 +221,6 @@ public class Practice4Activity extends Activity {
                     case MotionEvent.ACTION_HOVER_ENTER:
                     	PlayPalUtility.curEntry = new RecordEntry(
         						new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_START);
-        				PenRecorder.forceRecord();
                     	laddleView.setVisibility(ImageView.VISIBLE);
                         break;
                      
@@ -236,7 +235,6 @@ public class Practice4Activity extends Activity {
                     case MotionEvent.ACTION_HOVER_EXIT:
                     	PlayPalUtility.curEntry = new RecordEntry(
         						new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_END);
-        				PenRecorder.forceRecord();
                     	laddleView.setVisibility(ImageView.INVISIBLE);
                         break;
                 }
@@ -247,33 +245,7 @@ public class Practice4Activity extends Activity {
 		gameContext = this;
 		mSPenEventLibrary = new SPenEventLibrary();
 		
-		PlayPalUtility.registerProgressBar((ProgressBar)findViewById(R.id.progressBarRed), (ImageView)findViewById(R.id.progressMark), (ImageView)findViewById(R.id.progressBar), new Callable<Integer>() {
-			public Integer call() {
-				PlayPalUtility.killTimeBar();
-				PlayPalUtility.setLineGesture(false);
-				PlayPalUtility.unregisterLineGesture(game4RelativeLayout);
-				PlayPalUtility.clearGestureSets();
-				PlayPalUtility.clearDrawView();
-				
-				Intent newAct = new Intent();
-				newAct.setClass(Practice4Activity.this, AnimationActivity.class);
-				Bundle bundle = new Bundle();
-				bundle.putInt("GameIndex", 4);
-				bundle.putBoolean("isWin", false);
-				bundle.putString("userName", userName);
-				bundle.putInt("GameBadges", mBadges);
-				bundle.putInt("GameHighScore", mHighScore);
-				bundle.putInt("GameWinCount", mWinCount);
-				bundle.putInt("NewScore", -1);
-	            newAct.putExtras(bundle);
-				startActivityForResult(newAct, 0);
-				Practice4Activity.this.finish();
-				return 0;
-			}
-		});
-		PlayPalUtility.initialProgressBar(DOUGH_TIME, PlayPalUtility.TIME_MODE);
-		PenRecorder.registerRecorder(game4RelativeLayout, this, userName, "4-1");
-		
+		//PlayPalUtility.initialProgressBar(DOUGH_TIME, PlayPalUtility.TIME_MODE);
 		PlayPalUtility.setHoverTarget(true, laddleView);
 	}	
 
@@ -357,7 +329,6 @@ public class Practice4Activity extends Activity {
 			public void onHoverButtonDown(View arg0, MotionEvent event) {
 				PlayPalUtility.curEntry = new RecordEntry(
 						new Point((int)event.getRawX(), (int)event.getRawY()), RecordEntry.STATE_HOVER_BTN_START);
-				PenRecorder.forceRecord();
 				Log.d("Penpal","pressing");
 				butterSqueezing = true;				
 				
@@ -373,7 +344,6 @@ public class Practice4Activity extends Activity {
 			public void onHoverButtonUp(View arg0, MotionEvent event) {
 				PlayPalUtility.curEntry = new RecordEntry(
 						new Point((int)event.getRawX(), (int)event.getRawY()), RecordEntry.STATE_HOVER_BTN_END);
-				PenRecorder.forceRecord();
 				Log.d("Penpal","releasing");
 				butterSqueezing = false;
 				
@@ -400,14 +370,11 @@ public class Practice4Activity extends Activity {
 			score += PlayPalUtility.killTimeBar();
 			
 			laddleView.setImageResource(R.drawable.game4_thinknife);
-			PenRecorder.outputJSON();
 
 			PlayPalUtility.clearGestureSets();
 			PlayPalUtility.clearDrawView();
-			PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
+			//PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
 			initCookieView();
-
-			PenRecorder.registerRecorder(game4RelativeLayout, this, userName, "4-2");
 		}
 		else if(curProgress < DOUGH_PROGRESS_END){
 			
@@ -525,7 +492,7 @@ public class Practice4Activity extends Activity {
 						@Override
 						public void onAnimationEnd(Animation anim) {
 							if(isFirstCookie) {
-								PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
+								//PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
 								laddleView.setImageResource(R.drawable.game4_squeezer);
 								isFirstCookie = false;
 							}
@@ -567,10 +534,6 @@ public class Practice4Activity extends Activity {
 			});
 	
 			PlayPalUtility.setLineGesture(true);
-			
-			PenRecorder.outputJSON();
-			PenRecorder.registerRecorder(game4RelativeLayout, this, userName, "4-3");
-			
 		}
 		
 		return 1;
@@ -590,8 +553,6 @@ public class Practice4Activity extends Activity {
 			PlayPalUtility.unregisterLineGesture(game4RelativeLayout);
 			PlayPalUtility.clearGestureSets();
 			PlayPalUtility.clearDrawView();
-			PenRecorder.outputJSON();
-			PenRecorder.registerRecorder(game4RelativeLayout, this, userName, "4-4");
 			
 			Intent newAct = new Intent();
 			newAct.setClass(Practice4Activity.this, AnimationActivity.class);

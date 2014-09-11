@@ -156,6 +156,13 @@
             android:layout_marginLeft="350dp"
             android:layout_marginTop="40dp"
             android:src="@drawable/progress_bottom" />
+         
+         <ImageView
+            android:id="@+id/Game4_teachHand"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/teach_hand4"
+            android:visibility="invisible" />
 
          <ProgressBar
              android:id="@+id/progressBarRed"
