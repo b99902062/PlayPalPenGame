@@ -1,13 +1,14 @@
 package com.example.playpalpengame;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.concurrent.Callable;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -19,7 +20,6 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
@@ -54,15 +54,13 @@ public class Practice2Activity extends Activity {
 	private final Point[] cutBeginOffset = {new Point(124, 263), new Point(301, 262), new Point(134, 459), new Point(278, 457)};
 	private final Point[] cutEndOffset = {new Point(308, 438), new Point(123, 446), new Point(284, 600), new Point(134, 607)};
 
-	private int score = 0;
 	private int cutCountInOrder = 0;
 	
 	public static boolean isReady;
 	
+	private MediaPlayer roastMP = null;
+	
 	private String mUserName = null;
-	private int mBadges = 0;
-	private int mHighScore = 0;
-	private int mWinCount = 0;
 	
 	private int curFishIndex;
 	protected boolean canPutInBasket = false;
@@ -76,6 +74,8 @@ public class Practice2Activity extends Activity {
 	private ImageView teachHandView;
 	protected DrawableRelativeLayout game2RelativeLayout;
 	protected TextView testProgressCountText;
+	
+	private Context self;
 	
 	protected int progressCount;
 	protected static LinkedList<FishHandlerThread> fishThreadList;
@@ -96,6 +96,7 @@ public class Practice2Activity extends Activity {
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
+		self = this;
 		isReady = false;
 		
 		setContentView(R.layout.activity_game2);
@@ -105,9 +106,6 @@ public class Practice2Activity extends Activity {
 
 		Bundle bundle = getIntent().getExtras();
 		mUserName = bundle.getString("userName");
-		mBadges = bundle.getInt("GameBadges");
-		mHighScore = bundle.getInt("GameHighScore");
-		mWinCount = bundle.getInt("GameWinCount");
 		
 		progressCount = 0;
 				
@@ -132,6 +130,7 @@ public class Practice2Activity extends Activity {
 				return catchFish();
 			}
 		});
+		PlayPalUtility.setHoverTarget(true, netView);
 		PlayPalUtility.registerFailFeedback((ImageView)findViewById(R.id.failFeedbackView));
 		PlayPalUtility.setLineGesture(true);
 		PlayPalUtility.initDrawView(game2RelativeLayout, this);
@@ -149,7 +148,7 @@ public class Practice2Activity extends Activity {
                     	PlayPalUtility.curEntry = new RecordEntry(
     							new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_MOVE);
                     	RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-                    	params.setMargins((int)event.getX() - 200, (int)event.getY() - 200 , 0, 0);
+                    	params.setMargins((int)event.getX(), (int)event.getY() , 0, 0);
                     	if(canPutInBasket) {
                     		if(event.getX() - 200 > 1960 && event.getY() - 200 > 380 && event.getY() - 200 < 1380) {
                     			netView.setImageResource(R.drawable.game2_net);
@@ -159,13 +158,14 @@ public class Practice2Activity extends Activity {
                     			PlayPalUtility.cancelGestureSet(curFishIndex);
                     			fishThreadList.get(curFishIndex).killThread();
                     			
+                    			PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_SPLIT_POT, self);             			
                     			progressCount++;
                     			testProgressCountText.setText(String.format("ProgressCount: %d", progressCount));
                     			if(progressCount == step1TotalProgressCount) {
                     				teachHandView.clearAnimation();
                     				teachHandView.setVisibility(View.INVISIBLE);
                     				
-                    				score += PlayPalUtility.killTimeBar();
+                    				PlayPalUtility.killTimeBar();
                     				
                     				PlayPalUtility.clearGestureSets();
                     				PlayPalUtility.setLineGesture(false);
@@ -211,6 +211,11 @@ public class Practice2Activity extends Activity {
 	}
 	
 	private void clearAll() {
+		if(roastMP != null) {
+	    	roastMP.release();
+	    	roastMP = null;
+	    }
+		
 		for(int i=0; i<fishThreadList.size(); i++) {
 	    	if (fishThreadList.get(i) != null) {
 	    		fishThreadList.get(i).killThread();
@@ -288,8 +293,10 @@ public class Practice2Activity extends Activity {
 		fishThreadList.get(index).fishView.setVisibility(ImageView.INVISIBLE);
 		netView.setImageResource(R.drawable.game2_net2);
 		
-		setTeachHandLinear(500 - TEACH_HAND_OFFSET_X, 500 - TEACH_HAND_OFFSET_Y, 1800, 0);
+		setTeachHandLinear(500 - TEACH_HAND_OFFSET_X, 500 - TEACH_HAND_OFFSET_Y, 2000, 0);
 
+		PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_ID_TEST, this);
+		
 		return 0;
 	}
 	
@@ -301,6 +308,8 @@ public class Practice2Activity extends Activity {
 		fishView1.setVisibility(ImageView.VISIBLE);
 		
 		java.util.Arrays.fill(isFishCutArray, false);
+		
+		roastMP = PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_ROAST, this, true);
 		
 		PlayPalUtility.registerLineGesture(game2RelativeLayout, this, new Callable<Integer>() {
 			@Override
@@ -354,7 +363,7 @@ public class Practice2Activity extends Activity {
 			cutCountInOrder++;
 			teachHandView.clearAnimation();
 			teachHandView.setVisibility(View.INVISIBLE);
-			
+
 			if(cutCountInOrder < 4) {
 				Point pnt1 = new Point(fishOffset[0].x + cutBeginOffset[cutCountInOrder].x, fishOffset[0].y + cutBeginOffset[cutCountInOrder].y);
 				Point pnt2 = new Point(fishOffset[0].x + cutEndOffset[cutCountInOrder].x, fishOffset[0].y + cutEndOffset[cutCountInOrder].y);
@@ -365,6 +374,8 @@ public class Practice2Activity extends Activity {
 				teachHandView.clearAnimation();
 				teachHandView.setVisibility(View.INVISIBLE);
 			}
+
+			PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_CARTOON, this);
 			
 			final int baseIndex = lastTriggerIndex/4;
 			if(isFishCutArray[baseIndex * 4]
@@ -406,7 +417,7 @@ public class Practice2Activity extends Activity {
 		progressCount++;
 		testProgressCountText.setText(String.format("ProgressCount: %d", progressCount));
 		if(progressCount == step2TotalProgressCount) {
-			score += PlayPalUtility.killTimeBar();
+			PlayPalUtility.killTimeBar();
 			
 			clearAll();
 
@@ -434,17 +445,16 @@ public class Practice2Activity extends Activity {
     		else
     			fishThreadList.get(msg.getData().getInt("index")).fishView.setImageResource(R.drawable.game2_fish_1);
         	
-            int curX = msg.getData().getInt("nextX");
-            int curY = msg.getData().getInt("nextY");
-            
             int rotateAngle = msg.getData().getInt("rotateAngle");
             if(rotateAngle != 0)
             	fishThreadList.get(msg.getData().getInt("index")).doRotate(rotateAngle);
             
+            // practice mode don't need to move
+            /*
             fishThreadList.get(msg.getData().getInt("index")).setMargins(curX, curY, 0, 0);
-            Log.d("PlayPalTest", String.format("Fish[%d], Test: (%d, %d)", msg.getData().getInt("index"), curX, curY));
             if(!fishThreadList.get(msg.getData().getInt("index")).isDead)
             	PlayPalUtility.changeGestureParams(false, msg.getData().getInt("index"), new Point(curX + fishW, curY + fishH));
+            */
         }
     };
     
@@ -506,7 +516,6 @@ public class Practice2Activity extends Activity {
         
         protected void doNextAction() {
         	Bundle dataBundle = new Bundle();
-    		Log.d("NewTest", String.format("Index: %d", index));
     		
         	if(Math.random() > getRotateProb()) {
         		int rotateAngle = 360 - (int) (Math.sqrt(Math.random() * 129600));

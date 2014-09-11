@@ -1,11 +1,14 @@
 package com.example.playpalpengame;
 
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.media.MediaPlayer;
@@ -149,6 +152,7 @@ public class Game2Activity extends Activity {
 				return catchFish();
 			}
 		});
+		PlayPalUtility.setHoverTarget(true, netView);
 		PlayPalUtility.registerFailFeedback((ImageView)findViewById(R.id.failFeedbackView));
 		PenRecorder.registerRecorder(game2RelativeLayout, this, mUserName, "2-1");
 		PlayPalUtility.setLineGesture(true);
@@ -168,7 +172,7 @@ public class Game2Activity extends Activity {
                     	PlayPalUtility.curEntry = new RecordEntry(
     							new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_MOVE);
                     	RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-                    	params.setMargins((int)event.getX() - 200, (int)event.getY() - 200 , 0, 0);
+                    	params.setMargins((int)event.getX(), (int)event.getY() , 0, 0);
                     	if(canPutInBasket) {
                     		if(event.getX() - 200 > 1960 && event.getY() - 200 > 380 && event.getY() - 200 < 1380) {
                     			netView.setImageResource(R.drawable.game2_net);
@@ -221,11 +225,9 @@ public class Game2Activity extends Activity {
 	@Override
 	protected void onPause() {
 	    super.onPause();
+	    writeToSettings();
+	    
 	    clearAll();
-	    if(roastMP != null) {
-	    	roastMP.release();
-	    	roastMP = null;
-	    }
 	    BackgroundMusicHandler.recyle();
 	}
 	
@@ -234,15 +236,134 @@ public class Game2Activity extends Activity {
 		super.onResume();
 		BackgroundMusicHandler.initMusic(this);
 		BackgroundMusicHandler.setMusicSt(true);
+		
+		setBackFromSettings();
 	}
 	
 	@Override
 	public void onBackPressed() {
 	}
+
+	private void writeToSettings() {
+		SharedPreferences settings = getSharedPreferences("PLAY_PAL_TMP_INFO", 0);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putInt("CUR_PROGRESS", progressCount);
+		editor.putInt("CUR_TIMEBAR_MAX", PlayPalUtility.getProgressBarMaxVal());
+		editor.putInt("CUR_TIMEBAR_VAL", PlayPalUtility.getProgressBarCurVal());
+		editor.putInt("CUR_SCORE", score);
+		if(progressCount < step1TotalProgressCount) {
+			Set<String> fishLocArr = new HashSet<String>();
+			for(int i=0; i<fishThreadList.size(); i++) {
+				if(fishThreadList.get(i).isDead())
+					continue;
+				Point loc = fishThreadList.get(i).getCurLoc();
+				fishLocArr.add(loc.x + "," + loc.y);
+			}
+			editor.putStringSet("CUR_FISH_LOC", fishLocArr);
+		}
+		else {
+			Set<String> isCutArr = new HashSet<String>();
+			for(int i=0; i<isFishCutArray.length; i++) {
+				if(isFishCutArray[i])
+					isCutArr.add("T" + i);
+				else
+					isCutArr.add("F" + i);
+			}
+			editor.putStringSet("CUR_FISH_CUT", isCutArr);
+		}
+		editor.commit();
+	}
+	
+	private void setBackFromSettings() {
+		SharedPreferences settings = getSharedPreferences("PLAY_PAL_TMP_INFO", 0);
+		progressCount = settings.getInt("CUR_PROGRESS", -1);
+		if(progressCount < 0) {
+			progressCount = 0;
+			return;
+		}
+		else {
+			PlayPalUtility.initialProgressBar(settings.getInt("CUR_TIMEBAR_MAX", 0), PlayPalUtility.TIME_MODE);
+			PlayPalUtility.setProgressBarCurVal(settings.getInt("CUR_TIMEBAR_VAL", 0));
+			score = settings.getInt("CUR_SCORE", 0);
+			setBackProgressCountPart();
+			
+			settings.edit().clear().commit();
+		}
+	}
+	
+	private void setBackProgressCountPart() {
+		if(progressCount < step1TotalProgressCount) {
+			SharedPreferences settings = getSharedPreferences("PLAY_PAL_TMP_INFO", 0);
+			String[] fishLocSet = (String[]) settings.getStringSet("CUR_FISH_LOC", null).toArray(new String[settings.getStringSet("CUR_FISH_LOC", null).size()]);
+			
+			game2RelativeLayout = (DrawableRelativeLayout)findViewById(R.id.Game2RelativeLayout);
+			PlayPalUtility.registerLineGesture(game2RelativeLayout, this, new Callable<Integer>() {
+				@Override
+				public Integer call() throws Exception {
+					return catchFish();
+				}
+			});
+			PlayPalUtility.setHoverTarget(true, (ImageView)findViewById(R.id.netView));
+			PlayPalUtility.registerFailFeedback((ImageView)findViewById(R.id.failFeedbackView));
+			
+			PlayPalUtility.setLineGesture(true);
+			PlayPalUtility.initDrawView(game2RelativeLayout, this);
+			
+			fishThreadList = new LinkedList<FishHandlerThread>();
+			for(int i=0; i<fishLocSet.length; i++) {
+				FishHandlerThread fht = new FishHandlerThread(this, Integer.valueOf(fishLocSet[i].split(",")[0]), Integer.valueOf(fishLocSet[i].split(",")[1]));
+				fishThreadList.add(fht);
+				fht.start();
+			}
+			isReady = true;
+		}
+		else {
+			SharedPreferences settings = getSharedPreferences("PLAY_PAL_TMP_INFO", 0);
+			String[] isCutSet = (String[]) settings.getStringSet("CUR_FISH_CUT", null).toArray(new String[settings.getStringSet("CUR_FISH_CUT", null).size()]);
+			
+			roastMP = PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_ROAST, this, true);
+			
+			game2RelativeLayout = (DrawableRelativeLayout)findViewById(R.id.Game2RelativeLayout);
+			PlayPalUtility.registerLineGesture(game2RelativeLayout, this, new Callable<Integer>() {
+				@Override
+				public Integer call() throws Exception {
+					return performCross();
+				}
+			});
+			for(int i=0; i<isFishCutArray.length; i++) {
+				int index = Integer.valueOf(isCutSet[i].substring(1));
+				if(isCutSet[i].contains("T"))
+					isFishCutArray[index] = true;
+				else
+					isFishCutArray[index] = false;
+			}
+			
+			for(int index=0; index<isFishCutArray.length; index++) {
+				Point pnt1 = new Point(fishOffset[index/4].x + cutBeginOffset[index%4].x, fishOffset[index/4].y + cutBeginOffset[index%4].y);
+				Point pnt2 = new Point(fishOffset[index/4].x + cutEndOffset[index%4].x, fishOffset[index/4].y + cutEndOffset[index%4].y);
+				PlayPalUtility.initialLineGestureParams(false, false, CUT_BOX_SIZE, pnt1, pnt2);
+				
+				if(isFishCutArray[index]) {
+					PlayPalUtility.cancelGestureSet(index);
+					continue;
+				}
+				PlayPalUtility.setStraightStroke(pnt1, pnt2);
+				
+				fishCutPointPairArray[index] = new PointPair(pnt1, pnt2);
+			}
+			PlayPalUtility.setLineGesture(true);
+		}
+	}
 	
 	private void clearAll() {
+		if(roastMP != null) {
+	    	roastMP.release();
+	    	roastMP = null;
+	    }
+		
 		for(int i=0; i<fishThreadList.size(); i++) {
 	    	if (fishThreadList.get(i) != null) {
+	    		fishThreadList.get(i).fishView.setVisibility(View.GONE);
 	    		fishThreadList.get(i).killThread();
 		        if (!fishThreadList.get(i).isInterrupted()) 
 		        	fishThreadList.get(i).interrupt();
@@ -301,8 +422,6 @@ public class Game2Activity extends Activity {
 		canPutInBasket = true;
 		PlayPalUtility.setLineGesture(false);
 		fishThreadList.get(index).doPause();
-		//PlayPalUtility.cancelGestureSet(index);
-		//fishThreadList.get(index).killThread();
 		fishThreadList.get(index).fishView.setVisibility(ImageView.INVISIBLE);
 		netView.setImageResource(R.drawable.game2_net2);
 
@@ -408,7 +527,6 @@ public class Game2Activity extends Activity {
 		fishView.setVisibility(ImageView.GONE);
 		fishViewDone.setVisibility(ImageView.VISIBLE);
 		
-
 		progressCount++;
 		testProgressCountText.setText(String.format("ProgressCount: %d", progressCount));
 		if(progressCount == step2TotalProgressCount) {
@@ -479,18 +597,30 @@ public class Game2Activity extends Activity {
 		protected boolean isPause = false;
 		
         FishHandlerThread(Game2Activity context) {
+        	this(context, (int)(FISH_BOUND_LEFT + Math.random()*(FISH_BOUND_RIGHT - FISH_BOUND_LEFT + 1)), (int)(FISH_BOUND_UP + Math.random()*(FISH_BOUND_DOWN - FISH_BOUND_UP + 1)));
+        }
+        
+        FishHandlerThread(Game2Activity context, int x, int y) {
         	fishView = new ImageView(context);
 			fishView.setImageResource(R.drawable.game2_fish_1);
 			LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT,
 					LayoutParams.WRAP_CONTENT);
-			curX = (int)(FISH_BOUND_LEFT + Math.random()*(FISH_BOUND_RIGHT - FISH_BOUND_LEFT + 1));
-			curY = (int)(FISH_BOUND_UP + Math.random()*(FISH_BOUND_DOWN - FISH_BOUND_UP + 1));
+			curX = x;
+			curY = y;
 			params.setMargins(curX, curY, 0, 0);
 			fishView.setLayoutParams(params);
 
 			game2RelativeLayout.addView(fishView);
 			
 			index = PlayPalUtility.initialLineGestureParams(false, false, GESTURE_BOX_SIZE, new Point(curX + fishW, curY + fishH));
+        }
+        
+        public Point getCurLoc() {
+        	return new Point(curX, curY);
+        }
+        
+        public boolean isDead() {
+        	return isDead;
         }
         
         public void setMargins(int left, int top, int right, int down) {

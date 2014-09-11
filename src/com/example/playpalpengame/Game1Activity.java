@@ -5,6 +5,7 @@ import java.util.concurrent.Callable;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.graphics.drawable.AnimationDrawable;
 import android.media.MediaPlayer;
@@ -179,11 +180,10 @@ public class Game1Activity extends Activity {
 	@Override
 	protected void onPause() {
 		super.onPause();
+		
+		writeToSettings();
+		
 		clearAll();
-		if(fireMP != null) {
-			fireMP.release();
-			fireMP = null;
-		}
 		BackgroundMusicHandler.recyle();
 	}
 	
@@ -192,13 +192,88 @@ public class Game1Activity extends Activity {
 		super.onResume();
 		BackgroundMusicHandler.initMusic(this);
 		BackgroundMusicHandler.setMusicSt(true);
+		
+		setBackFromSettings();
 	}
 	
 	@Override
 	public void onBackPressed() {
 	}
 	
+	private void writeToSettings() {
+		SharedPreferences settings = getSharedPreferences("PLAY_PAL_TMP_INFO", 0);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putInt("CUR_PROGRESS", progressCount);
+		editor.putInt("CUR_TIMEBAR_MAX", PlayPalUtility.getProgressBarMaxVal());
+		editor.putInt("CUR_TIMEBAR_VAL", PlayPalUtility.getProgressBarCurVal());
+		editor.putInt("CUR_SCORE", score);
+		editor.commit();
+	}
+	
+	private void setBackFromSettings() {
+		SharedPreferences settings = getSharedPreferences("PLAY_PAL_TMP_INFO", 0);
+		progressCount = settings.getInt("CUR_PROGRESS", -1);
+		if(progressCount < 0) {
+			progressCount = 0;
+			return;
+		}
+		else {
+			PlayPalUtility.initialProgressBar(settings.getInt("CUR_TIMEBAR_MAX", 0), PlayPalUtility.TIME_MODE);
+			PlayPalUtility.setProgressBarCurVal(settings.getInt("CUR_TIMEBAR_VAL", 0));
+			score = settings.getInt("CUR_SCORE", 0);
+			setBackProgressCountPart();
+			
+			settings.edit().clear().commit();
+		}
+	}
+	
+	private void setBackProgressCountPart() {
+		if(progressCount < step1TotalProgressCount) {
+			//Carrot
+			PlayPalUtility.registerLineGesture(findViewById(R.id.game1RelativeLayout), this, new Callable<Integer>() {
+				public Integer call() {
+					return handleLineAction();
+				}
+			});
+			
+			PlayPalUtility.registerFailFeedback((ImageView)findViewById(R.id.failFeedbackView));
+			PlayPalUtility.setHoverTarget(true, (ImageView)findViewById(R.id.knifeView));
+			PlayPalUtility.setLineGesture(true);
+			Point beginPnt, endPnt;
+			if(progressCount < step1MidProgressCount) {
+				beginPnt = new Point(foodOffsetX + carrotCutBeginPointArray[progressCount].x, foodOffsetY + carrotCutBeginPointArray[progressCount].y);
+				endPnt = new Point(foodOffsetX + carrotCutEndPointArray[progressCount].x, foodOffsetY + carrotCutEndPointArray[progressCount].y);
+			}
+			else {
+				beginPnt = new Point(foodOffsetX + cucumberCutBeginPointArray[progressCount - step1MidProgressCount].x, foodOffsetY + cucumberCutBeginPointArray[progressCount - step1MidProgressCount].y);
+				endPnt = new Point(foodOffsetX + cucumberCutEndPointArray[progressCount - step1MidProgressCount].x, foodOffsetY + cucumberCutEndPointArray[progressCount - step1MidProgressCount].y);
+			}
+			PlayPalUtility.initialLineGestureParams(false, false, boxSize, beginPnt, endPnt);
+
+			PlayPalUtility.initDrawView((RelativeLayout) findViewById(R.id.game1RelativeLayout), this);
+			DrawGestureLine();
+		}
+		else if(progressCount < step2TotalProgressCount) {
+			//Fragment
+		}
+		else {
+			//Stir
+			PlayPalUtility.registerLineGesture((RelativeLayout) findViewById(R.id.game1RelativeLayout), this, new Callable<Integer>() {
+				public Integer call() {
+					return doPotStir();
+				}
+			});
+			PlayPalUtility.setLineGesture(true);
+			PlayPalUtility.initialLineGestureParams(true, false, potBoxSize, new Point(potLeftTopX, potLeftTopY), new Point(potLeftTopX + potBoxInterval, potLeftTopY), new Point(potLeftTopX + potBoxInterval, potLeftTopY + potBoxInterval), new Point(potLeftTopX, potLeftTopY + potBoxInterval));
+		}
+	}
+	
 	private void clearAll() {
+		if(fireMP != null) {
+			fireMP.release();
+			fireMP = null;
+		}
+		
 		score += PlayPalUtility.killTimeBar();
 		PlayPalUtility.setLineGesture(false);
 		PlayPalUtility.unregisterLineGesture(game1RelativeLayout);
@@ -399,12 +474,7 @@ public class Game1Activity extends Activity {
 		anim.start();
 		
 
-		if (progressCount == step3TotalProgressCount) {
-			if(fireMP != null) {
-				fireMP.release();
-				fireMP = null;
-			}
-			
+		if (progressCount == step3TotalProgressCount) {			
 			clearAll();
 			PenRecorder.outputJSON();
 			

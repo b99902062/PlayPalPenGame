@@ -15,6 +15,7 @@ import java.util.TimerTask;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -180,6 +181,9 @@ public class MainActivity extends Activity implements SensorEventListener {
 			@Override
 			public void onClick(View view) {
 				BackgroundMusicHandler.setCanRecycle(false);
+				
+				SharedPreferences settings = getSharedPreferences("PLAY_PAL_TMP_INFO", 0);
+				settings.edit().clear().commit();
 				
 				Intent newAct = new Intent();
 				newAct.setClass( MainActivity.this, LoadingActivity.class );
