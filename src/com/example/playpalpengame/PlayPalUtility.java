@@ -204,8 +204,7 @@ public class PlayPalUtility {
 		mSPenEventLibrary.setSPenHoverListener(null, null);
 		targetView = null;
 	}
-	
-	
+		
 	protected static void registerSingleHoverPoint(final boolean isHovering, View view, Context context, final Callable<Integer> func) {
 		targetView = view;
 		targetContext = context;
@@ -289,7 +288,6 @@ public class PlayPalUtility {
 		});
 	}
 	
-
 	protected static void registerHoverLineGesture(View view, Context context, final Callable<Integer> func) {
 		targetView = view;
 		targetContext = context;
@@ -617,8 +615,6 @@ public class PlayPalUtility {
 		hoverTarget = view;
 	}
 	
-	
-	
 	protected static int initialLineGestureParams(boolean isContinuous, boolean isInOrder, int size, Point... points) {
 		for (Point p : points) 
 			Log.d("PlayPalUtility", String.format("Point = (%d, %d)", p.x, p.y));
@@ -843,6 +839,19 @@ public class PlayPalUtility {
     		progressMark.setVisibility(ImageView.INVISIBLE);
     	else
     		progressMark.setVisibility(ImageView.VISIBLE);
+	}
+	
+	protected static int getProgressBarMaxVal() {
+		return totalProgress;
+	}
+	
+	protected static int getProgressBarCurVal() {
+		return curProgress;
+	}
+	
+	protected static void setProgressBarCurVal(int newVal) {
+		curProgress = newVal;
+		updateProgressBar();
 	}
 	
 	protected static void setDebugMode(boolean value) {

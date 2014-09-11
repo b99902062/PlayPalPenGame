@@ -115,9 +115,10 @@ public class PenRecorder{
 	
 	//call from utility when up
 	protected static void stopRecorder(){
-		timer.cancel();
-		timer = null;
-		//recorderTask.forceRecord();
+		if(timer != null) {
+			timer.cancel();
+			timer = null;
+		}
 	}
 	
 	//called after the game finished

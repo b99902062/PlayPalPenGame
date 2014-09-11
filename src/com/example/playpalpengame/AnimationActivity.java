@@ -207,8 +207,6 @@ public class AnimationActivity extends Activity {
 		targetView.setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View view, MotionEvent event) {
-				BackgroundMusicHandler.setCanRecycle(false);
-				
 				Intent newAct = new Intent();
 				newAct.setClass(AnimationActivity.this, MainActivity.class);
 				Bundle bundle = new Bundle();
