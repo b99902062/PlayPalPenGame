@@ -36,17 +36,9 @@
                 android:id="@+id/loginHeadView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="90dp"
-                android:layout_marginTop="130dp" />
+                android:layout_marginLeft="100dp"
+                android:layout_marginTop="126dp" />
 
-            <ImageView
-                android:id="@+id/loginHeadMaskView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="55dp"
-                android:layout_marginTop="90dp"
-                android:src="@drawable/login_head_mask" />
-            
             <ImageView
                 android:id="@+id/loginLoginBtn"
                 android:layout_width="wrap_content"
@@ -96,7 +88,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="200dp"
-            android:layout_marginTop="140dp"
+            android:layout_marginTop="90dp"
             android:text="姓名"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="#000000" />
@@ -108,7 +100,7 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:layout_marginLeft="240dp"
-            android:layout_marginTop="130dp"
+            android:layout_marginTop="80dp"
             android:layout_marginRight="10dp"
             android:layout_marginBottom="250dp" 
             android:textColor="#000000" />
@@ -120,7 +112,7 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:layout_marginLeft="250dp"
-            android:layout_marginTop="130dp"
+            android:layout_marginTop="80dp"
             android:ems="10"
             android:inputType="textPersonName"
             android:textColor="#000000"
@@ -131,44 +123,34 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="200dp"
-            android:layout_marginTop="250dp"
+            android:layout_marginTop="200dp"
             android:text="性別"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="#000000" />
 
-        <RadioGroup
-            android:id="@+id/genderRadioGroup"
+        <ImageView
+        	android:id="@+id/genderMaleBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="250dp"
-            android:layout_marginTop="250dp"
-            android:layout_x="40dp"
-            android:orientation="horizontal" >
-
-            <RadioButton
-                android:id="@+id/genderRadioButton1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:text="男"
-                android:textColor="#000000" />
-
-            <RadioButton
-                android:id="@+id/genderRadioButton2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="40dp"
-                android:text="女"
-                android:textColor="#000000" />
-        </RadioGroup>
-
+            android:layout_marginTop="150dp"
+            android:src="@drawable/male_2" />
+        
+        <ImageView
+        	android:id="@+id/genderFemaleBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="360dp"
+            android:layout_marginTop="150dp"
+            android:src="@drawable/female_1" />
+        
         <TextView
             android:id="@+id/ageLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="200dp"
             android:layout_marginTop="360dp"
-            android:text="年齡"
+            android:text="生日"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="#000000" />
 
@@ -176,9 +158,9 @@
             android:id="@+id/ageLabel_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="350dp"
+            android:layout_marginLeft="330dp"
             android:layout_marginTop="360dp"
-            android:text="歲"
+            android:text="年"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="#000000" />
 
@@ -186,7 +168,25 @@
             android:id="@+id/agePicker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="260dp"
+            android:layout_marginLeft="240dp"
+            android:layout_marginTop="280dp" 
+            android:textColor="#000000" />
+        
+        <TextView
+            android:id="@+id/ageLabel_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="450dp"
+            android:layout_marginTop="360dp"
+            android:text="月"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="#000000" />
+
+        <NumberPicker
+            android:id="@+id/agePicker2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="360dp"
             android:layout_marginTop="280dp" 
             android:textColor="#000000" />
 
@@ -195,8 +195,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="285dp"
-            android:layout_marginTop="405dp"
-            android:src="@drawable/login_check" />
+            android:layout_marginTop="455dp"
+            android:src="@drawable/login_takephoto" />
         
         <ImageView
             android:id="@+id/submitBtn"
