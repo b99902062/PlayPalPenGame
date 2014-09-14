@@ -16,6 +16,8 @@ import java.util.TimerTask;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -81,6 +83,8 @@ public class MainActivity extends Activity implements SensorEventListener {
 		
 		Bundle bundle = getIntent().getExtras();
 		mUserName = bundle.getString("userName");
+		
+		setHeadView();
 		
 		java.util.Arrays.fill(badges, 0);
 		ArrayList<RecordMessage>resultList = loadRecord();
@@ -175,6 +179,20 @@ public class MainActivity extends Activity implements SensorEventListener {
 		
 	}
 	
+	private void setHeadView() {
+		ImageView headView = (ImageView)findViewById(R.id.mainExtraHeadView);
+		String headFileName = "/sdcard/Android/data/com.example.playpalgame/" + mUserName + ".png";
+		File f = new File(headFileName);
+		if(f.exists()) {
+			Bitmap bMap = BitmapFactory.decodeFile(headFileName);
+			headView.setImageBitmap(bMap);;
+		}
+		else {
+			headView.setImageResource(R.drawable.login_head);
+		}
+		
+		((TextView)findViewById(R.id.mainExtraNameView)).setText(mUserName);
+	}
 	
 	protected void setStallListener(View targetView, final int gameIndex, final boolean isPlayBtn) {
 		targetView.setOnClickListener(new View.OnClickListener() {

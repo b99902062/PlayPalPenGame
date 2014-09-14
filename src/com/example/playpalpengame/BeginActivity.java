@@ -185,7 +185,7 @@ public class BeginActivity extends Activity {
 	      if (resultCode == RESULT_OK) {
 	    	  Bundle extras = data.getExtras();
 	          Bitmap bmp = (Bitmap) extras.get("data");
-	          bmp = Bitmap.createScaledBitmap(bmp, 190, 190, false);
+	          bmp = Bitmap.createScaledBitmap(bmp, 220, 220, false);
 	          picData = bmp;
 	          iv.setImageBitmap(bmp);
 	      }
