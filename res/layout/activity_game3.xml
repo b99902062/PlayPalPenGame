@@ -148,7 +148,6 @@
             android:id="@+id/Game3_teachHand"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/teach_hand3"
             android:visibility="invisible" />
         	
         <TextView

@@ -446,7 +446,7 @@ public class Game4Activity extends Activity {
 		
 		int subProgress = PlayPalUtility.getLastTriggerPointIndex();
 		Point p = doughPosArray[curProgress][subProgress+1];
-		if(subProgress == 1)
+		if(subProgress == 0)
 			PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_ROLLING, this);
 		
 		switch(curProgress){

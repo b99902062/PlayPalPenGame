@@ -13,6 +13,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
+import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -44,6 +45,9 @@ public class Practice4Activity extends Activity {
 	protected final int COOKIE_TIME = 600;
 	protected final int CREAM_TIME  = 1800;
 	
+	private final static int TEACH_HAND_OFFSET_X = 45;
+	private final static int TEACH_HAND_OFFSET_Y = 665;
+	
 	protected final int DOUGH_PROGRESS_END  = 1;
 	protected final int COOKIE_PROGRESS_END = DOUGH_PROGRESS_END + 1;
 	protected final int CREAM_PROGRESS_END  = COOKIE_PROGRESS_END + 8;	
@@ -64,6 +68,7 @@ public class Practice4Activity extends Activity {
 	
 	protected ImageView doughView;
 	protected ImageView laddleView;
+	private ImageView teachHandView;
 	
 	protected int boxSize;
 	protected int curProgress;
@@ -171,6 +176,7 @@ public class Practice4Activity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
+		
 		PlayPalUtility.setDebugMode(false);
 		
 		Bundle bundle = getIntent().getExtras();
@@ -191,6 +197,8 @@ public class Practice4Activity extends Activity {
 		doughView = (ImageView)findViewById(doughViewArray[0]);
 		laddleView = (ImageView)findViewById(R.id.Game4_ladle);		
 		game4RelativeLayout = (DrawableRelativeLayout) findViewById(R.id.Game4RelativeLayout);
+		teachHandView = (ImageView)findViewById(R.id.Game4_teachHand);
+				
 		
 		curProgress = 0;
 		boxSize = 50;
@@ -245,8 +253,9 @@ public class Practice4Activity extends Activity {
 		gameContext = this;
 		mSPenEventLibrary = new SPenEventLibrary();
 		
-		//PlayPalUtility.initialProgressBar(DOUGH_TIME, PlayPalUtility.TIME_MODE);
 		PlayPalUtility.setHoverTarget(true, laddleView);
+		
+		setTeachHandLinear(centerPoint.x - TEACH_HAND_OFFSET_X, centerPoint.y - TEACH_HAND_OFFSET_Y, doughPosArray[0][3].x - centerPoint.x, doughPosArray[0][3].y - centerPoint.y);
 	}	
 
 	@Override
@@ -275,10 +284,27 @@ public class Practice4Activity extends Activity {
 		});
 	}
 	
+	private void setTeachHandLinear(int bX, int bY, int xOffset, int yOffset) {
+		teachHandView.setVisibility(View.VISIBLE);
+		
+		LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT,
+				LayoutParams.WRAP_CONTENT);
+		params.setMargins(bX, bY, 0, 0);
+		teachHandView.setLayoutParams(params);
+		
+		Animation am = new TranslateAnimation(0, xOffset, 0, yOffset);
+		am.setDuration(2000);
+		am.setRepeatCount(-1);
+		
+		teachHandView.startAnimation(am);
+	}
+	
 	protected void initCookieView(){
-		Random ran = new Random();
-
-		lonelyCookie = new Cookie(5, ran.nextInt(3), (ImageView)findViewById(cookieViewArray[4]));
+		teachHandView.clearAnimation();
+		
+		
+		//the circle cookie
+		lonelyCookie = new Cookie(5, 0, (ImageView)findViewById(cookieViewArray[4]));
 		lonelyCookie.setCreamColor();
 		lonelyCookie.setGesturePoint();
 		lonelyCookie.setGestureDottedLine();
@@ -294,11 +320,10 @@ public class Practice4Activity extends Activity {
 					
 			@Override
 			public boolean onHover(View arg0, MotionEvent event) {
-				if(curButterView == null || !butterSqueezing){
+				if(!butterSqueezing){
 					return false;
 				}
-				PlayPalUtility.curEntry = new RecordEntry(
-						new Point((int)event.getRawX(), (int)event.getRawY()), RecordEntry.STATE_HOVER_BTN_MOVE);
+				PlayPalUtility.curEntry = new RecordEntry(new Point((int)event.getRawX(), (int)event.getRawY()), RecordEntry.STATE_HOVER_BTN_MOVE);
 				
 				if(ratio < CREAM_MAX_RATIO)
 					ratio++;
@@ -310,17 +335,18 @@ public class Practice4Activity extends Activity {
 					curButterView = new ImageView(gameContext);
 					curButterView.setImageResource(creamArray[lonelyCookie.creamColor]);
 					game4RelativeLayout.addView(curButterView);
+					
 					ratio = CREAM_INIT_RATIO;	
 					startPoint = new Point((int)event.getX(),(int)event.getY());
 				}
 				
-				RelativeLayout.LayoutParams params = (LayoutParams) curButterView.getLayoutParams();			
-				params.width = params.height = (int)(CREAM_SIZE*ratio/20.0);
-				params.setMargins(	lonelyCookie.view.getLeft()+(int)event.getX()-params.height/2, 
-						lonelyCookie.view.getTop()+(int)event.getY()-params.width/2, 
-									0, 0);
-				
-				curButterView.setLayoutParams(params);
+				if(curButterView == null){
+					RelativeLayout.LayoutParams params = (LayoutParams) curButterView.getLayoutParams();			
+					params.width = params.height = (int)(CREAM_SIZE*ratio/20.0);
+					params.setMargins(	lonelyCookie.view.getLeft()+(int)event.getX()-params.height/2, 
+							lonelyCookie.view.getTop()+(int)event.getY()-params.width/2, 0, 0);	
+					curButterView.setLayoutParams(params);
+				}
 
 				return false;
 			}
@@ -333,9 +359,8 @@ public class Practice4Activity extends Activity {
 				butterSqueezing = true;				
 				
 				curButterView = new ImageView(gameContext);	
-				curButterView.setImageResource(R.drawable.game3_cream);
-				game4RelativeLayout.addView(curButterView);
-				ratio = 0;
+				curButterView.setImageResource(creamArray[lonelyCookie.creamColor]);
+				ratio = CREAM_INIT_RATIO;	;
 				
 				startPoint = new Point((int)event.getX(),(int)event.getY());
 			}
@@ -623,14 +648,6 @@ public class Practice4Activity extends Activity {
 		
 		public void beBaked(){
 			view.setBackgroundResource(cookieResArray3[type]);//Color.TRANSPARENT
-			
-			Random rand = new Random();
-			center = pointAddition(center, new Point( rand.nextInt(200)-100, rand.nextInt(200)-100) );
-			
-			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        	params.setMargins(center.x - 200, center.y - 200 , 0, 0);
-        	this.view.setLayoutParams(params);        	
-        	
 		}
 		
 		public void setCreamColor(){

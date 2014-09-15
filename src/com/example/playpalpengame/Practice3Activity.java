@@ -58,6 +58,7 @@ public class Practice3Activity extends Activity {
 	
 	private final static int TEACH_HAND_OFFSET_X = 45;
 	private final static int TEACH_HAND_OFFSET_Y = 665;
+	protected static AnimationDrawable pressAnim;
 	
 	protected final int INIT_CREAM_RATIO = 10;
 	protected final int CREAM_MAX_RATIO = 20;
@@ -81,6 +82,8 @@ public class Practice3Activity extends Activity {
 	private int mHighScore = 0;
 	private int mWinCount = 0;
 	private int score = 0;
+	
+	
 	
 	TextView  progressCountText;
 	ImageView bowlView;
@@ -262,7 +265,7 @@ public class Practice3Activity extends Activity {
 			
 		});
 
-		PlayPalUtility.setDebugMode(false);
+		PlayPalUtility.setDebugMode(true);
 		PlayPalUtility.initDrawView(game3RelativeLayout, this);
 		setFoodListener(mixView);
 		
@@ -283,7 +286,27 @@ public class Practice3Activity extends Activity {
 		
 		PlayPalUtility.setHoverTarget(true, eggbeatView);
 		
-		setTeachHandCircular(centralPoint.x-TEACH_HAND_OFFSET_X, centralPoint.y-TEACH_HAND_OFFSET_Y, 240);
+		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+    	params.setMargins(centralPoint.x-TEACH_HAND_OFFSET_X, centralPoint.y-TEACH_HAND_OFFSET_Y-240, 0, 0);
+		teachHandView.setLayoutParams(params);
+		
+		teachHandView.setVisibility(ImageView.VISIBLE);
+		teachHandView.setBackgroundResource(R.anim.game3_teach_hand_animation);
+		
+		pressAnim = (AnimationDrawable) teachHandView.getBackground();
+		pressAnim.start();
+		
+		teachHandView.setOnTouchListener(new View.OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event){
+				if(event.getAction() == MotionEvent.ACTION_DOWN) {
+					pressAnim.stop();
+					setTeachHandCircular(centralPoint.x-TEACH_HAND_OFFSET_X, centralPoint.y-TEACH_HAND_OFFSET_Y, 240);
+					v.setOnTouchListener(null);
+				}
+				return true;
+			}
+		});
 	}	
 	
 	@Override
@@ -316,7 +339,6 @@ public class Practice3Activity extends Activity {
 	}
 	
 	protected void setOvenListener(View targetView){	
-		
 		setFoodListener(ovenView2);
 		targetView.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -335,6 +357,8 @@ public class Practice3Activity extends Activity {
 					public void onAnimationEnd(Animation anim) {	
 						ovenView2.setVisibility(ImageView.GONE);
 						ovenView2.clearAnimation();
+						
+						setTeachHandLinear(dottedLineArray[0].x-TEACH_HAND_OFFSET_X, dottedLineArray[0].y-TEACH_HAND_OFFSET_Y, dottedLineArray[2].x-dottedLineArray[0].x, dottedLineArray[2].y-dottedLineArray[0].y);
 						
 						curProgress++;
 						progressCountText.setText("ProgressCount: " + new String("" + curProgress));
@@ -383,9 +407,6 @@ public class Practice3Activity extends Activity {
 					}
 				});
 				
-				
-				
-				setTeachHandLinear(dottedLineArray[0].x-TEACH_HAND_OFFSET_X, dottedLineArray[0].y-TEACH_HAND_OFFSET_Y, dottedLineArray[2].x-dottedLineArray[0].x, dottedLineArray[2].y-dottedLineArray[0].y);
 				
 				PlayPalUtility.initialLineGestureParams(false, false, boxSize/2, 
 						dottedLineArray[0],
@@ -498,6 +519,11 @@ public class Practice3Activity extends Activity {
 		progressCountText.setText("ProgressCount: " + new String("" + curProgress));
 		
 		teachHandView.clearAnimation();
+	
+		teachHandView.setBackgroundResource(R.anim.game3_teach_hand_btn_animation);
+		AnimationDrawable btnAnim = (AnimationDrawable) teachHandView.getBackground();
+		btnAnim.start();
+		
 		setTeachHandLinear(creamPosArray[4].x-TEACH_HAND_OFFSET_X, creamPosArray[4].y-TEACH_HAND_OFFSET_Y, 1, 1);
 		
 		cakeCreamHintView.setVisibility(ImageView.VISIBLE);
@@ -531,7 +557,7 @@ public class Practice3Activity extends Activity {
 		if(curProgress == CREAM_PROGRESS_END){
 			
 			teachHandView.clearAnimation();
-			setTeachHandLinear(1560-TEACH_HAND_OFFSET_X, 600-TEACH_HAND_OFFSET_Y, 1560-centralPoint.x, 600-centralPoint.y);
+			setTeachHandLinear(1560-TEACH_HAND_OFFSET_X, 600-TEACH_HAND_OFFSET_Y, centralPoint.x-1560, centralPoint.y-600);
 			
 			cakeDottedLineView.setVisibility(ImageView.INVISIBLE);
 			cakeStrawberryView.setVisibility(ImageView.VISIBLE);
@@ -605,7 +631,9 @@ public class Practice3Activity extends Activity {
 		Animation am = new CircularTranslateAnimation(teachHandView, range);
 		am.setDuration(2000);
 		am.setRepeatCount(-1);
-		
+		am.setFillEnabled(true);
+		am.setFillAfter(true);
+		am.setFillBefore(true);
 		teachHandView.startAnimation(am);
 	}
 

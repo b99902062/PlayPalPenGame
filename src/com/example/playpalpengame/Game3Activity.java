@@ -22,6 +22,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
@@ -211,12 +212,12 @@ public class Game3Activity extends Activity {
 						curButterView = new ImageView(gameContext);
 						curButterView.setImageResource(R.drawable.game3_cream);
 						game3RelativeLayout.addView(curButterView);
-						ratio = 0;	
+						ratio = INIT_CREAM_RATIO;	
 						startPoint = new Point((int)event.getX(),(int)event.getY());
 					}
 					
 					RelativeLayout.LayoutParams params = (LayoutParams) curButterView.getLayoutParams();			
-					params.width = params.height = (int)(SMALL_CREAM_SIZE*ratio/20.0);
+					params.width = params.height = (int)(SMALL_CREAM_SIZE*ratio/CREAM_MAX_RATIO);
 					params.setMargins(	cakeView.getLeft()+(int)event.getX()-params.height/2, 
 										cakeView.getTop()+(int)event.getY()-params.width/2, 
 										0, 0);
@@ -224,7 +225,7 @@ public class Game3Activity extends Activity {
 					curButterView.setLayoutParams(params);
 				}
 				else{
-					if(ratio == 0){
+					if(ratio == INIT_CREAM_RATIO){
 						curButterView = new ImageView(gameContext);
 						curButterView.setImageResource(R.drawable.game3_cream2);
 						game3RelativeLayout.addView(curButterView);
@@ -324,18 +325,52 @@ public class Game3Activity extends Activity {
 	@Override
 	protected void onPause() {
 	    super.onPause();
+	    writeToSettings();
 	    BackgroundMusicHandler.recyle();
 	}
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
+		setBackFromSettings();
 		BackgroundMusicHandler.initMusic(this);
 		BackgroundMusicHandler.setMusicSt(true);
 	}
 	
 	@Override
 	public void onBackPressed() {
+	}
+	
+	
+	private void writeToSettings(){
+		SharedPreferences settings = getSharedPreferences("PLAY_PAL_TMP_INFO", 0);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putInt("CUR_PROGRESS", curProgress);
+		editor.putInt("CUR_TIMEBAR_MAX", PlayPalUtility.getProgressBarMaxVal());
+		editor.putInt("CUR_TIMEBAR_VAL", PlayPalUtility.getProgressBarCurVal());
+		editor.putInt("CUR_SCORE", score);
+		editor.commit();
+	}
+	
+	private void setBackFromSettings(){
+		SharedPreferences settings = getSharedPreferences("PLAY_PAL_TMP_INFO", 0);
+		curProgress = settings.getInt("CUR_PROGRESS", -1);
+		if(curProgress < 0) {
+			curProgress = 0;
+			return;
+		}
+		else{
+			PlayPalUtility.initialProgressBar(settings.getInt("CUR_TIMEBAR_MAX", 0), PlayPalUtility.TIME_MODE);
+			PlayPalUtility.setProgressBarCurVal(settings.getInt("CUR_TIMEBAR_VAL", 0));
+			score = settings.getInt("CUR_SCORE", 0);
+			setBackProgressCountPart();
+			
+			settings.edit().clear().commit();	
+		}
+	}
+	
+	private void setBackProgressCountPart(){
+		
 	}
 	
 	protected void setFoodListener(View targetView) {
@@ -488,6 +523,7 @@ public class Game3Activity extends Activity {
 					currentFoodView.setVisibility(ImageView.GONE);
 					currentFoodView.clearAnimation();
 					
+					PlayPalUtility.clearDrawView();
 					PlayPalUtility.setLineGesture(false);
 					PlayPalUtility.clearGestureSets();
 				}
