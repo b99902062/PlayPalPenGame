@@ -171,7 +171,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            android:src="@drawable/teach_hand1" 
+            android:src="@drawable/teach_hand1_down" 
             android:visibility="invisible" />
         
     </view>

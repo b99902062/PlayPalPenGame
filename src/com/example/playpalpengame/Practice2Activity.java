@@ -41,6 +41,8 @@ public class Practice2Activity extends Activity {
 	
 	private final static int TEACH_HAND_OFFSET_X = 45;
 	private final static int TEACH_HAND_OFFSET_Y = 665;
+	private final static int TEACH_HAND_DOWN_OFFSET_X = 80;
+	private final static int TEACH_HAND_DOWN_OFFSET_Y = 735;
 	
 	protected final int step1TotalProgressCount = 1;
 	protected final int step2TotalProgressCount = 2;
@@ -288,12 +290,11 @@ public class Practice2Activity extends Activity {
 		canPutInBasket = true;
 		PlayPalUtility.setLineGesture(false);
 		fishThreadList.get(index).doPause();
-		//PlayPalUtility.cancelGestureSet(index);
-		//fishThreadList.get(index).killThread();
 		fishThreadList.get(index).fishView.setVisibility(ImageView.INVISIBLE);
 		netView.setImageResource(R.drawable.game2_net2);
 		
-		setTeachHandLinear(500 - TEACH_HAND_OFFSET_X, 500 - TEACH_HAND_OFFSET_Y, 2000, 0);
+		((ImageView)findViewById(R.id.teachHandView)).setImageResource(R.drawable.teach_hand2);
+		setTeachHandLinear(500 - TEACH_HAND_OFFSET_X, 1000 - TEACH_HAND_OFFSET_Y, 2000, 0);
 
 		PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_ID_TEST, this);
 		
@@ -340,7 +341,8 @@ public class Practice2Activity extends Activity {
 		Point pnt1 = new Point(fishOffset[0].x + cutBeginOffset[0].x, fishOffset[0].y + cutBeginOffset[0].y);
 		Point pnt2 = new Point(fishOffset[0].x + cutEndOffset[0].x, fishOffset[0].y + cutEndOffset[0].y);
 		
-		setTeachHandLinear(pnt1.x - TEACH_HAND_OFFSET_X, pnt1.y - TEACH_HAND_OFFSET_Y, pnt2.x - pnt1.x, pnt2.y - pnt1.y);
+		((ImageView)findViewById(R.id.teachHandView)).setImageResource(R.drawable.teach_hand2_down);
+		setTeachHandLinear(pnt1.x - TEACH_HAND_DOWN_OFFSET_X, pnt1.y - TEACH_HAND_DOWN_OFFSET_Y, pnt2.x - pnt1.x, pnt2.y - pnt1.y);
 		
 		PlayPalUtility.setLineGesture(true);
 		
@@ -368,7 +370,7 @@ public class Practice2Activity extends Activity {
 				Point pnt1 = new Point(fishOffset[0].x + cutBeginOffset[cutCountInOrder].x, fishOffset[0].y + cutBeginOffset[cutCountInOrder].y);
 				Point pnt2 = new Point(fishOffset[0].x + cutEndOffset[cutCountInOrder].x, fishOffset[0].y + cutEndOffset[cutCountInOrder].y);
 				
-				setTeachHandLinear(pnt1.x - TEACH_HAND_OFFSET_X, pnt1.y - TEACH_HAND_OFFSET_Y, pnt2.x - pnt1.x, pnt2.y - pnt1.y);
+				setTeachHandLinear(pnt1.x - TEACH_HAND_DOWN_OFFSET_X, pnt1.y - TEACH_HAND_DOWN_OFFSET_Y, pnt2.x - pnt1.x, pnt2.y - pnt1.y);
 			}
 			else {
 				teachHandView.clearAnimation();
@@ -481,7 +483,7 @@ public class Practice2Activity extends Activity {
 			LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT,
 					LayoutParams.WRAP_CONTENT);
 			curX = 500;
-			curY = 500;
+			curY = 1000;
 			params.setMargins(curX, curY, 0, 0);
 			fishView.setLayoutParams(params);
 

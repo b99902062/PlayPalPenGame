@@ -12,33 +12,6 @@
            android:layout_height="match_parent"
            android:background="@drawable/background" >
            
-           <RelativeLayout 
-               android:id="@+id/jarRelativeLayout"
-               android:layout_width="wrap_content"
-               android:layout_height="match_parent"
-               android:layout_marginLeft="50dp" >
-               
-               <ImageView
-				    android:id="@+id/jarView"
-				    android:src="@drawable/jar_bottle"
-				    android:layout_width="wrap_content"
-				    android:layout_height="wrap_content"
-				    android:visibility="visible"
-		        	android:layout_marginTop="150dp" />
-	
-				<ImageView
-				    android:id="@+id/jarTop"
-				    android:layout_width="wrap_content"
-				    android:layout_height="wrap_content"
-				    android:layout_alignTop="@+id/jarView"
-				    android:layout_centerHorizontal="true"
-				    android:layout_marginTop="24dp"
-				    android:src="@drawable/jar_top"
-				    android:visibility="visible" />
-           </RelativeLayout>
-               
-           
-           
            <RelativeLayout
                android:layout_width="wrap_content"
                android:layout_height="match_parent"
@@ -428,6 +401,61 @@
                    android:src="@drawable/main_badges_6" />
 
            </RelativeLayout>
+           
+           <RelativeLayout 
+               android:id="@+id/jarRelativeLayout"
+               android:layout_width="384dp"
+               android:layout_height="match_parent"
+               android:layout_marginLeft="50dp" >
+               
+               <ImageView 
+                   android:id="@+id/mainExtraHeadView"
+				    android:layout_width="wrap_content"
+				    android:layout_height="wrap_content"
+				    android:layout_alignParentLeft="true"
+                 	android:layout_marginLeft="137dp"
+                	android:layout_marginTop="55dp"
+				    android:visibility="visible" />
+               
+               <ImageView 
+                   android:id="@+id/mainExtraPanelView"
+				    android:src="@drawable/main_extra_panel"
+				    android:layout_width="wrap_content"
+				    android:layout_height="wrap_content"
+				    android:visibility="visible" />
+               
+               <TextView
+                   android:id="@+id/mainExtraNameView"
+				    android:layout_width="wrap_content"
+				    android:layout_height="wrap_content"
+		            android:layout_marginTop="190dp"
+		            android:layout_centerHorizontal="true"
+            		android:textAppearance="?android:attr/textAppearanceMedium"
+            		android:textColor="#682774" 
+				    android:visibility="visible" />
+               
+               <ImageView
+				    android:id="@+id/jarView"
+				    android:src="@drawable/jar_bottle"
+				    android:layout_width="wrap_content"
+				    android:layout_height="wrap_content"
+				    android:visibility="invisible"
+		        	android:layout_marginTop="150dp" />
+	
+				<ImageView
+				    android:id="@+id/jarTop"
+				    android:layout_width="wrap_content"
+				    android:layout_height="wrap_content"
+				    android:layout_alignTop="@+id/jarView"
+				    android:layout_centerHorizontal="true"
+				    android:layout_marginTop="24dp"
+				    android:layout_marginLeft="0dp"
+				    android:layout_marginRight="0dp"
+				    android:src="@drawable/jar_top"
+				    android:visibility="invisible" />
+           </RelativeLayout>
+               
+           
 
        </LinearLayout>
 

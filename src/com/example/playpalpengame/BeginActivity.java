@@ -6,7 +6,9 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 
 import org.json.JSONException;
@@ -18,6 +20,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -49,6 +53,9 @@ public class BeginActivity extends Activity {
 	private ListView userListView;
 	private String tmpUserName = null;
 	
+	private ImageView maleBtn;
+	private ImageView femaleBtn;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -58,6 +65,12 @@ public class BeginActivity extends Activity {
 		setContentView(R.layout.activity_begin);
 
 		isTheFirstRecord = false;
+		
+		setAgeColor((NumberPicker)findViewById(R.id.agePicker));
+		setAgeColor((NumberPicker)findViewById(R.id.agePicker2));
+		
+		maleBtn = (ImageView)findViewById(R.id.genderMaleBtn);
+		femaleBtn = (ImageView)findViewById(R.id.genderFemaleBtn);
 		
 		userListView = (ListView)findViewById(R.id.userListView);
 		
@@ -106,15 +119,7 @@ public class BeginActivity extends Activity {
 		setLoginBtn();
 		setRegisterBtn();
 		setLayoutListener();
-		((RadioGroup)findViewById(R.id.genderRadioGroup)).setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(RadioGroup group, int checkedId) {
-				if(checkedId == R.id.genderRadioButton1)
-					isMale = true;
-				else
-					isMale = false;
-			}
-		});
+		setGenderBtn();
 
 		ArrayList<RecordMessage> resultList = new ArrayList<RecordMessage>();
 		resultList = MainActivity.loadRecord(); 
@@ -129,7 +134,15 @@ public class BeginActivity extends Activity {
 				map.put("itemHeadImage", "/sdcard/Android/data/com.example.playpalgame/" + resultList.get(i).userName + ".png");
 				map.put("itemUserName", resultList.get(i).userName);
 				String genderStr = resultList.get(i).isMale ? "Male" : "Female";
-				map.put("itemMoreInfo", genderStr + " ( " + resultList.get(i).age + " )");
+				
+				Calendar c = Calendar.getInstance();
+				int ageY = c.get(Calendar.YEAR) - resultList.get(i).age/100;
+				int ageM = c.get(Calendar.MONTH) + 1 - resultList.get(i).age % 100;
+				if(ageM < 0) {
+					ageY--;
+					ageM += 12;
+				}
+				map.put("itemMoreInfo", genderStr + " ( " + ageY + "y " + ageM + "m )");
 				item.add(map);
 			}
 
@@ -172,12 +185,58 @@ public class BeginActivity extends Activity {
 	      if (resultCode == RESULT_OK) {
 	    	  Bundle extras = data.getExtras();
 	          Bitmap bmp = (Bitmap) extras.get("data");
-	          bmp = Bitmap.createScaledBitmap(bmp, 200, 200, false);
+	          bmp = Bitmap.createScaledBitmap(bmp, 220, 220, false);
 	          picData = bmp;
 	          iv.setImageBitmap(bmp);
 	      }
 	      super.onActivityResult(requestCode, resultCode, data);
 	}
+	 
+	 private void setAgeColor(NumberPicker numberPicker) {
+	     final int count = numberPicker.getChildCount();
+	     for(int i = 0; i < count; i++){
+	         View child = numberPicker.getChildAt(i);
+	         if(child instanceof EditText){
+	             try{
+	                 Field selectorWheelPaintField = numberPicker.getClass()
+	                     .getDeclaredField("mSelectorWheelPaint");
+	                 selectorWheelPaintField.setAccessible(true);
+	                 ((Paint)selectorWheelPaintField.get(numberPicker)).setColor(Color.BLACK);
+	                 ((EditText)child).setTextColor(Color.BLACK);
+	                 numberPicker.invalidate();
+	             }
+	             catch(NoSuchFieldException e){
+	                 Log.w("setNumberPickerTextColor", e);
+	             }
+	             catch(IllegalAccessException e){
+	                 Log.w("setNumberPickerTextColor", e);
+	             }
+	             catch(IllegalArgumentException e){
+	                 Log.w("setNumberPickerTextColor", e);
+	             }
+	         }
+	     }
+	 }
+	 
+	 private void setGenderBtn() {
+		 maleBtn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				isMale = true;
+				maleBtn.setImageResource(R.drawable.male_2);
+				femaleBtn.setImageResource(R.drawable.female_1);
+			}
+		 });
+		 
+		 femaleBtn.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					isMale = false;
+					maleBtn.setImageResource(R.drawable.male_1);
+					femaleBtn.setImageResource(R.drawable.female_2);
+				}
+		 });
+	 }
 	
 	private void setLoginBtn() {
 		ImageView loginBtn = (ImageView)findViewById(R.id.loginLoginBtn);
@@ -190,10 +249,13 @@ public class BeginActivity extends Activity {
 				findViewById(R.id.userListView).setVisibility(View.VISIBLE);
 				findViewById(R.id.userNameText).setVisibility(View.INVISIBLE);
 				findViewById(R.id.genderLabel).setVisibility(View.INVISIBLE);
-				findViewById(R.id.genderRadioGroup).setVisibility(View.INVISIBLE);
+				findViewById(R.id.genderMaleBtn).setVisibility(View.INVISIBLE);
+				findViewById(R.id.genderFemaleBtn).setVisibility(View.INVISIBLE);
 				findViewById(R.id.ageLabel).setVisibility(View.INVISIBLE);
 				findViewById(R.id.ageLabel_1).setVisibility(View.INVISIBLE);
+				findViewById(R.id.ageLabel_2).setVisibility(View.INVISIBLE);
 				findViewById(R.id.agePicker).setVisibility(View.INVISIBLE);
+				findViewById(R.id.agePicker2).setVisibility(View.INVISIBLE);
 				findViewById(R.id.takePicBtn).setVisibility(View.INVISIBLE);
 				
 				if(!isRightPanelOn) {
@@ -237,15 +299,23 @@ public class BeginActivity extends Activity {
 				findViewById(R.id.takePicBtn).setVisibility(View.VISIBLE);
 				
 				NumberPicker agePicker = (NumberPicker)findViewById(R.id.agePicker);
-				agePicker.setMaxValue(18);
-				agePicker.setMinValue(0);
-				agePicker.setValue(3);
+				agePicker.setMaxValue(2050);
+				agePicker.setMinValue(2000);
+				agePicker.setValue(2010);
+				
+				NumberPicker agePicker2 = (NumberPicker)findViewById(R.id.agePicker2);
+				agePicker2.setMaxValue(12);
+				agePicker2.setMinValue(1);
+				agePicker2.setValue(1);
 				
 				findViewById(R.id.genderLabel).setVisibility(View.VISIBLE);
-				findViewById(R.id.genderRadioGroup).setVisibility(View.VISIBLE);
+				findViewById(R.id.genderMaleBtn).setVisibility(View.VISIBLE);
+				findViewById(R.id.genderFemaleBtn).setVisibility(View.VISIBLE);
 				findViewById(R.id.ageLabel).setVisibility(View.VISIBLE);
 				findViewById(R.id.ageLabel_1).setVisibility(View.VISIBLE);
+				findViewById(R.id.ageLabel_2).setVisibility(View.VISIBLE);
 				findViewById(R.id.agePicker).setVisibility(View.VISIBLE);
+				findViewById(R.id.agePicker2).setVisibility(View.VISIBLE);
 				
 				if(!isRightPanelOn) {
 					Animation rightPanelAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_OUTRIGHT_TO_CUR, 1000);
@@ -259,10 +329,10 @@ public class BeginActivity extends Activity {
 					@Override
 					public void onClick(View arg0) {
 						String userName = ((EditText)findViewById(R.id.userNameText)).getText().toString();
-						if(userName.equals(""))
+						if(userName.equals("") || picData == null)
 							return;
 						
-						userAge = ((NumberPicker)findViewById(R.id.agePicker)).getValue();
+						userAge = ((NumberPicker)findViewById(R.id.agePicker)).getValue() * 100 + ((NumberPicker)findViewById(R.id.agePicker2)).getValue();
 						BeginActivity.createNewPlayerData(userName);
 						
 						BackgroundMusicHandler.setCanRecycle(false);
@@ -319,6 +389,7 @@ public class BeginActivity extends Activity {
 	}
 	
 	public static void createNewPlayerData(String newName) {
+		
 		RandomAccessFile analysisFile;
 		//String filePath = Resources.getSystem().getString(R.string.str_record_json_location);
 		String filePath = "/sdcard/Android/data/com.example.playpalgame/record.json";

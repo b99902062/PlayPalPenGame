@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -263,7 +264,15 @@ public class TherapyMainActivity extends Activity {
 									TherapyMainActivity.genderLabel.setText("Gender: Male");
 								else
 									TherapyMainActivity.genderLabel.setText("Gender: Female");
-								TherapyMainActivity.ageLabel.setText("Age: " + userInfoList.get(i).age);
+								
+								Calendar c = Calendar.getInstance();
+								int ageY = c.get(Calendar.YEAR) - userInfoList.get(i).age/100;
+								int ageM = c.get(Calendar.MONTH) + 1 - userInfoList.get(i).age % 100;
+								if(ageM < 0) {
+									ageY--;
+									ageM += 12;
+								}
+								TherapyMainActivity.ageLabel.setText("Age: " + ageY + "y " + ageM + "m");
 								
 								String headFileName = "/sdcard/Android/data/com.example.playpalgame/" + adapterView.getSelectedItem().toString() + ".png";
 								File f = new File(headFileName);

@@ -37,6 +37,8 @@ public class Practice1Activity extends Activity {
 	
 	private final static int TEACH_HAND_OFFSET_X = 45;
 	private final static int TEACH_HAND_OFFSET_Y = 665;
+	private final static int TEACH_HAND_DOWN_OFFSET_X = 70;
+	private final static int TEACH_HAND_DOWN_OFFSET_Y = 720;
 	private final static int HELICAL_OFFSET_X = 500;
 	private final static int HELICAL_OFFSET_Y = 500;
 	
@@ -152,7 +154,7 @@ public class Practice1Activity extends Activity {
 		PlayPalUtility.initDrawView(game1RelativeLayout, this);
 		DrawGestureLine();
 		
-		setTeachHandLinear(beginPnt.x - TEACH_HAND_OFFSET_X, beginPnt.y - TEACH_HAND_OFFSET_Y, endPnt.x - beginPnt.x, endPnt.y - beginPnt.y);
+		setTeachHandLinear(beginPnt.x - TEACH_HAND_DOWN_OFFSET_X, beginPnt.y - TEACH_HAND_DOWN_OFFSET_Y, endPnt.x - beginPnt.x, endPnt.y - beginPnt.y);
 	}
 	
 	@Override
@@ -303,7 +305,7 @@ public class Practice1Activity extends Activity {
 					
 					fireMP = PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_STIR_POT, self, true);
 					
-					setTeachHandCircular(780 + HELICAL_OFFSET_X - TEACH_HAND_OFFSET_X, 380 + HELICAL_OFFSET_Y  - TEACH_HAND_OFFSET_Y, 240);
+					setTeachHandCircular(780 + HELICAL_OFFSET_X - TEACH_HAND_DOWN_OFFSET_X, 380 + HELICAL_OFFSET_Y  - TEACH_HAND_DOWN_OFFSET_Y, 240);
 					//potView.setBackgroundResource(R.anim.pot_stir_animation);
 					//potStirAnim = (AnimationDrawable) potView.getBackground();
 					
@@ -496,7 +498,7 @@ public class Practice1Activity extends Activity {
 							PlayPalUtility.initialLineGestureParams(false, false, boxSize, beginPnt, endPnt);
 							DrawGestureLine();
 							
-							setTeachHandLinear(beginPnt.x - TEACH_HAND_OFFSET_X, beginPnt.y - TEACH_HAND_OFFSET_Y, endPnt.x - beginPnt.x, endPnt.y - beginPnt.y);
+							setTeachHandLinear(beginPnt.x - TEACH_HAND_DOWN_OFFSET_X, beginPnt.y - TEACH_HAND_DOWN_OFFSET_Y, endPnt.x - beginPnt.x, endPnt.y - beginPnt.y);
 						}
 
 						@Override
@@ -562,7 +564,7 @@ public class Practice1Activity extends Activity {
 						@Override
 						public void onAnimationEnd(Animation arg0) {
 							// dirty hardcoded params :(
-							setTeachHandLinear(150 + 20 - TEACH_HAND_OFFSET_X, 200 + 380 + 20 - TEACH_HAND_OFFSET_Y, 1000, 0);
+							setTeachHandLinear(150 + 20 - TEACH_HAND_DOWN_OFFSET_X, 200 + 380 + 20 - TEACH_HAND_DOWN_OFFSET_Y, 1000, 0);
 						}
 
 						@Override
