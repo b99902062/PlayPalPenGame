@@ -201,7 +201,7 @@ public class Practice4Activity extends Activity {
 				
 		
 		curProgress = 0;
-		boxSize = 50;
+		boxSize = 60;
 		
 		PlayPalUtility.registerLineGesture(game4RelativeLayout, this, 
 			new Callable<Integer>() {
@@ -303,12 +303,13 @@ public class Practice4Activity extends Activity {
 		teachHandView.clearAnimation();
 		
 		
-		//the circle cookie
-		lonelyCookie = new Cookie(5, 0, (ImageView)findViewById(cookieViewArray[4]));
+		//the circle cookie(_t=2)
+		lonelyCookie = new Cookie(5, 2, (ImageView)findViewById(cookieViewArray[4]));
 		lonelyCookie.setCreamColor();
 		lonelyCookie.setGesturePoint();
 		lonelyCookie.setGestureDottedLine();
 		lonelyCookie.view.setVisibility(ImageView.INVISIBLE);
+		
 		
 		
 		mSPenEventLibrary.setSPenHoverListener(lonelyCookie.view, new SPenHoverListener(){
@@ -398,8 +399,15 @@ public class Practice4Activity extends Activity {
 
 			PlayPalUtility.clearGestureSets();
 			PlayPalUtility.clearDrawView();
-			//PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
+			
+			teachHandView.clearAnimation();
+			teachHandView.setVisibility(ImageView.INVISIBLE);
+			
 			initCookieView();
+			
+			setTeachHandCircular(lonelyCookie.center.x-TEACH_HAND_OFFSET_X, lonelyCookie.center.y-TEACH_HAND_OFFSET_Y, 150);
+			teachHandView.setVisibility(ImageView.INVISIBLE);
+			
 		}
 		else if(curProgress < DOUGH_PROGRESS_END){
 			
@@ -465,8 +473,11 @@ public class Practice4Activity extends Activity {
 		
 		int idx = PlayPalUtility.getLastTriggerSetIndex();
 		PlayPalUtility.cancelGestureSet(idx);
-		lonelyCookie.view.setVisibility(ImageView.VISIBLE);
 		
+		teachHandView.clearAnimation();
+		teachHandView.setVisibility(ImageView.INVISIBLE);
+		
+		lonelyCookie.view.setVisibility(ImageView.VISIBLE);
 		lonelyCookie.beCutted();
 		
 		if(curProgress == COOKIE_PROGRESS_END){
@@ -604,6 +615,23 @@ public class Practice4Activity extends Activity {
 		
 		return FloatMath.sqrt(dx*dx + dy*dy);
 	}
+	
+	private void setTeachHandCircular(int bX, int bY, int range) {
+		teachHandView.setVisibility(View.VISIBLE);
+		
+		LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		params.setMargins(bX, bY, 0, 0);
+		teachHandView.setLayoutParams(params);
+		
+		Animation am = new CircularTranslateAnimation(teachHandView, range);
+		am.setDuration(2000);
+		am.setRepeatCount(-1);
+		am.setFillEnabled(true);
+		am.setFillAfter(true);
+		am.setFillBefore(true);
+		teachHandView.startAnimation(am);
+	}
+	
 	
 	public class Cookie{
 		protected final int TRIANGULAR_COOKIE=0;

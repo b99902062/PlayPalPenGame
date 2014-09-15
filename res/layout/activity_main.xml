@@ -437,10 +437,20 @@
                <ImageView
 				    android:id="@+id/jarView"
 				    android:src="@drawable/jar_bottle"
-				    android:layout_width="wrap_content"
-				    android:layout_height="wrap_content"
-				    android:visibility="invisible"
-		        	android:layout_marginTop="150dp" />
+				    android:layout_centerHorizontal="true"
+				    android:layout_width="1000dp"
+				    android:layout_height="1000dp"
+				    android:visibility="visible"
+		        	android:layout_marginTop="200dp" />
+               
+               <ImageView
+                   android:id="@+id/jarView2"
+                   android:src="@drawable/jar_bottle2"
+                   android:layout_centerHorizontal="true"
+                   android:layout_width="1000dp"
+				   android:layout_height="1000dp"
+                   android:visibility="visible"
+                   android:layout_marginTop="200dp" />
 	
 				<ImageView
 				    android:id="@+id/jarTop"
@@ -448,11 +458,9 @@
 				    android:layout_height="wrap_content"
 				    android:layout_alignTop="@+id/jarView"
 				    android:layout_centerHorizontal="true"
-				    android:layout_marginTop="24dp"
-				    android:layout_marginLeft="0dp"
-				    android:layout_marginRight="0dp"
+				    android:layout_marginTop="75dp"
 				    android:src="@drawable/jar_top"
-				    android:visibility="invisible" />
+				    android:visibility="visible" />
            </RelativeLayout>
                
            

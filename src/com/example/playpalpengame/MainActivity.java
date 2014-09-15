@@ -363,7 +363,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 			
 			
 			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-			params.setMargins((int)(xPos-Star_Size/2+240), (int)(yPos-Star_Size/2+300), 0, 0);
+			params.setMargins((int)(xPos-Star_Size/2+100), (int)(yPos-Star_Size/2+500), 0, 0);
 			params.width = Star_Size;
 			params.height = Star_Size;
 			starImg.setRotation(-angle*180/(float)Math.PI);

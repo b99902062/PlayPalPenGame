@@ -222,7 +222,6 @@ public class PlayPalUtility {
 			Point startPoint;
 			ImageView curButterView;
 			
-			
 			@Override
 			public void onHoverButtonUp(View v, MotionEvent event) {
 				isPressing = false;
