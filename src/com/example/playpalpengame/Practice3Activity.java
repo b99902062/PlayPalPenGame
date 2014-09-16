@@ -212,7 +212,7 @@ public class Practice3Activity extends Activity {
 						curButterView = new ImageView(gameContext);
 						curButterView.setImageResource(R.drawable.game3_cream);
 						game3RelativeLayout.addView(curButterView);
-						ratio = 0;	
+						ratio = INIT_CREAM_RATIO;	
 						startPoint = new Point((int)event.getX(),(int)event.getY());
 					}
 					
@@ -225,7 +225,7 @@ public class Practice3Activity extends Activity {
 					curButterView.setLayoutParams(params);
 				}
 				else{
-					if(ratio == 0){
+					if(ratio == INIT_CREAM_RATIO){
 						curButterView = new ImageView(gameContext);
 						curButterView.setImageResource(R.drawable.game3_cream2);
 						game3RelativeLayout.addView(curButterView);
@@ -348,6 +348,8 @@ public class Practice3Activity extends Activity {
 	
 	protected void setOvenListener(View targetView){	
 		setFoodListener(ovenView2);
+		
+		
 		targetView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -627,7 +629,7 @@ public class Practice3Activity extends Activity {
 		PlayPalUtility.clearDrawView();
 		
 		Intent newAct = new Intent();
-		newAct.setClass(Practice3Activity.this, AnimationActivity.class);
+		newAct.setClass(Practice3Activity.this, MainActivity.class);
 		Bundle bundle = new Bundle();
 		bundle.putInt("GameIndex", 3);
 		bundle.putBoolean("isWin", true);

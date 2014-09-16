@@ -46,7 +46,7 @@ public class Game4Activity extends Activity {
 	
 	protected final int DOUGH_PROGRESS_END  = 4;
 	protected final int COOKIE_PROGRESS_END = DOUGH_PROGRESS_END + 8;
-	protected final int CREAM_PROGRESS_END  = COOKIE_PROGRESS_END + 90;	
+	protected final int CREAM_PROGRESS_END  = COOKIE_PROGRESS_END + 8;	
 	
 	protected final int COOKIE_NUM = 8;
 	protected final int DOUGH_NUM = 5;
@@ -102,6 +102,12 @@ public class Game4Activity extends Activity {
 		R.drawable.game4_dough3,
 		R.drawable.game4_dough4_s,
 		R.drawable.game4_dough4,			
+	};
+	
+	protected int[] bigCookieAnimArray = {
+		R.anim.game4_large_cookie1_animation,
+		R.anim.game4_large_cookie2_animation,
+		R.anim.game4_large_cookie3_animation
 	};
 		
 	protected Cookie[] cookieArray = new Cookie[8]; 
@@ -172,7 +178,7 @@ public class Game4Activity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
-		PlayPalUtility.setDebugMode(true);
+		PlayPalUtility.setDebugMode(false);
 		
 		Bundle bundle = getIntent().getExtras();
 		userName = bundle.getString("userName");
@@ -194,7 +200,7 @@ public class Game4Activity extends Activity {
 		game4RelativeLayout = (DrawableRelativeLayout) findViewById(R.id.Game4RelativeLayout);
 		
 		curProgress = 0;
-		boxSize = 50;
+		boxSize = 60;
 		
 		PlayPalUtility.registerLineGesture(game4RelativeLayout, this, 
 			new Callable<Integer>() {
@@ -526,19 +532,14 @@ public class Game4Activity extends Activity {
 				doughAnim.startNow();
 			}
 			
-			for(int i=0; i<COOKIE_NUM; i++){
+			for(int i=0; i<COOKIE_NUM; i++){	
 				final Cookie curCookie = cookieArray[i];
 				Animation cookieAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTLEFT);
 				cookieAnim.setAnimationListener(new AnimationListener() {
 					@Override
 					public void onAnimationEnd(Animation anim) {
 						curCookie.view.clearAnimation();
-						
 						curCookie.beBaked();
-						
-						for(int j=0; j<16; j++)
-							PlayPalUtility.initialLineGestureParams(false, true, CREAM_BOX_SIZE, pointAddition(curCookie.center, cookieCreamOffsetArray[curCookie.type][j]));
-						
 						Animation cookieAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_OUTLEFT_TO_CUR);
 						cookieAnim.setAnimationListener(new AnimationListener() {
 							@Override
@@ -579,6 +580,15 @@ public class Game4Activity extends Activity {
 			}
 			
 			PlayPalUtility.clearGestureSets();
+			
+			for(int i=0; i<COOKIE_NUM; i++){
+				final Cookie curCookie = cookieArray[i];
+				curCookie.setPos();
+				for(int j=0; j<16; j++){
+					PlayPalUtility.initialLineGestureParams(false, true, CREAM_BOX_SIZE, pointAddition(curCookie.center, cookieCreamOffsetArray[curCookie.type][j]));
+				}
+			}
+			
 			PlayPalUtility.registerSingleHoverPoint(true, game4RelativeLayout, this, new Callable<Integer>() {
 				public Integer call() {
 					return handleCookieCreamAction(cookieArray[0].view);
@@ -597,7 +607,11 @@ public class Game4Activity extends Activity {
 	
 	
 	protected Integer handleCookieCreamAction(View view){
-		curProgress++;
+		int idx = PlayPalUtility.getLastTriggerSetIndex();
+		cookieArray[idx/16].doButter();
+		PlayPalUtility.cancelGestureSet(idx);
+		
+		/*curProgress++;
 		progressCountText.setText("ProgressCount: " + new String("" + curProgress));
 		
 		int idx = PlayPalUtility.getLastTriggerSetIndex();
@@ -627,6 +641,7 @@ public class Game4Activity extends Activity {
 			Game4Activity.this.finish();
 			return 0;
 		}
+		*/
 		return 1;
 	}
 	
@@ -646,6 +661,7 @@ public class Game4Activity extends Activity {
 		protected int id;
 		protected int type;
 		protected int creamColor;
+		protected int numCream;
 		protected int cookieRadius = 175;
 		protected int temp_Length  = (int)(cookieRadius/Math.sqrt(2));
 		protected int temp_Length2 = (int)(cookieRadius*Math.sin(Math.PI/3));
@@ -663,6 +679,7 @@ public class Game4Activity extends Activity {
 		
 		
 		public Cookie(int _id, int _t, ImageView _v){
+			numCream = 0;
 			id   = _id;
 			type = _t;
 			view = _v;
@@ -679,12 +696,15 @@ public class Game4Activity extends Activity {
 			cutAnim.start();
 		}
 		
-		public void beBaked(){
-			view.setBackgroundResource(cookieResArray3[type]);//Color.TRANSPARENT
-			
+		public void setPos(){
 			Random rand = new Random();
 			center = pointAddition(center, new Point( rand.nextInt(200)-100, rand.nextInt(200)-100) );
+		}
+		
+		public void beBaked(){
+			view.setBackgroundResource(cookieResArray3[type]);
 			
+			//this.setPos();
 			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         	params.setMargins(center.x - 200, center.y - 200 , 0, 0);
         	this.view.setLayoutParams(params);        	
@@ -715,6 +735,39 @@ public class Game4Activity extends Activity {
 			}
 			else{
 				PlayPalUtility.setCircleStroke(this.center, cookieRadius);
+			}
+		}
+		
+		public void doButter(){
+			numCream++;
+			
+			if(numCream == 10){
+				view.setBackgroundResource(bigCookieAnimArray[type]);
+				AnimationDrawable largeAnim = (AnimationDrawable) view.getBackground();
+				largeAnim.start();
+				curProgress++;
+			}
+			
+			if(curProgress >= CREAM_PROGRESS_END){
+				score += PlayPalUtility.killTimeBar();
+				PlayPalUtility.setLineGesture(false);
+				PlayPalUtility.unregisterLineGesture(game4RelativeLayout);
+				PlayPalUtility.clearGestureSets();
+				PlayPalUtility.clearDrawView();
+				PenRecorder.outputJSON();
+				
+				Intent newAct = new Intent();
+				newAct.setClass(Game4Activity.this, AnimationActivity.class);
+				Bundle bundle = new Bundle();
+				bundle.putInt("GameIndex", 4);
+				bundle.putBoolean("isWin", true);
+				bundle.putString("userName", userName);
+				bundle.putInt("GameBadges", mBadges);
+				bundle.putInt("GameHighScore", mHighScore);
+				bundle.putInt("GameWinCount", mWinCount);
+				bundle.putInt("NewScore", score);
+	            newAct.putExtras(bundle);
+				startActivityForResult(newAct, 0);
 			}
 		}
 	}
