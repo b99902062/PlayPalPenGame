@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.graphics.drawable.AnimationDrawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,6 +20,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
@@ -76,6 +78,8 @@ public class Practice2Activity extends Activity {
 	private ImageView teachHandView;
 	protected DrawableRelativeLayout game2RelativeLayout;
 	protected TextView testProgressCountText;
+	
+	protected AnimationDrawable downAnim;
 	
 	private Context self;
 	
@@ -198,6 +202,8 @@ public class Practice2Activity extends Activity {
         });
 		
 		createFish();
+		setDownAnim();
+		
 		teachHandView.setVisibility(View.VISIBLE);
 		isReady = true;
 	}
@@ -210,6 +216,12 @@ public class Practice2Activity extends Activity {
 	
 	@Override
 	public void onBackPressed() {
+	}
+	
+	private void setDownAnim() {
+		teachHandView.setBackgroundResource(R.anim.game2_teach_hand_animation);
+		downAnim = (AnimationDrawable) teachHandView.getBackground();
+		downAnim.start();
 	}
 	
 	private void clearAll() {
@@ -239,8 +251,8 @@ public class Practice2Activity extends Activity {
 	private void setTeachHandLinear(int bX, int bY, int xOffset, int yOffset) {
 		teachHandView.setVisibility(View.VISIBLE);
 		
-		LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT,
-				LayoutParams.WRAP_CONTENT);
+		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
+				FrameLayout.LayoutParams.WRAP_CONTENT);
 		params.setMargins(bX, bY, 0, 0);
 		teachHandView.setLayoutParams(params);
 		
@@ -293,7 +305,10 @@ public class Practice2Activity extends Activity {
 		fishThreadList.get(index).fishView.setVisibility(ImageView.INVISIBLE);
 		netView.setImageResource(R.drawable.game2_net2);
 		
-		((ImageView)findViewById(R.id.teachHandView)).setImageResource(R.drawable.teach_hand2);
+		//((ImageView)findViewById(R.id.teachHandView)).setImageResource(R.drawable.teach_hand2);
+		((AnimationDrawable)teachHandView.getBackground()).stop();
+		teachHandView.setBackground(null);
+		teachHandView.setImageResource(R.drawable.teach_hand2);
 		setTeachHandLinear(500 - TEACH_HAND_OFFSET_X, 1000 - TEACH_HAND_OFFSET_Y, 2000, 0);
 
 		PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_ID_TEST, this);
@@ -342,6 +357,7 @@ public class Practice2Activity extends Activity {
 		Point pnt2 = new Point(fishOffset[0].x + cutEndOffset[0].x, fishOffset[0].y + cutEndOffset[0].y);
 		
 		((ImageView)findViewById(R.id.teachHandView)).setImageResource(R.drawable.teach_hand2_down);
+		teachHandView.setImageResource(R.drawable.teach_hand2_down);
 		setTeachHandLinear(pnt1.x - TEACH_HAND_DOWN_OFFSET_X, pnt1.y - TEACH_HAND_DOWN_OFFSET_Y, pnt2.x - pnt1.x, pnt2.y - pnt1.y);
 		
 		PlayPalUtility.setLineGesture(true);

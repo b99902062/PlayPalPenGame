@@ -20,6 +20,7 @@ import android.view.animation.Animation.AnimationListener;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
@@ -85,6 +86,7 @@ public class Practice1Activity extends Activity {
 	protected AnimationDrawable potDropAnim;
 	protected AnimationDrawable potStirAnim;
 	protected AnimationDrawable fireAnim;
+	protected AnimationDrawable downAnim;
 	
 	protected Point[] carrotCutBeginPointArray = {new Point(231, 406), new Point(465, 340), new Point(740, 311), new Point(979, 300), new Point(1195, 318)};
 	protected Point[] carrotCutEndPointArray = {new Point(270, 715), new Point(650, 747), new Point(952, 759), new Point(1175, 736), new Point(1354, 677)};
@@ -208,8 +210,8 @@ public class Practice1Activity extends Activity {
 
 		fireView = (ImageView) findViewById(R.id.fireView);
 		fireView.setBackgroundResource(R.anim.pot_fire_animation);
-		fireAnim = (AnimationDrawable) fireView.getBackground();
-
+		fireAnim = (AnimationDrawable) fireView.getBackground();		
+		
 		setHomeListener(findViewById(R.id.homeBtn));
 
 		knifeView = (ImageView) findViewById(R.id.knifeView);
@@ -226,8 +228,8 @@ public class Practice1Activity extends Activity {
 	private void setTeachHandLinear(int bX, int bY, int xOffset, int yOffset) {
 		teachHandView.setVisibility(View.VISIBLE);
 		
-		LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT,
-				LayoutParams.WRAP_CONTENT);
+		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
+				FrameLayout.LayoutParams.WRAP_CONTENT);
 		params.setMargins(bX, bY, 0, 0);
 		teachHandView.setLayoutParams(params);
 		
@@ -241,8 +243,8 @@ public class Practice1Activity extends Activity {
 	private void setTeachHandCircular(int bX, int bY, int range) {
 		teachHandView.setVisibility(View.VISIBLE);
 		
-		LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT,
-				LayoutParams.WRAP_CONTENT);
+		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
+				FrameLayout.LayoutParams.WRAP_CONTENT);
 		params.setMargins(bX, bY, 0, 0);
 		teachHandView.setLayoutParams(params);
 		
@@ -302,6 +304,8 @@ public class Practice1Activity extends Activity {
 					fireView.setVisibility(ImageView.VISIBLE);
 					fireAnim.setVisible(true, true);
 					fireAnim.start();
+					
+					potView.setImageResource(R.drawable.game1_pot_3);
 					
 					fireMP = PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_STIR_POT, self, true);
 					
