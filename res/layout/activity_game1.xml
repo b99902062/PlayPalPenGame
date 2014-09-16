@@ -120,6 +120,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginLeft="390dp"
             android:layout_marginTop="190dp"
+            android:src="@drawable/game1_pot_3"
             android:visibility="invisible" />
 
         <ImageView
@@ -163,9 +164,10 @@
             android:layout_alignParentTop="true"
             android:src="@drawable/game1_knife"
             android:visibility="invisible" />
-
         
-        <ImageView
+    </view>
+    
+    <ImageView
             android:id="@+id/teachHandView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -173,7 +175,5 @@
             android:layout_alignParentTop="true"
             android:src="@drawable/teach_hand1_down" 
             android:visibility="invisible" />
-        
-    </view>
 
 </FrameLayout>

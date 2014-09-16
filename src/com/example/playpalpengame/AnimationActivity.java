@@ -18,6 +18,7 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.AnimationDrawable;
@@ -56,6 +57,9 @@ public class AnimationActivity extends Activity {
 		
 		self = this;
 		setContentView(R.layout.activity_animation);
+		
+		SharedPreferences settings = getSharedPreferences("PLAY_PAL_TMP_INFO", 0);
+		settings.edit().clear().commit();
 		
 		Bundle bundle = getIntent().getExtras();
 		gameIndex = bundle.getInt("GameIndex");
