@@ -120,7 +120,6 @@
             android:layout_alignParentTop="true"
             android:layout_marginLeft="390dp"
             android:layout_marginTop="190dp"
-            android:src="@drawable/game1_pot_3"
             android:visibility="invisible" />
 
         <ImageView

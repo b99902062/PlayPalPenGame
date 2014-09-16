@@ -210,8 +210,8 @@ public class Practice1Activity extends Activity {
 
 		fireView = (ImageView) findViewById(R.id.fireView);
 		fireView.setBackgroundResource(R.anim.pot_fire_animation);
-		fireAnim = (AnimationDrawable) fireView.getBackground();
-
+		fireAnim = (AnimationDrawable) fireView.getBackground();		
+		
 		setHomeListener(findViewById(R.id.homeBtn));
 
 		knifeView = (ImageView) findViewById(R.id.knifeView);
@@ -304,6 +304,8 @@ public class Practice1Activity extends Activity {
 					fireView.setVisibility(ImageView.VISIBLE);
 					fireAnim.setVisible(true, true);
 					fireAnim.start();
+					
+					potView.setImageResource(R.drawable.game1_pot_3);
 					
 					fireMP = PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_STIR_POT, self, true);
 					

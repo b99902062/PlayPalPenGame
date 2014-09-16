@@ -366,6 +366,8 @@ public class Game1Activity extends Activity {
 					fireAnim.setVisible(true, true);
 					fireAnim.start();
 
+					potView.setImageResource(R.drawable.game1_pot_3);
+
 					fireMP = PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_STIR_POT, self, true);
 					
 					//potView.setBackgroundResource(R.anim.pot_stir_animation);
