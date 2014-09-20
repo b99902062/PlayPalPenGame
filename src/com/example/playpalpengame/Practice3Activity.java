@@ -1,10 +1,14 @@
 package com.example.playpalpengame;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Callable;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.FloatMath;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -32,6 +36,8 @@ import android.graphics.PathEffect;
 import android.graphics.Point;
 import android.graphics.drawable.AnimationDrawable;
 
+import com.example.playpalpengame.Game3Activity.OvenHandler;
+import com.example.playpalpengame.Game3Activity.ovenTimerTask;
 import com.samsung.spen.lib.input.SPenEventLibrary;
 import com.samsung.spensdk.applistener.SPenHoverListener;
 
@@ -62,7 +68,7 @@ public class Practice3Activity extends Activity {
 	private final static int TEACH_HAND_BTN_OFFSET_X = 260;
 	private final static int TEACH_HAND_BTN_OFFSET_Y = 790;
 	
-	
+	protected final int CREAM_DIST = 30;
 	protected final int INIT_CREAM_RATIO = 10;
 	protected final int CREAM_MAX_RATIO = 20;
 	protected final int SMALL_CREAM_SIZE = 75;
@@ -76,6 +82,7 @@ public class Practice3Activity extends Activity {
 	protected final int MIX_TIME   = 600;
 	protected final int CREAM_TIME = 600;
 	
+	public static OvenHandler ovenHandler;
 	protected int boxSize;
 	protected int creamBoxSize;
 	protected int curProgress;
@@ -130,6 +137,8 @@ public class Practice3Activity extends Activity {
 
 		View homeBtn = findViewById(R.id.homeBtn);
 		setHomeListener(homeBtn);
+		
+		ovenHandler = new OvenHandler();
 		
 		curProgress = 0;
 		boxSize = 100;
@@ -208,7 +217,8 @@ public class Practice3Activity extends Activity {
 					Point curPoint = new Point((int)event.getX(),(int)event.getY());
 					float dist = calcDistance(startPoint, curPoint);
 				
-					if(dist>=25){
+					if(dist>CREAM_DIST){
+						PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_POP, Practice3Activity.this);
 						curButterView = new ImageView(gameContext);
 						curButterView.setImageResource(R.drawable.game3_cream);
 						game3RelativeLayout.addView(curButterView);
@@ -346,91 +356,11 @@ public class Practice3Activity extends Activity {
 		});
 	}
 	
-	protected void setOvenListener(View targetView){	
+	protected void setOvenListener(View targetView){
+		PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_OVEN, this);
 		setFoodListener(ovenView2);
-		
-		
-		targetView.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				if(!canTouchOven){
-					Log.d("Penpal_oven","can't be touched agian");
-					return;
-				}
-				
-				canTouchOven = false;
-				//ovenAnimation.stop();
-				
-				Animation ovenAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTLEFT);
-				ovenAnim.setAnimationListener(new AnimationListener() {
-					@Override
-					public void onAnimationEnd(Animation anim) {	
-						ovenView2.setVisibility(ImageView.GONE);
-						ovenView2.clearAnimation();
-						
-						cakeCreamHintView.setVisibility(ImageView.INVISIBLE);
-						pressAnim.stop();
-						teachHandView.setVisibility(ImageView.VISIBLE);
-						teachHandView.setBackgroundResource(R.anim.game3_teach_hand_btn_animation);
-						btnAnim = (AnimationDrawable) teachHandView.getBackground();
-						btnAnim.start();
-						
-						setTeachHandLinear(dottedLineArray[0].x-TEACH_HAND_BTN_OFFSET_X, dottedLineArray[0].y-TEACH_HAND_BTN_OFFSET_Y, dottedLineArray[2].x-dottedLineArray[0].x, dottedLineArray[2].y-dottedLineArray[0].y);
-						
-						curProgress++;
-						progressCountText.setText("ProgressCount: " + new String("" + curProgress));
-					}
-
-					@Override
-					public void onAnimationRepeat(Animation animation) {
-					}
-
-					@Override
-					public void onAnimationStart(Animation animation) {
-					}
-				});
-				currentFoodView.setAnimation(ovenAnim);
-				ovenAnim.startNow();
-				
-				setFoodListener(cakeView);
-				Animation cakeAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_OUTLEFT_TO_CUR);
-				cakeAnim.setAnimationListener(new AnimationListener() {
-					@Override
-					public void onAnimationEnd(Animation anim) {
-						eggbeatView.setImageResource(R.drawable.game3_squeezer);
-						cakeDottedLineView.setVisibility(ImageView.VISIBLE);
-						PlayPalUtility.setLineGesture(true);
-						
-						teachHandView.setVisibility(ImageView.VISIBLE);
-						
-						//PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
-					}
-
-					@Override
-					public void onAnimationRepeat(Animation animation) {
-					}
-
-					@Override
-					public void onAnimationStart(Animation animation) {
-					}
-				});
-				
-				cakeView.setAnimation(cakeAnim);
-				cakeAnim.startNow();
-				
-				PlayPalUtility.registerHoverLineGesture(game3RelativeLayout, gameContext, new Callable<Integer>() {
-					public Integer call() {
-						return handleCakeAction(cakeView);
-					}
-				});
-				
-				
-				PlayPalUtility.initialLineGestureParams(false, false, creamBoxSize, 
-						dottedLineArray[0],
-						dottedLineArray[1],
-						dottedLineArray[2]);
-			}
-		});
+		Timer timer = new Timer(true);
+		timer.schedule(new ovenTimerTask(), 3500, 1000);
 	}
 		
 	protected Integer handleStirring(View view){
@@ -561,8 +491,7 @@ public class Practice3Activity extends Activity {
 		});
 		
 		PlayPalUtility.setLineGesture(true);
-		for(int i=0; i<5; i++)
-			PlayPalUtility.initialLineGestureParams(false, false, boxSize/2, creamPosArray[i]);
+		PlayPalUtility.initialLineGestureParams(false, false, boxSize/2, creamPosArray[4]);
 		
 	
 		return 1;
@@ -689,6 +618,89 @@ public class Practice3Activity extends Activity {
 		float dy = p1.y - p2.y;
 		
 		return FloatMath.sqrt(dx*dx + dy*dy);
+	}
+	
+	
+	class OvenHandler extends Handler {
+		public void handleMessage(Message msg){
+			Animation ovenAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTLEFT);
+			ovenAnim.setAnimationListener(new AnimationListener() {
+				@Override
+				public void onAnimationEnd(Animation anim) {	
+					ovenView2.setVisibility(ImageView.GONE);
+					ovenView2.clearAnimation();
+					
+					cakeCreamHintView.setVisibility(ImageView.INVISIBLE);
+					pressAnim.stop();
+					teachHandView.setVisibility(ImageView.VISIBLE);
+					teachHandView.setBackgroundResource(R.anim.game3_teach_hand_btn_animation);
+					btnAnim = (AnimationDrawable) teachHandView.getBackground();
+					btnAnim.start();
+					
+					setTeachHandLinear(dottedLineArray[0].x-TEACH_HAND_BTN_OFFSET_X, dottedLineArray[0].y-TEACH_HAND_BTN_OFFSET_Y, dottedLineArray[2].x-dottedLineArray[0].x, dottedLineArray[2].y-dottedLineArray[0].y);
+					
+					curProgress++;
+					progressCountText.setText("ProgressCount: " + new String("" + curProgress));
+				}
+
+				@Override
+				public void onAnimationRepeat(Animation animation) {
+				}
+
+				@Override
+				public void onAnimationStart(Animation animation) {
+				}
+			});
+			currentFoodView.setAnimation(ovenAnim);
+			ovenAnim.startNow();
+			
+			setFoodListener(cakeView);
+			Animation cakeAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_OUTLEFT_TO_CUR);
+			cakeAnim.setAnimationListener(new AnimationListener() {
+				@Override
+				public void onAnimationEnd(Animation anim) {
+					eggbeatView.setImageResource(R.drawable.game3_squeezer);
+					cakeDottedLineView.setVisibility(ImageView.VISIBLE);
+					PlayPalUtility.setLineGesture(true);
+					
+					teachHandView.setVisibility(ImageView.VISIBLE);
+					
+					//PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
+				}
+
+				@Override
+				public void onAnimationRepeat(Animation animation) {
+				}
+
+				@Override
+				public void onAnimationStart(Animation animation) {
+				}
+			});
+			
+			cakeView.setAnimation(cakeAnim);
+			cakeAnim.startNow();
+			
+			PlayPalUtility.registerHoverLineGesture(game3RelativeLayout, gameContext, new Callable<Integer>() {
+				public Integer call() {
+					return handleCakeAction(cakeView);
+				}
+			});
+			
+			
+			PlayPalUtility.initialLineGestureParams(false, false, creamBoxSize, 
+					dottedLineArray[0],
+					dottedLineArray[1],
+					dottedLineArray[2]);
+		}
+	}
+	
+	
+	class ovenTimerTask extends TimerTask{
+		public void run(){
+			Message msg = new Message();
+            Practice3Activity.ovenHandler.sendMessage(msg);
+            this.cancel();
+		}
 	}
 	
 }

@@ -1,10 +1,14 @@
 package com.example.playpalpengame;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Callable;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.FloatMath;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -71,7 +75,7 @@ public class Game3Activity extends Activity {
 		new Point(780+710, 380+512),	
 		new Point(780+588, 380+310)};
 		
-	
+	protected final int CREAM_DIST = 30;
 	protected final int INIT_CREAM_RATIO = 10;
 	protected final int CREAM_MAX_RATIO = 20;
 	protected final int SMALL_CREAM_SIZE = 75;
@@ -84,7 +88,7 @@ public class Game3Activity extends Activity {
 	
 	protected final int MIX_TIME   = 600;
 	protected final int CREAM_TIME = 600;
-	
+	public static OvenHandler ovenHandler;
 	protected int boxSize;
 	protected int curProgress;
 	protected boolean canTouchOven = false;
@@ -136,6 +140,7 @@ public class Game3Activity extends Activity {
 		curProgress = 0;
 		boxSize = 100;
 		gameContext = this;
+		ovenHandler = new OvenHandler();
 		
 		progressCountText = (TextView)findViewById(R.id.testProgressCount);
 		bowlView = (ImageView)findViewById(R.id.Game3_bowl);
@@ -208,8 +213,8 @@ public class Game3Activity extends Activity {
 					Point curPoint = new Point((int)event.getX(),(int)event.getY());
 					float dist = calcDistance(startPoint, curPoint);
 				
-					if(dist>=40){
-						//PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_CREAM, Game3Activity.this);
+					if(dist>=CREAM_DIST){
+						PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_POP, Game3Activity.this);
 						curButterView = new ImageView(gameContext);
 						curButterView.setImageResource(R.drawable.game3_cream);
 						game3RelativeLayout.addView(curButterView);
@@ -323,6 +328,7 @@ public class Game3Activity extends Activity {
 		PlayPalUtility.initialProgressBar(MIX_TIME, PlayPalUtility.TIME_MODE);
 		
 		PlayPalUtility.setHoverTarget(true, eggbeatView);
+		
 	}	
 	
 	@Override
@@ -406,90 +412,10 @@ public class Game3Activity extends Activity {
 	
 	protected void setOvenListener(View targetView){
 		PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_OVEN, this);
-		
 		setFoodListener(ovenView2);
-		targetView.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				if(!canTouchOven){
-					Log.d("Penpal_oven","can't be touched agian");
-					return;
-				}
-				
-				canTouchOven = false;
-				
-				Animation ovenAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTLEFT);
-				ovenAnim.setAnimationListener(new AnimationListener() {
-					@Override
-					public void onAnimationEnd(Animation anim) {	
-						ovenView2.setVisibility(ImageView.GONE);
-						ovenView2.clearAnimation();
-						
-						curProgress++;
-						progressCountText.setText("ProgressCount: " + new String("" + curProgress));
-					}
-
-					@Override
-					public void onAnimationRepeat(Animation animation) {
-					}
-
-					@Override
-					public void onAnimationStart(Animation animation) {
-					}
-				});
-				currentFoodView.setAnimation(ovenAnim);
-				ovenAnim.startNow();
-				
-				setFoodListener(cakeView);
-				Animation cakeAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_OUTLEFT_TO_CUR);
-				cakeAnim.setAnimationListener(new AnimationListener() {
-					@Override
-					public void onAnimationEnd(Animation anim) {
-						eggbeatView.setImageResource(R.drawable.game3_squeezer);
-						cakeDottedLineView.setVisibility(ImageView.VISIBLE);
-						PlayPalUtility.setLineGesture(true);
-						PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
-					}
-
-					@Override
-					public void onAnimationRepeat(Animation animation) {
-					}
-
-					@Override
-					public void onAnimationStart(Animation animation) {
-					}
-				});
-				
-				cakeView.setAnimation(cakeAnim);
-				cakeAnim.startNow();
-				
-				PlayPalUtility.registerHoverLineGesture(game3RelativeLayout, gameContext, new Callable<Integer>() {
-					public Integer call() {
-						return handleCakeAction(cakeView);
-					}
-				});
-				
-				PlayPalUtility.initialLineGestureParams(false, false, boxSize/2, 
-						dottedLineArray[0],
-						dottedLineArray[1],
-						dottedLineArray[2],
-						dottedLineArray[3],
-						dottedLineArray[4],
-						dottedLineArray[5],
-						dottedLineArray[6],
-						dottedLineArray[7],
-						dottedLineArray[8],
-						dottedLineArray[9],
-						dottedLineArray[10],
-						dottedLineArray[11],
-						dottedLineArray[12],
-						dottedLineArray[13],
-						dottedLineArray[14],
-						dottedLineArray[15],
-						dottedLineArray[16],
-						dottedLineArray[17]);
-			}
-		});
+		
+		Timer timer = new Timer(true);
+		timer.schedule(new ovenTimerTask(), 3500, 1000);
 	}
 		
 	protected Integer handleStirring(View view){
@@ -691,4 +617,87 @@ public class Game3Activity extends Activity {
 		return FloatMath.sqrt(dx*dx + dy*dy);
 	}
 	
+	
+	class OvenHandler extends Handler {
+        public void handleMessage(Message msg) {
+        	Animation ovenAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTLEFT);
+			ovenAnim.setAnimationListener(new AnimationListener() {
+				@Override
+				public void onAnimationEnd(Animation anim) {	
+					ovenView2.setVisibility(ImageView.GONE);
+					ovenView2.clearAnimation();
+					
+					curProgress++;
+					progressCountText.setText("ProgressCount: " + new String("" + curProgress));
+				}
+
+				@Override
+				public void onAnimationRepeat(Animation animation) {
+				}
+
+				@Override
+				public void onAnimationStart(Animation animation) {
+				}
+			});
+			currentFoodView.setAnimation(ovenAnim);
+			ovenAnim.startNow();
+			
+			setFoodListener(cakeView);
+			Animation cakeAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_OUTLEFT_TO_CUR);
+			cakeAnim.setAnimationListener(new AnimationListener() {
+				@Override
+				public void onAnimationEnd(Animation anim) {
+					eggbeatView.setImageResource(R.drawable.game3_squeezer);
+					cakeDottedLineView.setVisibility(ImageView.VISIBLE);
+					PlayPalUtility.setLineGesture(true);
+					PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
+				}
+
+				@Override
+				public void onAnimationRepeat(Animation animation) {
+				}
+
+				@Override
+				public void onAnimationStart(Animation animation) {
+				}
+			});
+			
+			cakeView.setAnimation(cakeAnim);
+			cakeAnim.startNow();
+			
+			PlayPalUtility.registerHoverLineGesture(game3RelativeLayout, gameContext, new Callable<Integer>() {
+				public Integer call() {
+					return handleCakeAction(cakeView);
+				}
+			});
+			
+			PlayPalUtility.initialLineGestureParams(false, false, boxSize/2, 
+					dottedLineArray[0],
+					dottedLineArray[1],
+					dottedLineArray[2],
+					dottedLineArray[3],
+					dottedLineArray[4],
+					dottedLineArray[5],
+					dottedLineArray[6],
+					dottedLineArray[7],
+					dottedLineArray[8],
+					dottedLineArray[9],
+					dottedLineArray[10],
+					dottedLineArray[11],
+					dottedLineArray[12],
+					dottedLineArray[13],
+					dottedLineArray[14],
+					dottedLineArray[15],
+					dottedLineArray[16],
+					dottedLineArray[17]);
+		}
+	};
+	
+	class ovenTimerTask extends TimerTask{
+		public void run(){
+			Message msg = new Message();
+            Game3Activity.ovenHandler.sendMessage(msg);
+            this.cancel();
+		}
+	}
 }

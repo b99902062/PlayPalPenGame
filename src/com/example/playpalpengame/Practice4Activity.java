@@ -343,6 +343,7 @@ public class Practice4Activity extends Activity {
 				float dist = calcDistance(startPoint, curPoint);
 			
 				if(dist>=CREAM_DIST){
+					PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_POP, Practice4Activity.this);
 					curButterView = new ImageView(gameContext);
 					curButterView.setImageResource(creamArray[lonelyCookie.creamColor]);
 					game4RelativeLayout.addView(curButterView);
@@ -353,7 +354,7 @@ public class Practice4Activity extends Activity {
 				
 				if(curButterView != null){
 					RelativeLayout.LayoutParams params = (LayoutParams) curButterView.getLayoutParams();			
-					params.width = params.height = (int)(CREAM_SIZE*ratio/20.0);
+					params.width = params.height = (int)(CREAM_SIZE*ratio/CREAM_MAX_RATIO);
 					params.setMargins(	lonelyCookie.view.getLeft()+(int)event.getX()-params.height/2, 
 							lonelyCookie.view.getTop()+(int)event.getY()-params.width/2, 0, 0);	
 					curButterView.setLayoutParams(params);
@@ -558,6 +559,7 @@ public class Practice4Activity extends Activity {
 							teachHandView.setBackgroundResource(R.anim.game4_teach_hand_btn_animation);
 							btnAnim = (AnimationDrawable) teachHandView.getBackground();
 							btnAnim.start();
+							PlayPalUtility.setLineGesture(false);
 						}
 
 						@Override
@@ -608,6 +610,7 @@ public class Practice4Activity extends Activity {
 		
 		int idx = PlayPalUtility.getLastTriggerSetIndex();
 		PlayPalUtility.cancelGestureSet(idx);
+		
 		
 		if(curProgress >= CREAM_PROGRESS_END){
 			score += PlayPalUtility.killTimeBar();

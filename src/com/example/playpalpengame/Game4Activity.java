@@ -22,6 +22,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.AnimationDrawable;
@@ -288,6 +289,7 @@ public class Game4Activity extends Activity {
 	protected void onPause() {
 	    super.onPause();
 	    BackgroundMusicHandler.recyle();
+	    writeToSettings();
 	}
 	
 	@Override
@@ -299,6 +301,38 @@ public class Game4Activity extends Activity {
 	
 	@Override
 	public void onBackPressed() {
+	}
+	
+	private void writeToSettings() {
+		SharedPreferences settings = getSharedPreferences("PLAY_PAL_TMP_INFO", 0);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putInt("CUR_PROGRESS", curProgress);
+		editor.putInt("CUR_TIMEBAR_MAX", PlayPalUtility.getProgressBarMaxVal());
+		editor.putInt("CUR_TIMEBAR_VAL", PlayPalUtility.getProgressBarCurVal());
+		editor.putInt("CUR_SCORE", score);
+		editor.commit();
+	}
+	
+	private void setBackFromSettings() {
+		SharedPreferences settings = getSharedPreferences("PLAY_PAL_TMP_INFO", 0);
+		curProgress = settings.getInt("CUR_PROGRESS", -1);
+		if(curProgress < 0) {
+			curProgress = 0;
+			return;
+		}
+		else {
+			PlayPalUtility.initialProgressBar(settings.getInt("CUR_TIMEBAR_MAX", 0), PlayPalUtility.TIME_MODE);
+			PlayPalUtility.setProgressBarCurVal(settings.getInt("CUR_TIMEBAR_VAL", 0));
+			score = settings.getInt("CUR_SCORE", 0);
+			setBackProgressCountPart();
+			
+			settings.edit().clear().commit();
+		}
+	}
+	
+	private void setBackProgressCountPart(){
+		
+		
 	}
 	
 	protected void setHomeListener(View targetView) {
@@ -357,6 +391,7 @@ public class Game4Activity extends Activity {
 					float dist = calcDistance(startPoint, curPoint);
 				
 					if(dist>=CREAM_DIST){
+						PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_POP, Game4Activity.this);
 						curButterView = new ImageView(gameContext);
 						curButterView.setImageResource(creamArray[curCookie.creamColor]);
 						game4RelativeLayout.addView(curButterView);
@@ -563,6 +598,7 @@ public class Game4Activity extends Activity {
 						});
 						curCookie.view.setAnimation(cookieAnim);
 						cookieAnim.startNow();
+						PlayPalUtility.setLineGesture(false);
 					}
 
 					@Override
@@ -580,7 +616,10 @@ public class Game4Activity extends Activity {
 				cookieAnim.startNow();	
 			}
 			
+			PenRecorder.outputJSON();
 			PlayPalUtility.clearGestureSets();
+			PlayPalUtility.setLineGesture(false);
+			PlayPalUtility.unregisterLineGesture(game4RelativeLayout);
 			
 			for(int i=0; i<COOKIE_NUM; i++){
 				final Cookie curCookie = cookieArray[i];
@@ -596,11 +635,10 @@ public class Game4Activity extends Activity {
 					return handleCookieCreamAction(cookieArray[0].view);
 				}
 			});
-	
-			PlayPalUtility.setLineGesture(false);
+		
 			
-			PenRecorder.outputJSON();
 			PenRecorder.registerRecorder(game4RelativeLayout, this, userName, "4-3");
+			PlayPalUtility.clearDrawView();
 			
 		}
 		
@@ -612,38 +650,7 @@ public class Game4Activity extends Activity {
 		int idx = PlayPalUtility.getLastTriggerSetIndex();
 		cookieArray[idx/16].doButter();
 		PlayPalUtility.cancelGestureSet(idx);
-		
-		/*curProgress++;
-		progressCountText.setText("ProgressCount: " + new String("" + curProgress));
-		
-		int idx = PlayPalUtility.getLastTriggerSetIndex();
-		PlayPalUtility.cancelGestureSet(idx);
-		
-		if(curProgress >= CREAM_PROGRESS_END){
-			score += PlayPalUtility.killTimeBar();
-			PlayPalUtility.setLineGesture(false);
-			PlayPalUtility.unregisterLineGesture(game4RelativeLayout);
-			PlayPalUtility.clearGestureSets();
-			PlayPalUtility.clearDrawView();
-			PenRecorder.outputJSON();
-			PenRecorder.registerRecorder(game4RelativeLayout, this, userName, "4-4");
-			
-			Intent newAct = new Intent();
-			newAct.setClass(Game4Activity.this, AnimationActivity.class);
-			Bundle bundle = new Bundle();
-			bundle.putInt("GameIndex", 4);
-			bundle.putBoolean("isWin", true);
-			bundle.putString("userName", userName);
-			bundle.putInt("GameBadges", mBadges);
-			bundle.putInt("GameHighScore", mHighScore);
-			bundle.putInt("GameWinCount", mWinCount);
-			bundle.putInt("NewScore", score);
-            newAct.putExtras(bundle);
-			startActivityForResult(newAct, 0);
-			Game4Activity.this.finish();
-			return 0;
-		}
-		*/
+
 		return 1;
 	}
 	

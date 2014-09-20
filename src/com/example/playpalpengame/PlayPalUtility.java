@@ -48,19 +48,14 @@ public class PlayPalUtility {
 	protected final static int SOUND_ROAST = 7;
 	protected final static int SOUND_CARTOON = 8;
 	
-	
 	protected final static int SOUND_MIX = 9;
 	protected final static int SOUND_OVEN = 10;
-	protected final static int SOUND_CREAM = 11;
+	protected final static int SOUND_POP = 11;
+	protected final static int SOUND_CREAM = 12;
 	
-	protected final static int SOUND_ROLLING = 12;
-	protected final static int SOUND_CUT_DOUGH = 13;
+	protected final static int SOUND_ROLLING = 13;
+	protected final static int SOUND_CUT_DOUGH = 14;
 	
-	/*
-	protected final static int SOUND_EGG = 9;
-	protected final static int SOUND_SQUEEZE=10;
-	protected final static int SOUND_DOUGH=11;
-	*/
 	
 	protected final static int FROM_OUTLEFT_TO_CUR = 1;
 	protected final static int FROM_CUR_TO_OUTRIGHT = 2;
@@ -115,6 +110,7 @@ public class PlayPalUtility {
 									 R.raw.unsorted_cartoon, 
 									 R.raw.game3_mixing,
 									 R.raw.game3_oven_trimmed, 
+									 R.raw.game3_cream_pop,
 									 R.raw.game3_squeezing_cream,
 									 R.raw.game4_cartoon_rolling,
 									 R.raw.game4_cutting_dough};
@@ -286,8 +282,6 @@ public class PlayPalUtility {
 						}
 					}
 				}
-				
-				
 				
 				if(event.getAction()  == MotionEvent.ACTION_HOVER_ENTER) {
 					hoverTarget.setVisibility(ImageView.VISIBLE);
