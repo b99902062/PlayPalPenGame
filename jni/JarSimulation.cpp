@@ -2,6 +2,7 @@
 #include <android/log.h>
 #include <Box2D/Box2D.h>
 #include <stdio.h>
+#include <time.h>
 #include <vector>
 
 #define PTM_Ratio 1500.f
@@ -23,15 +24,17 @@ class Star{
 
 	b2Body* bodies[2];
 
-	Star(b2World* m_world, float xPos, float yPos, float radius, uint16 groupBits){
-		int body_num = 2;
+	Star(b2World* m_world, float xPos, float yPos, float radius, uint16 groupBits, int _g){
+		int body_num = 5;
 		int vertex_num = 3;
-
 		for(int i=0; i<body_num; i++){
 			b2Vec2 vertices[3];
-			for(int j=0; j<vertex_num; j++){
-				vertices[j].Set(radius*cos((j+0.5*i) * 2 * M_PI / vertex_num), radius*sin((j+0.5*i) * 2 * M_PI / vertex_num));
-			}
+
+			double main_deg = (i * 2 + 0.5) * M_PI / body_num;
+			double dt_deg   = 0.3 * 2 * M_PI;
+			vertices[0].Set(radius*cos(main_deg), radius*sin(main_deg));
+			vertices[1].Set(0.382*radius*cos(main_deg+dt_deg), radius*sin(main_deg+dt_deg));
+			vertices[2].Set(0.382*radius*cos(main_deg-dt_deg), radius*sin(main_deg-dt_deg));
 
 			b2BodyDef starBodyDef;
 			starBodyDef.type = b2_dynamicBody;
@@ -43,16 +46,16 @@ class Star{
 
 			b2FixtureDef starFixtureDef;
 			starFixtureDef.shape = &starShape;
-			starFixtureDef.density = 10;
-			starFixtureDef.friction = 0.1f;
-			starFixtureDef.restitution = 0.2f;
+			starFixtureDef.density = 5 + 0.1f*_g;
+			starFixtureDef.friction = 0.1f + 0.05f*_g;
+			starFixtureDef.restitution = 0.2f + 0.05*_g;
 			starFixtureDef.filter.categoryBits = groupBits;
 			starFixtureDef.filter.maskBits = groupBits;
 
 			bodies[i] = m_world->CreateBody(&starBodyDef);
 			bodies[i]->CreateFixture(&starFixtureDef);
 		}
-
+		//joint fixtures
 		b2WeldJointDef jointDef;
 		jointDef.bodyA = bodies[0];
 		jointDef.bodyB = bodies[1];
@@ -100,14 +103,14 @@ std::vector< Star* > starBodies;
 
 void generateStarBody(int _x, int _y, int _g){
 
-	Star* newStar = new Star(m_world, _x, _y, Star_Size/PTM_Ratio/2, Group[_g]);
+	Star* newStar = new Star(m_world, _x, _y, Star_Size/PTM_Ratio/2, Group[_g], _g);
 	starBodies.push_back(newStar);
 	return;
 }
 
 void init() {
 
-	b2Vec2 gravity(0.0f, -100.0f);
+	b2Vec2 gravity(0.0f, -9.8f);
 	m_world = new b2World(gravity);
 	starBodies.clear();
 
@@ -176,7 +179,9 @@ extern "C"
 jboolean Java_com_example_playpalpengame_MainActivity_putIntoJar (
 		JNIEnv* env, jobject thiz, jint layerIndex) {
 
-	generateStarBody(X_middle/PTM_Ratio, Y_middle/PTM_Ratio, layerIndex);
+
+
+	generateStarBody( (X_middle+rand()%200-100)/PTM_Ratio, (Y_middle+rand()%200-100) /PTM_Ratio, layerIndex);
 	return true;
 }
 
@@ -198,6 +203,7 @@ jboolean Java_com_example_playpalpengame_MainActivity_updateAngle (
 
 void Java_com_example_playpalpengame_MainActivity_initWorld(JNIEnv* env, jobject thiz){
 	init();
+	srand (time(NULL));
 	return;
 }
 

@@ -62,7 +62,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 	public native float[] getPosition(int idx);
 	public native void worldStep();
 	
-	public static final int Num_Layers = 3;
+	public static final int Num_Layers = 2;
 	public static final int Star_Size = 125;
 	public static final float PTM_Ratio = 1500;
 	public static final int FPS = 60;
@@ -108,12 +108,10 @@ public class MainActivity extends Activity implements SensorEventListener {
 		
 		timer.cancel();
 		
-		
 		RelativeLayout jarLayout = (RelativeLayout)findViewById(R.id.jarRelativeLayout);
 		for(StarStat star:starArr){
 			jarLayout.removeView(star.view);
 		}
-		
 		
 		jarLayout.invalidate();
 		
@@ -124,10 +122,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 	
 	@Override
 	protected void onResume() {
-		super.onResume();
-		BackgroundMusicHandler.initMusic(this);
-		BackgroundMusicHandler.setMusicSt(true);
-			
+		super.onResume();			
 		System.loadLibrary("JarSimulation");
 		RelativeLayout jarLayout = (RelativeLayout)findViewById(R.id.jarRelativeLayout);
 		jarLayout.invalidate();
@@ -135,20 +130,32 @@ public class MainActivity extends Activity implements SensorEventListener {
 		initWorld();
 		starArr = new LinkedList<StarStat>();
 		for(int i=0; i<winCount.length; i++) {
+			//Log.d("jar",""+i+" "+winCount[i]);
 			for(int j=0; j<winCount[i]; j++) {
 				ImageView newStar = new ImageView(this);
+				
 				newStar.setImageResource(starResArray[i]);
-				putIntoJar((int)(Math.random()*Num_Layers));
+				int nl = (int)(Math.random()*Num_Layers);
+				putIntoJar(nl);
+				
+				
 				starArr.add(new StarStat(i * 10000 + j, newStar));
+				newStar.setVisibility(ImageView.VISIBLE);
 				
 				RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-            	params.setMargins(0, 0, 0, 0);
-            	newStar.setVisibility(ImageView.INVISIBLE);
+            	params.setMargins(300, 500, 0, 0);
             	newStar.setLayoutParams(params);
 				
-				jarLayout.addView(newStar);
+            	jarLayout.addView(newStar);
+            	newStar.bringToFront();
+            	jarLayout.invalidate();
 			}
 		}
+		Log.d("#star",""+starArr.size());
+		
+		
+		BackgroundMusicHandler.initMusic(this);
+		BackgroundMusicHandler.setMusicSt(true);
 		
 		sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 		sensorManager.registerListener( this,
@@ -339,6 +346,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 			worldStep();
 			
 			for(int id=0; id<starArr.size(); id++){
+				
 				float[] pos = getPosition(id);
 				Message msg = new Message();
 		    	Bundle dataBundle = new Bundle();
@@ -349,6 +357,8 @@ public class MainActivity extends Activity implements SensorEventListener {
 		    	//transform from box2D's coord. system to android corrd. system
 		    	msg.setData(dataBundle);
 		    	MainActivity.starHandler.sendMessage(msg);
+		    	
+		    	Log.d("Update",""+id+" "+pos[0]*PTM_Ratio+" "+pos[1]*PTM_Ratio);
 			}
 		}
 	}
