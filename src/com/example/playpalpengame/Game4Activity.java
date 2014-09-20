@@ -365,7 +365,7 @@ public class Game4Activity extends Activity {
 					}
 					
 					RelativeLayout.LayoutParams params = (LayoutParams) curButterView.getLayoutParams();			
-					params.width = params.height = (int)(CREAM_SIZE*ratio/20.0);
+					params.width = params.height = (int)(CREAM_SIZE*ratio/CREAM_MAX_RATIO);
 					params.setMargins(	curCookie.view.getLeft()+(int)event.getX()-params.height/2, 
 							curCookie.view.getTop()+(int)event.getY()-params.width/2, 
 										0, 0);
@@ -496,6 +496,7 @@ public class Game4Activity extends Activity {
 	
 	
 	protected Integer handleCookieProgress (View view){
+		PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_CUT_DOUGH, this);
 		curProgress++;
 		progressCountText.setText("ProgressCount: " + new String("" + curProgress));
 		
@@ -590,12 +591,13 @@ public class Game4Activity extends Activity {
 			}
 			
 			PlayPalUtility.registerSingleHoverPoint(true, game4RelativeLayout, this, new Callable<Integer>() {
+				@Override
 				public Integer call() {
 					return handleCookieCreamAction(cookieArray[0].view);
 				}
 			});
 	
-			PlayPalUtility.setLineGesture(true);
+			PlayPalUtility.setLineGesture(false);
 			
 			PenRecorder.outputJSON();
 			PenRecorder.registerRecorder(game4RelativeLayout, this, userName, "4-3");

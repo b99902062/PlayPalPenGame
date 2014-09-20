@@ -56,8 +56,8 @@ public class Practice3Activity extends Activity {
 		new Point(780+710, 380+512),	
 		new Point(780+588, 380+310)};
 	
-	private final static int TEACH_HAND_OFFSET_X = 30;
-	private final static int TEACH_HAND_OFFSET_Y = 680;
+	private final static int TEACH_HAND_OFFSET_X = 45;
+	private final static int TEACH_HAND_OFFSET_Y = 665;
 	
 	private final static int TEACH_HAND_BTN_OFFSET_X = 260;
 	private final static int TEACH_HAND_BTN_OFFSET_Y = 790;
@@ -434,6 +434,7 @@ public class Practice3Activity extends Activity {
 	}
 		
 	protected Integer handleStirring(View view){
+		PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_MIX, this);
 		FramesSequenceAnimation anim = null;
 		curProgress++;
 		progressCountText.setText("ProgressCount: " + new String("" + curProgress));
@@ -545,6 +546,8 @@ public class Practice3Activity extends Activity {
 		setTeachHandLinear(creamPosArray[4].x-TEACH_HAND_BTN_OFFSET_X, creamPosArray[4].y-TEACH_HAND_BTN_OFFSET_Y, 0, 0);
 		
 		cakeCreamHintView.setVisibility(ImageView.VISIBLE);
+		cakeCreamHintView.bringToFront();
+		game3RelativeLayout.invalidate();
 		PlayPalUtility.clearGestureSets();
 		PlayPalUtility.unregisterHoverLineGesture(game3RelativeLayout);
 		// += PlayPalUtility.killTimeBar();
@@ -566,6 +569,7 @@ public class Practice3Activity extends Activity {
 	}
 	
 	protected Integer handleCream(View view){
+		PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_CREAM, this);
 		curProgress++;
 		progressCountText.setText("ProgressCount: " + new String("" + curProgress));
 		
@@ -599,6 +603,8 @@ public class Practice3Activity extends Activity {
 			
 			cakeDottedLineView.setVisibility(ImageView.INVISIBLE);
 			cakeStrawberryView.setVisibility(ImageView.VISIBLE);
+			cakeStrawberryView.bringToFront();
+			game3RelativeLayout.invalidate();
 			PlayPalUtility.setAlphaAnimation(cakeStrawberryView,true);
 			
 			PlayPalUtility.clearGestureSets();

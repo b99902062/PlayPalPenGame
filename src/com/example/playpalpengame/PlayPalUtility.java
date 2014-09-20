@@ -48,8 +48,14 @@ public class PlayPalUtility {
 	protected final static int SOUND_ROAST = 7;
 	protected final static int SOUND_CARTOON = 8;
 	
-	protected final static int SOUND_OVEN = 9;
-	protected final static int SOUND_ROLLING = 10;
+	
+	protected final static int SOUND_MIX = 9;
+	protected final static int SOUND_OVEN = 10;
+	protected final static int SOUND_CREAM = 11;
+	
+	protected final static int SOUND_ROLLING = 12;
+	protected final static int SOUND_CUT_DOUGH = 13;
+	
 	/*
 	protected final static int SOUND_EGG = 9;
 	protected final static int SOUND_SQUEEZE=10;
@@ -98,7 +104,20 @@ public class PlayPalUtility {
 	protected static ArrayList<GestureSet> gestureSetList = new ArrayList<GestureSet>();
 	protected static ArrayList<StrokeSet> strokeSetList = new ArrayList<StrokeSet>();
 	
-	private static int[] soundRes = {R.raw.test_sound, R.raw.game1_cutting_onion, R.raw.game1_water_drop, R.raw.game1_boiling_short, R.raw.unsorted_yayyy, R.raw.unsorted_uhoh, R.raw.game1_drinking, R.raw.game2_roast, R.raw.unsorted_cartoon, R.raw.game3_oven, R.raw.game4_cartoon_rolling};
+	private static int[] soundRes = {R.raw.test_sound, 
+									 R.raw.game1_cutting_onion, 
+									 R.raw.game1_water_drop, 
+									 R.raw.game1_boiling_short, 
+									 R.raw.unsorted_yayyy, 
+									 R.raw.unsorted_uhoh, 
+									 R.raw.game1_drinking, 
+									 R.raw.game2_roast, 
+									 R.raw.unsorted_cartoon, 
+									 R.raw.game3_mixing,
+									 R.raw.game3_oven_trimmed, 
+									 R.raw.game3_squeezing_cream,
+									 R.raw.game4_cartoon_rolling,
+									 R.raw.game4_cutting_dough};
 	
 	protected static boolean butterSqueezing = false;
 	protected static SPenEventLibrary mSPenEventLibrary = new SPenEventLibrary();

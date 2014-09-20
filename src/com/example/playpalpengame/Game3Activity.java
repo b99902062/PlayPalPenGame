@@ -208,7 +208,8 @@ public class Game3Activity extends Activity {
 					Point curPoint = new Point((int)event.getX(),(int)event.getY());
 					float dist = calcDistance(startPoint, curPoint);
 				
-					if(dist>=25){
+					if(dist>=40){
+						//PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_CREAM, Game3Activity.this);
 						curButterView = new ImageView(gameContext);
 						curButterView.setImageResource(R.drawable.game3_cream);
 						game3RelativeLayout.addView(curButterView);
@@ -245,6 +246,7 @@ public class Game3Activity extends Activity {
 
 			@Override
 			public void onHoverButtonDown(View arg0, MotionEvent event) {
+				
 				PlayPalUtility.curEntry = new RecordEntry(
 						new Point((int)event.getRawX(), (int)event.getRawY()), RecordEntry.STATE_HOVER_BTN_START);
 				PenRecorder.forceRecord();
@@ -255,6 +257,7 @@ public class Game3Activity extends Activity {
 				curButterView = new ImageView(gameContext);	
 				curButterView.setImageResource(R.drawable.game3_cream);
 				game3RelativeLayout.addView(curButterView);
+				
 				ratio = 0;
 				
 				startPoint = new Point((int)event.getX(),(int)event.getY());
@@ -490,6 +493,7 @@ public class Game3Activity extends Activity {
 	}
 		
 	protected Integer handleStirring(View view){
+		PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_MIX, this);
 		FramesSequenceAnimation anim = null;
 		curProgress++;
 		progressCountText.setText("ProgressCount: " + new String("" + curProgress));
@@ -592,6 +596,8 @@ public class Game3Activity extends Activity {
 		progressCountText.setText("ProgressCount: " + new String("" + curProgress));
 		
 		cakeCreamHintView.setVisibility(ImageView.VISIBLE);
+		cakeCreamHintView.bringToFront();
+		game3RelativeLayout.invalidate();
 		PlayPalUtility.clearGestureSets();
 		PlayPalUtility.unregisterHoverLineGesture(game3RelativeLayout);
 		score += PlayPalUtility.killTimeBar();
@@ -615,6 +621,7 @@ public class Game3Activity extends Activity {
 	}
 	
 	protected Integer handleCream(View view){
+		PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_CREAM, this);
 		curProgress++;
 		progressCountText.setText("ProgressCount: " + new String("" + curProgress));
 		
@@ -624,6 +631,9 @@ public class Game3Activity extends Activity {
 		if(curProgress == CREAM_PROGRESS_END){
 			cakeDottedLineView.setVisibility(ImageView.INVISIBLE);
 			cakeStrawberryView.setVisibility(ImageView.VISIBLE);
+			cakeStrawberryView.bringToFront();
+			game3RelativeLayout.invalidate();
+			
 			PlayPalUtility.setAlphaAnimation(cakeStrawberryView,true);
 			
 			PlayPalUtility.clearGestureSets();

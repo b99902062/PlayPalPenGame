@@ -38,8 +38,10 @@ public class Practice4Activity extends Activity {
 	protected final int CREAM_DIST = 10;
 	protected final int CREAM_INIT_RATIO = 5;
 	protected final int CREAM_MAX_RATIO = 10;
+	
 	protected boolean canTouchOven = false;
 	protected boolean butterSqueezing = false;
+	
 	
 	protected final int DOUGH_TIME  = 600;
 	protected final int COOKIE_TIME = 600;
@@ -47,6 +49,9 @@ public class Practice4Activity extends Activity {
 	
 	private final static int TEACH_HAND_OFFSET_X = 45;
 	private final static int TEACH_HAND_OFFSET_Y = 665;
+	private final static int TEACH_HAND_BTN_OFFSET_X = 260;
+	private final static int TEACH_HAND_BTN_OFFSET_Y = 790;
+	
 	
 	protected final int DOUGH_PROGRESS_END  = 1;
 	protected final int COOKIE_PROGRESS_END = DOUGH_PROGRESS_END + 1;
@@ -61,7 +66,8 @@ public class Practice4Activity extends Activity {
 		return new Point(p1.x+p2.x, p1.y+p2.y);
 	}
 	
-	
+	protected AnimationDrawable btnAnim;
+	protected AnimationDrawable pressAnim;
 	protected TextView  progressCountText;
 	protected DrawableRelativeLayout game4RelativeLayout;
 	protected SPenEventLibrary mSPenEventLibrary;
@@ -256,6 +262,11 @@ public class Practice4Activity extends Activity {
 		PlayPalUtility.setHoverTarget(true, laddleView);
 		
 		setTeachHandLinear(centerPoint.x - TEACH_HAND_OFFSET_X, centerPoint.y - TEACH_HAND_OFFSET_Y, doughPosArray[0][3].x - centerPoint.x, doughPosArray[0][3].y - centerPoint.y);
+		
+		teachHandView.setVisibility(ImageView.VISIBLE);
+		teachHandView.setBackgroundResource(R.anim.game4_teach_hand_animation);
+		pressAnim = (AnimationDrawable) teachHandView.getBackground();
+		pressAnim.start();
 	}	
 
 	@Override
@@ -303,11 +314,12 @@ public class Practice4Activity extends Activity {
 		teachHandView.clearAnimation();
 
 		//the circle cookie(_t=2)
-		lonelyCookie = new Cookie(5, 2, (ImageView)findViewById(cookieViewArray[4]));
+		lonelyCookie = new Cookie(4, 2, (ImageView)findViewById(cookieViewArray[4]));
 		lonelyCookie.setCreamColor();
 		lonelyCookie.setGesturePoint();
 		lonelyCookie.setGestureDottedLine();
 		lonelyCookie.view.setVisibility(ImageView.INVISIBLE);
+		
 		
 		mSPenEventLibrary.setSPenHoverListener(lonelyCookie.view, new SPenHoverListener(){
 			Point startPoint;
@@ -404,6 +416,7 @@ public class Practice4Activity extends Activity {
 			
 			initCookieView();
 			
+			pressAnim.stop();
 			setTeachHandCircular(lonelyCookie.center.x-TEACH_HAND_OFFSET_X, lonelyCookie.center.y-TEACH_HAND_OFFSET_Y, 150);
 			teachHandView.setVisibility(ImageView.INVISIBLE);
 			
@@ -467,6 +480,7 @@ public class Practice4Activity extends Activity {
 	
 	
 	protected Integer handleCookieProgress (View view){
+		PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_CUT_DOUGH, this);
 		curProgress++;
 		progressCountText.setText("ProgressCount: " + new String("" + curProgress));
 		
@@ -512,6 +526,7 @@ public class Practice4Activity extends Activity {
 	
 			final Cookie curCookie = lonelyCookie;
 			Animation cookieAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTLEFT);
+			
 			cookieAnim.setAnimationListener(new AnimationListener() {
 				@Override
 				public void onAnimationEnd(Animation anim) {
@@ -532,6 +547,17 @@ public class Practice4Activity extends Activity {
 								isFirstCookie = false;
 							}
 							curCookie.view.clearAnimation();
+							
+							teachHandView.setVisibility(ImageView.VISIBLE);
+							LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+							params.setMargins(lonelyCookie.center.x-TEACH_HAND_BTN_OFFSET_X, lonelyCookie.center.y-TEACH_HAND_BTN_OFFSET_Y, 0, 0);
+							teachHandView.setLayoutParams(params);
+							teachHandView.bringToFront();
+							game4RelativeLayout.invalidate();							
+							
+							teachHandView.setBackgroundResource(R.anim.game4_teach_hand_btn_animation);
+							btnAnim = (AnimationDrawable) teachHandView.getBackground();
+							btnAnim.start();
 						}
 
 						@Override
@@ -571,11 +597,12 @@ public class Practice4Activity extends Activity {
 			PlayPalUtility.setLineGesture(true);
 		}
 		
+		
 		return 1;
 	}
 	
 	
-	protected Integer handleCookieCreamAction(View view){
+	protected Integer handleCookieCreamAction(View view){    
 		curProgress++;
 		progressCountText.setText("ProgressCount: " + new String("" + curProgress));
 		
@@ -599,6 +626,7 @@ public class Practice4Activity extends Activity {
 			bundle.putInt("GameHighScore", mHighScore);
 			bundle.putInt("GameWinCount", mWinCount);
 			bundle.putInt("NewScore", score);
+			newAct.putExtras(bundle);
 			startActivityForResult(newAct, 0);
 			Practice4Activity.this.finish();
 			return 0;
