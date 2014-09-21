@@ -12,29 +12,31 @@
 
 #define X_middle 300
 #define Y_middle 500
+
 #define U_Boundary 825
 #define D_Boundary 150
-
 #define L_Boundary 20
 #define R_Boundary 580
+#define DXY 0
+
+#define body_num   2
+#define vertex_num 3
 
 
 class Star{
 	public:
-
-	b2Body* bodies[2];
+	b2Body* bodies[5];
 
 	Star(b2World* m_world, float xPos, float yPos, float radius, uint16 groupBits, int _g){
-		int body_num = 5;
-		int vertex_num = 3;
-		for(int i=0; i<body_num; i++){
-			b2Vec2 vertices[3];
 
-			double main_deg = (i * 2 + 0.5) * M_PI / body_num;
+		/*for(int i=0; i<body_num; i++){
+
+			b2Vec2 vertices[3];
+			double main_deg = (i * 2.0 / body_num + 0.5) * M_PI;
 			double dt_deg   = 0.3 * 2 * M_PI;
 			vertices[0].Set(radius*cos(main_deg), radius*sin(main_deg));
-			vertices[1].Set(0.382*radius*cos(main_deg+dt_deg), radius*sin(main_deg+dt_deg));
-			vertices[2].Set(0.382*radius*cos(main_deg-dt_deg), radius*sin(main_deg-dt_deg));
+			vertices[1].Set(0.382*radius*cos(main_deg+dt_deg), 0.382*radius*sin(main_deg+dt_deg));
+			vertices[2].Set(0.382*radius*cos(main_deg-dt_deg), 0.382*radius*sin(main_deg-dt_deg));
 
 			b2BodyDef starBodyDef;
 			starBodyDef.type = b2_dynamicBody;
@@ -46,51 +48,98 @@ class Star{
 
 			b2FixtureDef starFixtureDef;
 			starFixtureDef.shape = &starShape;
-			starFixtureDef.density = 5 + 0.1f*_g;
-			starFixtureDef.friction = 0.1f + 0.05f*_g;
-			starFixtureDef.restitution = 0.2f + 0.05*_g;
+			starFixtureDef.density = 5;// + 0.1f*_g;
+			starFixtureDef.friction = 0.1f;// + 0.05f*_g;
+			starFixtureDef.restitution = 0.2f;// + 0.05*_g;
 			starFixtureDef.filter.categoryBits = groupBits;
 			starFixtureDef.filter.maskBits = groupBits;
 
 			bodies[i] = m_world->CreateBody(&starBodyDef);
 			bodies[i]->CreateFixture(&starFixtureDef);
 		}
-		//joint fixtures
-		b2WeldJointDef jointDef;
-		jointDef.bodyA = bodies[0];
-		jointDef.bodyB = bodies[1];
-		jointDef.localAnchorA = bodies[0]->GetLocalCenter();
-		jointDef.localAnchorB = bodies[1]->GetLocalCenter();
-		b2RevoluteJoint* joint = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
+		*/
+
+		for(int i=0; i<body_num; i++){
+					b2Vec2 vertices[3];
+					for(int j=0; j<vertex_num; j++){
+						vertices[j].Set(radius*cos((j+0.5*i) * 2 * M_PI / vertex_num), radius*sin((j+0.5*i) * 2 * M_PI / vertex_num));
+					}
+
+					b2BodyDef starBodyDef;
+					starBodyDef.type = b2_dynamicBody;
+					starBodyDef.position.Set(xPos, yPos);
+					starBodyDef.allowSleep = false;
+
+					b2PolygonShape starShape;
+					starShape.Set(vertices, vertex_num);
+
+					b2FixtureDef starFixtureDef;
+					starFixtureDef.shape = &starShape;
+					starFixtureDef.density = 10 + 0.1f*_g;
+					starFixtureDef.friction = 0.1f + 0.05f*_g;
+					starFixtureDef.restitution = 0.2f + 0.05f*_g;
+					starFixtureDef.filter.categoryBits = groupBits;
+					starFixtureDef.filter.maskBits = groupBits;
+
+					bodies[i] = m_world->CreateBody(&starBodyDef);
+					bodies[i]->CreateFixture(&starFixtureDef);
+				}
+
+		for(int i=0; i<body_num; i++){
+			//joint fixtures
+			b2WeldJointDef jointDef;
+			jointDef.bodyA = bodies[i];
+			jointDef.bodyB = bodies[(i+1)%body_num];
+			jointDef.localAnchorA = bodies[i]->GetLocalCenter();
+			jointDef.localAnchorB = bodies[(i+1)%body_num]->GetLocalCenter();
+			b2RevoluteJoint* joint = (b2RevoluteJoint*)m_world->CreateJoint(&jointDef);
+		}
 	}
 
 	b2Vec2 getPosition(){
-		float xPos = (bodies[0]->GetWorldCenter().x + bodies[1]->GetWorldCenter().x)/2;
-		float yPos = (bodies[0]->GetWorldCenter().y + bodies[1]->GetWorldCenter().y)/2;
+		float xPos=0;
+		float yPos=0;
+
+		for(int i=0; i<body_num; i++){
+			xPos += bodies[i]->GetWorldCenter().x;
+			yPos += bodies[i]->GetWorldCenter().y;
+		}
+		xPos = xPos/body_num;
+		yPos = yPos/body_num;
+
 
 		char s[100];
-		sprintf(s,"%f %f",xPos,yPos);
-		//__android_log_write(ANDROID_LOG_DEBUG, "jar",s);
+		sprintf(s,"%f %f\n",xPos,yPos);
+		__android_log_write(ANDROID_LOG_DEBUG, "gravity", s);
 
-		if(xPos<L_Boundary/PTM_Ratio || xPos>R_Boundary/PTM_Ratio){
+		if(xPos<(L_Boundary-DXY)/PTM_Ratio || xPos>(R_Boundary+DXY)/PTM_Ratio){
 			//__android_log_write(ANDROID_LOG_DEBUG, "jar", "1:(");
-			bodies[0]->SetTransform(b2Vec2(X_middle/PTM_Ratio, bodies[0]->GetWorldCenter().y), bodies[0]->GetAngle());
-			bodies[1]->SetTransform(b2Vec2(X_middle/PTM_Ratio, bodies[1]->GetWorldCenter().y), bodies[1]->GetAngle());
+			for(int i=0; i<body_num; i++)
+				bodies[i]->SetTransform(b2Vec2(X_middle/PTM_Ratio, bodies[i]->GetWorldCenter().y), bodies[i]->GetAngle());
 		}
-		if(yPos<D_Boundary/PTM_Ratio || yPos>U_Boundary/PTM_Ratio){
+		if(yPos<(D_Boundary-DXY)/PTM_Ratio || yPos>(U_Boundary+DXY)/PTM_Ratio){
 			//__android_log_write(ANDROID_LOG_DEBUG, "jar", "2:(");
-			bodies[0]->SetTransform(b2Vec2(bodies[0]->GetWorldCenter().x, Y_middle/PTM_Ratio), bodies[0]->GetAngle());
-			bodies[1]->SetTransform(b2Vec2(bodies[1]->GetWorldCenter().x, Y_middle/PTM_Ratio), bodies[1]->GetAngle());
+			for(int i=0; i<body_num; i++)
+				bodies[i]->SetTransform(b2Vec2(bodies[i]->GetWorldCenter().x, Y_middle/PTM_Ratio), bodies[i]->GetAngle());
 		}
 
-		xPos = (bodies[0]->GetWorldCenter().x + bodies[1]->GetWorldCenter().x)/2;
-		yPos = (bodies[0]->GetWorldCenter().y + bodies[1]->GetWorldCenter().y)/2;
+		xPos = yPos = 0;
+		for(int i=0; i<body_num; i++){
+				xPos += bodies[i]->GetWorldCenter().x;
+				yPos += bodies[i]->GetWorldCenter().y;
+			}
+		xPos = xPos/body_num;
+		yPos = yPos/body_num;
 
 		return b2Vec2(xPos,yPos);
 	}
 
+
 	float getAngle(){
-		return (bodies[0]->GetAngle() + bodies[1]->GetAngle())/2;
+		if( bodies[0]!=NULL)
+			return bodies[0]->GetAngle() + 0.5*M_PI;
+		else
+			return 0;
 	}
 
 };
@@ -179,9 +228,7 @@ extern "C"
 jboolean Java_com_example_playpalpengame_MainActivity_putIntoJar (
 		JNIEnv* env, jobject thiz, jint layerIndex) {
 
-
-
-	generateStarBody( (X_middle+rand()%200-100)/PTM_Ratio, (Y_middle+rand()%200-100) /PTM_Ratio, layerIndex);
+	generateStarBody( X_middle/PTM_Ratio, Y_middle/PTM_Ratio, layerIndex);
 	return true;
 }
 

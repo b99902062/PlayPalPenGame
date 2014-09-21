@@ -62,8 +62,8 @@ public class MainActivity extends Activity implements SensorEventListener {
 	public native float[] getPosition(int idx);
 	public native void worldStep();
 	
-	public static final int Num_Layers = 2;
-	public static final int Star_Size = 125;
+	public static final int Num_Layers = 1;
+	public static final int Star_Size = 130;
 	public static final float PTM_Ratio = 1500;
 	public static final int FPS = 60;
 	
@@ -130,14 +130,12 @@ public class MainActivity extends Activity implements SensorEventListener {
 		initWorld();
 		starArr = new LinkedList<StarStat>();
 		for(int i=0; i<winCount.length; i++) {
-			//Log.d("jar",""+i+" "+winCount[i]);
 			for(int j=0; j<winCount[i]; j++) {
 				ImageView newStar = new ImageView(this);
 				
 				newStar.setImageResource(starResArray[i]);
 				int nl = (int)(Math.random()*Num_Layers);
 				putIntoJar(nl);
-				
 				
 				starArr.add(new StarStat(i * 10000 + j, newStar));
 				newStar.setVisibility(ImageView.VISIBLE);
@@ -150,9 +148,7 @@ public class MainActivity extends Activity implements SensorEventListener {
             	newStar.bringToFront();
             	jarLayout.invalidate();
 			}
-		}
-		Log.d("#star",""+starArr.size());
-		
+		}		
 		
 		BackgroundMusicHandler.initMusic(this);
 		BackgroundMusicHandler.setMusicSt(true);
@@ -358,7 +354,8 @@ public class MainActivity extends Activity implements SensorEventListener {
 		    	msg.setData(dataBundle);
 		    	MainActivity.starHandler.sendMessage(msg);
 		    	
-		    	Log.d("Update",""+id+" "+pos[0]*PTM_Ratio+" "+pos[1]*PTM_Ratio);
+		    	//if(id==1)
+		    	//	Log.d("Update",""+id+" "+pos[0]*PTM_Ratio+" "+pos[1]*PTM_Ratio);
 			}
 		}
 	}
