@@ -194,6 +194,7 @@ public class Game1Activity extends Activity {
 		BackgroundMusicHandler.setMusicSt(true);
 		
 		setBackFromSettings();
+		System.gc();
 	}
 	
 	@Override
@@ -296,10 +297,12 @@ public class Game1Activity extends Activity {
 		potView = (ImageView) findViewById(R.id.potView);
 		board2Layout = (RelativeLayout) findViewById(R.id.board2RelativeLayout);
 
+		
 		potView.setBackgroundResource(R.anim.pot_drop_animation);
 		potDropAnim = (AnimationDrawable) potView.getBackground();
 
 		fireView = (ImageView) findViewById(R.id.fireView);
+		
 		fireView.setBackgroundResource(R.anim.pot_fire_animation);
 		fireAnim = (AnimationDrawable) fireView.getBackground();
 

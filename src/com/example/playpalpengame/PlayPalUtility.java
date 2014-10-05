@@ -1,11 +1,14 @@
 package com.example.playpalpengame;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Callable;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
@@ -16,6 +19,7 @@ import android.graphics.PathEffect;
 import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.FloatMath;
@@ -114,6 +118,11 @@ public class PlayPalUtility {
 									 R.raw.game3_squeezing_cream,
 									 R.raw.game4_cartoon_rolling,
 									 R.raw.game4_cutting_dough};
+	
+	private static int[][] voiceRes = {{R.raw.voice_1_1, R.raw.voice_1_2, R.raw.voice_1_3, R.raw.voice_1_4, R.raw.voice_1_5, R.raw.voice_1_6, R.raw.voice_1_7, R.raw.voice_1_8, R.raw.voice_1_9, R.raw.voice_1_10},
+		{R.raw.voice_2_1, R.raw.voice_2_2, R.raw.voice_2_3, R.raw.voice_2_4, R.raw.voice_2_5, R.raw.voice_2_6},
+		{R.raw.voice_3_1, R.raw.voice_3_2, R.raw.voice_3_3, R.raw.voice_3_4, R.raw.voice_3_5, R.raw.voice_3_6, R.raw.voice_3_7, R.raw.voice_3_8, R.raw.voice_3_9, R.raw.voice_3_10, R.raw.voice_3_11}, 
+		{R.raw.voice_4_1, R.raw.voice_4_2, R.raw.voice_4_3, R.raw.voice_4_4, R.raw.voice_4_5, R.raw.voice_4_6, R.raw.voice_4_7}}; 
 	
 	protected static boolean butterSqueezing = false;
 	protected static SPenEventLibrary mSPenEventLibrary = new SPenEventLibrary();
@@ -777,6 +786,26 @@ public class PlayPalUtility {
         mp.start();
 	}
 	
+	protected static void playTeachVoice(final Context context, int... voiceIndexs) {
+		int id = voiceIndexs[0];
+		  
+		int gameIndex = id / 100 - 1;
+		int stageIndex = id % 100 - 1;
+		
+		final int[] remainIndexs = Arrays.copyOfRange(voiceIndexs, 1, voiceIndexs.length);
+		
+		MediaPlayer mp = MediaPlayer.create(context, voiceRes[gameIndex][stageIndex]);
+        mp.setOnCompletionListener(new OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                mp.release();
+                if(remainIndexs.length > 0)
+                	playTeachVoice(context, remainIndexs);
+            }
+        });   
+        mp.start();
+	}
+	
 	protected static void registerProgressBar(ProgressBar barView, ImageView markView, ImageView progressBackView) {
 		registerProgressBar(barView, markView, progressBackView, null);
 	}
@@ -1099,3 +1128,25 @@ class CircularTranslateAnimation extends Animation {
         t.getMatrix().setTranslate(dx, dy);
     }
 }
+
+class WaitTimerTask extends TimerTask {
+	private Activity activity;
+	private String userName;
+	
+	public WaitTimerTask(Activity act, String name) {
+		activity = act;
+		userName = name;
+	}
+	
+    public void run() {
+    	BackgroundMusicHandler.setCanRecycle(false);
+    	
+    	Intent newAct = new Intent();
+		newAct.setClass(activity, MainActivity.class);
+		Bundle bundle = new Bundle();
+		bundle.putString("userName", userName);
+        newAct.putExtras(bundle);
+		activity.startActivityForResult(newAct, 0);
+		activity.finish();
+    }
+  };

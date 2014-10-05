@@ -2,6 +2,7 @@ package com.example.playpalpengame;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Timer;
 import java.util.concurrent.Callable;
 
 import android.os.Bundle;
@@ -31,6 +32,7 @@ import com.samsung.spen.lib.input.SPenEventLibrary;
 import com.samsung.spensdk.applistener.SPenHoverListener;
 
 public class Practice4Activity extends Activity {
+	protected Context self; 
 	
 	protected final int CREAM_BOX_SIZE = 50;
 	protected final int CREAM_COLOR_NUM = 6;
@@ -184,12 +186,16 @@ public class Practice4Activity extends Activity {
 		super.onCreate(savedInstanceState);
 		
 		PlayPalUtility.setDebugMode(false);
+
+		self = this;
 		
 		Bundle bundle = getIntent().getExtras();
 		userName = bundle.getString("userName");
 		mBadges = bundle.getInt("GameBadges");
 		mHighScore = bundle.getInt("GameHighScore");
 		mWinCount = bundle.getInt("GameWinCount");
+		
+		PlayPalUtility.playTeachVoice(this, 401, 402);
 		
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -264,11 +270,27 @@ public class Practice4Activity extends Activity {
 		setTeachHandLinear(centerPoint.x - TEACH_HAND_OFFSET_X, centerPoint.y - TEACH_HAND_OFFSET_Y, doughPosArray[0][3].x - centerPoint.x, doughPosArray[0][3].y - centerPoint.y);
 		
 		teachHandView.setVisibility(ImageView.VISIBLE);
+		
 		teachHandView.setBackgroundResource(R.anim.game4_teach_hand_animation);
 		pressAnim = (AnimationDrawable) teachHandView.getBackground();
 		pressAnim.start();
 	}	
 
+	@Override
+	protected void onPause() {
+	    super.onPause();
+	    BackgroundMusicHandler.recyle();
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		BackgroundMusicHandler.initMusic(this);
+		BackgroundMusicHandler.setMusicSt(true);
+		
+		System.gc();
+	}
+	
 	@Override
 	public void onBackPressed() {
 	}
@@ -320,14 +342,13 @@ public class Practice4Activity extends Activity {
 		lonelyCookie.setGestureDottedLine();
 		lonelyCookie.view.setVisibility(ImageView.INVISIBLE);
 		
-		
 		mSPenEventLibrary.setSPenHoverListener(lonelyCookie.view, new SPenHoverListener(){
 			Point startPoint;
 			ImageView curButterView;
 			int ratio = CREAM_INIT_RATIO;
 			int w = 50;
 			int h = 50;
-					
+			
 			@Override
 			public boolean onHover(View arg0, MotionEvent event) {
 				if(!butterSqueezing){
@@ -414,6 +435,8 @@ public class Practice4Activity extends Activity {
 			
 			teachHandView.clearAnimation();
 			teachHandView.setVisibility(ImageView.INVISIBLE);
+
+			PlayPalUtility.playTeachVoice(this, 403, 404);
 			
 			initCookieView();
 			
@@ -498,8 +521,6 @@ public class Practice4Activity extends Activity {
 			score += PlayPalUtility.killTimeBar();
 			PlayPalUtility.clearDrawView();
 			
-			
-			
 			for (int i=0; i<2; i++)
 			{
 				final ImageView curDoughView = (ImageView)findViewById(doughViewArray[i]);
@@ -549,12 +570,15 @@ public class Practice4Activity extends Activity {
 							}
 							curCookie.view.clearAnimation();
 							
+							PlayPalUtility.playTeachVoice(self, 405, 406);
+							
 							teachHandView.setVisibility(ImageView.VISIBLE);
 							LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 							params.setMargins(lonelyCookie.center.x-TEACH_HAND_BTN_OFFSET_X, lonelyCookie.center.y-TEACH_HAND_BTN_OFFSET_Y, 0, 0);
 							teachHandView.setLayoutParams(params);
 							teachHandView.bringToFront();
 							game4RelativeLayout.invalidate();							
+							
 							
 							teachHandView.setBackgroundResource(R.anim.game4_teach_hand_btn_animation);
 							btnAnim = (AnimationDrawable) teachHandView.getBackground();
@@ -619,19 +643,11 @@ public class Practice4Activity extends Activity {
 			PlayPalUtility.clearGestureSets();
 			PlayPalUtility.clearDrawView();
 			
-			Intent newAct = new Intent();
-			newAct.setClass(Practice4Activity.this, MainActivity.class);
-			Bundle bundle = new Bundle();
-			bundle.putInt("GameIndex", 4);
-			bundle.putBoolean("isWin", true);
-			bundle.putString("userName", userName);
-			bundle.putInt("GameBadges", mBadges);
-			bundle.putInt("GameHighScore", mHighScore);
-			bundle.putInt("GameWinCount", mWinCount);
-			bundle.putInt("NewScore", score);
-			newAct.putExtras(bundle);
-			startActivityForResult(newAct, 0);
-			Practice4Activity.this.finish();
+			PlayPalUtility.playTeachVoice(this, 407);
+			
+			Timer timer = new Timer(true);
+			timer.schedule(new WaitTimerTask(this, userName), 5000);
+			
 			return 0;
 		}
 		return 1;
@@ -690,7 +706,8 @@ public class Practice4Activity extends Activity {
 			id   = _id;
 			type = _t;
 			view = _v;
-			view.setVisibility(ImageView.VISIBLE);		
+			view.setVisibility(ImageView.VISIBLE);
+			
 			view.setBackgroundResource(cookieResArray[type]);
 			center = new Point(view.getLeft()+200, view.getTop()+200);
 			
@@ -698,6 +715,7 @@ public class Practice4Activity extends Activity {
 		
 		public void beCutted(){
 			PlayPalUtility.eraseStroke(0);
+			
 			view.setBackgroundResource(cookieAnimArray[type]);
 			AnimationDrawable cutAnim = (AnimationDrawable) view.getBackground();
 			cutAnim.start();

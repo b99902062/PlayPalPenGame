@@ -344,6 +344,8 @@ public class Game3Activity extends Activity {
 		setBackFromSettings();
 		BackgroundMusicHandler.initMusic(this);
 		BackgroundMusicHandler.setMusicSt(true);
+		
+		System.gc();
 	}
 	
 	@Override

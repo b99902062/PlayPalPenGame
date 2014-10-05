@@ -42,7 +42,7 @@ import com.samsung.spen.lib.input.SPenEventLibrary;
 import com.samsung.spensdk.applistener.SPenHoverListener;
 
 public class Practice3Activity extends Activity {
-	
+	protected Context self;
 	protected Point centralPoint = new Point(1280,880);
 	protected Point[] pointArray = {
 		new Point(1480,880),
@@ -124,6 +124,8 @@ public class Practice3Activity extends Activity {
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		
+		self = this;
+		
 		Bundle bundle = getIntent().getExtras();
 		userName = bundle.getString("userName");
 		mBadges = bundle.getInt("GameBadges");
@@ -139,6 +141,8 @@ public class Practice3Activity extends Activity {
 		setHomeListener(homeBtn);
 		
 		ovenHandler = new OvenHandler();
+		
+		PlayPalUtility.playTeachVoice(this, 301, 302);
 		
 		curProgress = 0;
 		boxSize = 100;
@@ -309,6 +313,7 @@ public class Practice3Activity extends Activity {
 		teachHandView.setLayoutParams(params);
 		
 		teachHandView.setVisibility(ImageView.VISIBLE);
+		
 		teachHandView.setBackgroundResource(R.anim.game3_teach_hand_animation);
 		
 		pressAnim = (AnimationDrawable) teachHandView.getBackground();
@@ -326,6 +331,21 @@ public class Practice3Activity extends Activity {
 			}
 		});
 	}	
+	
+	@Override
+	protected void onPause() {
+	    super.onPause();
+	    BackgroundMusicHandler.recyle();
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		BackgroundMusicHandler.initMusic(this);
+		BackgroundMusicHandler.setMusicSt(true);
+		
+		System.gc();
+	}
 	
 	@Override
 	public void onBackPressed() {
@@ -387,6 +407,8 @@ public class Practice3Activity extends Activity {
 			anim = AnimationsContainer.getInstance().createGame3StirAnim(mixView2,2);
 		}
 		else if( curProgress == MIX_PROGRESS_END){
+			PlayPalUtility.playTeachVoice(self, 303, 304);
+			
 			pressAnim.stop();
 			teachHandView.clearAnimation();
 			teachHandView.setVisibility(ImageView.INVISIBLE);
@@ -469,6 +491,8 @@ public class Practice3Activity extends Activity {
 		
 		teachHandView.clearAnimation();
 		
+		PlayPalUtility.playTeachVoice(this, 308);
+		
 		teachHandView.setBackgroundResource(R.anim.game3_teach_hand_btn_animation);
 		btnAnim = (AnimationDrawable) teachHandView.getBackground();
 		btnAnim.start();
@@ -510,12 +534,14 @@ public class Practice3Activity extends Activity {
 			btnAnim.stop();
 			teachHandView.clearAnimation();
 			
+			PlayPalUtility.playTeachVoice(this, 309, 310);
+			
 			setTeachHandLinear(1560-TEACH_HAND_OFFSET_X, 600-TEACH_HAND_OFFSET_Y, 0, 0);
 			teachHandView.setVisibility(ImageView.VISIBLE);
+			
 			teachHandView.setBackgroundResource(R.anim.game3_teach_hand_animation);
 			pressAnim = (AnimationDrawable) teachHandView.getBackground();
 			pressAnim.start();
-			
 			
 			teachHandView.setOnTouchListener(new View.OnTouchListener() {
 				@Override
@@ -563,20 +589,11 @@ public class Practice3Activity extends Activity {
 		PlayPalUtility.clearGestureSets();
 		PlayPalUtility.clearDrawView();
 		
-		Intent newAct = new Intent();
-		newAct.setClass(Practice3Activity.this, MainActivity.class);
-		Bundle bundle = new Bundle();
-		bundle.putInt("GameIndex", 3);
-		bundle.putBoolean("isWin", true);
-		bundle.putString("userName", userName);
-		bundle.putInt("GameBadges", mBadges);
-		bundle.putInt("GameHighScore", mHighScore);
-		bundle.putInt("GameWinCount", mWinCount);
-		bundle.putInt("NewScore", score);
-        newAct.putExtras(bundle);
-		startActivityForResult(newAct, 0);
-		Practice3Activity.this.finish();
+		PlayPalUtility.playTeachVoice(this, 311);
 		
+		Timer timer = new Timer(true);
+		timer.schedule(new WaitTimerTask(this, userName), 5000);
+				
 		return 1;
 	}
 	
@@ -633,9 +650,12 @@ public class Practice3Activity extends Activity {
 					cakeCreamHintView.setVisibility(ImageView.INVISIBLE);
 					pressAnim.stop();
 					teachHandView.setVisibility(ImageView.VISIBLE);
+					
 					teachHandView.setBackgroundResource(R.anim.game3_teach_hand_btn_animation);
 					btnAnim = (AnimationDrawable) teachHandView.getBackground();
 					btnAnim.start();
+					
+					PlayPalUtility.playTeachVoice(self,  305, 306, 307);
 					
 					setTeachHandLinear(dottedLineArray[0].x-TEACH_HAND_BTN_OFFSET_X, dottedLineArray[0].y-TEACH_HAND_BTN_OFFSET_Y, dottedLineArray[2].x-dottedLineArray[0].x, dottedLineArray[2].y-dottedLineArray[0].y);
 					

@@ -1,6 +1,8 @@
 package com.example.playpalpengame;
 
 import java.util.LinkedList;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Callable;
 
 import android.app.Activity;
@@ -172,6 +174,7 @@ public class Practice2Activity extends Activity {
                     				teachHandView.setVisibility(View.INVISIBLE);
                     				
                     				PlayPalUtility.killTimeBar();
+                    				PlayPalUtility.playTeachVoice(self, 203, 204, 205);
                     				
                     				PlayPalUtility.clearGestureSets();
                     				PlayPalUtility.setLineGesture(false);
@@ -203,6 +206,7 @@ public class Practice2Activity extends Activity {
 		
 		createFish();
 		setDownAnim();
+		PlayPalUtility.playTeachVoice(self, 201, 202);
 		
 		teachHandView.setVisibility(View.VISIBLE);
 		isReady = true;
@@ -212,6 +216,16 @@ public class Practice2Activity extends Activity {
 	protected void onPause() {
 	    super.onPause();
 	    clearAll();
+	    BackgroundMusicHandler.recyle();
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		BackgroundMusicHandler.initMusic(this);
+		BackgroundMusicHandler.setMusicSt(true);
+		
+		System.gc();
 	}
 	
 	@Override
@@ -219,6 +233,7 @@ public class Practice2Activity extends Activity {
 	}
 	
 	private void setDownAnim() {
+		
 		teachHandView.setBackgroundResource(R.anim.game2_teach_hand_animation);
 		downAnim = (AnimationDrawable) teachHandView.getBackground();
 		downAnim.start();
@@ -438,19 +453,17 @@ public class Practice2Activity extends Activity {
 			PlayPalUtility.killTimeBar();
 			
 			clearAll();
+			PlayPalUtility.playTeachVoice(self, 206);
 
-			Intent newAct = new Intent();
-			newAct.setClass(Practice2Activity.this, MainActivity.class);
-			Bundle bundle = new Bundle();
-			bundle.putString("userName", mUserName);
-            newAct.putExtras(bundle);
-			startActivityForResult(newAct, 0);
-			Practice2Activity.this.finish();
+			Timer timer = new Timer(true);
+			timer.schedule(new WaitTimerTask(this, mUserName), 5000);
 		}
 		
 		
 		return 0;
 	}
+	
+	
 	
 	private static Handler fishLocationHandler = new Handler() {
         public void handleMessage(Message msg) {

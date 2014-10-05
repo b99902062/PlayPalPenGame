@@ -238,6 +238,7 @@ public class Game2Activity extends Activity {
 		BackgroundMusicHandler.setMusicSt(true);
 		
 		setBackFromSettings();
+		System.gc();
 	}
 	
 	@Override

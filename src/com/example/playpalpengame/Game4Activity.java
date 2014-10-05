@@ -297,6 +297,8 @@ public class Game4Activity extends Activity {
 		super.onResume();
 		BackgroundMusicHandler.initMusic(this);
 		BackgroundMusicHandler.setMusicSt(true);
+		
+		System.gc();
 	}
 	
 	@Override
@@ -692,7 +694,8 @@ public class Game4Activity extends Activity {
 			id   = _id;
 			type = _t;
 			view = _v;
-			view.setVisibility(ImageView.VISIBLE);		
+			view.setVisibility(ImageView.VISIBLE);
+			
 			view.setBackgroundResource(cookieResArray[type]);
 			center = new Point(view.getLeft()+200, view.getTop()+200);
 			
@@ -700,6 +703,7 @@ public class Game4Activity extends Activity {
 		
 		public void beCutted(){
 			PlayPalUtility.eraseStroke(this.id);
+			
 			view.setBackgroundResource(cookieAnimArray[type]);
 			AnimationDrawable cutAnim = (AnimationDrawable) view.getBackground();
 			cutAnim.start();
@@ -711,6 +715,7 @@ public class Game4Activity extends Activity {
 		}
 		
 		public void beBaked(){
+			
 			view.setBackgroundResource(cookieResArray3[type]);
 			
 			//this.setPos();
@@ -751,6 +756,7 @@ public class Game4Activity extends Activity {
 			numCream++;
 			
 			if(numCream == 10){
+				
 				view.setBackgroundResource(bigCookieAnimArray[type]);
 				AnimationDrawable largeAnim = (AnimationDrawable) view.getBackground();
 				largeAnim.start();

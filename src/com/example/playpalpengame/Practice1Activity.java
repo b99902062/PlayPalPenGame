@@ -1,7 +1,11 @@
 package com.example.playpalpengame;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Callable;
+
+import com.example.playpalpengame.LoadingActivity.timerTask;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -157,6 +161,7 @@ public class Practice1Activity extends Activity {
 		DrawGestureLine();
 		
 		setTeachHandLinear(beginPnt.x - TEACH_HAND_DOWN_OFFSET_X, beginPnt.y - TEACH_HAND_DOWN_OFFSET_Y, endPnt.x - beginPnt.x, endPnt.y - beginPnt.y);
+		PlayPalUtility.playTeachVoice(this, 101, 102, 103);
 	}
 	
 	@Override
@@ -171,6 +176,8 @@ public class Practice1Activity extends Activity {
 		super.onResume();
 		BackgroundMusicHandler.initMusic(this);
 		BackgroundMusicHandler.setMusicSt(true);
+		
+		System.gc();
 	}
 	
 	@Override
@@ -205,10 +212,12 @@ public class Practice1Activity extends Activity {
 		potView = (ImageView) findViewById(R.id.potView);
 		board2Layout = (RelativeLayout) findViewById(R.id.board2RelativeLayout);
 
+		
 		potView.setBackgroundResource(R.anim.pot_drop_animation);
 		potDropAnim = (AnimationDrawable) potView.getBackground();
 
 		fireView = (ImageView) findViewById(R.id.fireView);
+		
 		fireView.setBackgroundResource(R.anim.pot_fire_animation);
 		fireAnim = (AnimationDrawable) fireView.getBackground();		
 		
@@ -292,6 +301,8 @@ public class Practice1Activity extends Activity {
 			teachHandView.setVisibility(View.INVISIBLE);
 			
 			score += PlayPalUtility.killTimeBar();
+			PlayPalUtility.playTeachVoice(self, 109);
+			
 			Animation boardAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTLEFT);
 			boardAnim.setAnimationListener(new AnimationListener() {
 				@Override
@@ -416,13 +427,10 @@ public class Practice1Activity extends Activity {
 			clearAll();			
 			Log.d("EndTest", String.format("Game1Score: %d", score));
 			
-			Intent newAct = new Intent();
-			newAct.setClass(Practice1Activity.this, MainActivity.class);
-			Bundle bundle = new Bundle();
-			bundle.putString("userName", mUserName);
-            newAct.putExtras(bundle);
-			startActivityForResult(newAct, 0);
-			Practice1Activity.this.finish();
+			PlayPalUtility.playTeachVoice(self, 110);
+			
+			Timer timer = new Timer(true);
+			timer.schedule(new WaitTimerTask(this, mUserName), 4000);
 		}
 		
 		return 1;
@@ -476,6 +484,7 @@ public class Practice1Activity extends Activity {
 			PlayPalUtility.clearDrawView();
 			teachHandView.clearAnimation();
 			teachHandView.setVisibility(View.INVISIBLE);
+			PlayPalUtility.playTeachVoice(this, 104);
 			
 			PlayPalUtility.setLineGesture(false);
 			PlayPalUtility.clearGestureSets();
@@ -491,6 +500,8 @@ public class Practice1Activity extends Activity {
 					cucumberView.setAnimation(cucumberAnim);
 					cucumberView.setVisibility(ImageView.VISIBLE);
 					setFoodListener(cucumberView);
+					
+					PlayPalUtility.playTeachVoice(self, 105, 106);
 					
 					cucumberAnim.setAnimationListener(new AnimationListener() {
 						@Override
@@ -533,6 +544,7 @@ public class Practice1Activity extends Activity {
 			teachHandView.clearAnimation();
 			teachHandView.setVisibility(View.INVISIBLE);
 			score += PlayPalUtility.killTimeBar();
+			PlayPalUtility.playTeachVoice(self, 107);
 			
 			Animation cucumberAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTRIGHT);
 			Animation boardAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTRIGHT);
@@ -555,6 +567,8 @@ public class Practice1Activity extends Activity {
 					cucumberView.clearAnimation();
 					cucumberView.setVisibility(ImageView.GONE);
 
+					PlayPalUtility.playTeachVoice(self, 108);
+					
 					potView.setVisibility(ImageView.VISIBLE);
 					Animation fadeIn = new AlphaAnimation(0, 1);
 					fadeIn.setInterpolator(new DecelerateInterpolator());
