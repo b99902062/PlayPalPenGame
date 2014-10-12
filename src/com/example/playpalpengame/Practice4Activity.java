@@ -32,8 +32,6 @@ import com.samsung.spen.lib.input.SPenEventLibrary;
 import com.samsung.spensdk.applistener.SPenHoverListener;
 
 public class Practice4Activity extends Activity {
-	protected Context self; 
-	
 	protected final int CREAM_BOX_SIZE = 50;
 	protected final int CREAM_COLOR_NUM = 6;
 	protected final int CREAM_SIZE = 100;
@@ -68,8 +66,8 @@ public class Practice4Activity extends Activity {
 		return new Point(p1.x+p2.x, p1.y+p2.y);
 	}
 	
-	protected AnimationDrawable btnAnim;
-	protected AnimationDrawable pressAnim;
+	protected FramesSequenceAnimation btnAnim;
+	protected FramesSequenceAnimation pressAnim;
 	protected TextView  progressCountText;
 	protected DrawableRelativeLayout game4RelativeLayout;
 	protected SPenEventLibrary mSPenEventLibrary;
@@ -147,12 +145,6 @@ public class Practice4Activity extends Activity {
 		R.id.Game4_cookie7,
 	};
 	
-	protected int[] cookieAnimArray = {
-		R.anim.game4_cookie1_animation,
-		R.anim.game4_cookie2_animation,
-		R.anim.game4_cookie3_animation
-	};
-	
 	protected int[] creamArray = {
 		R.drawable.game4_cream1,
 		R.drawable.game4_cream2,
@@ -187,7 +179,7 @@ public class Practice4Activity extends Activity {
 		
 		PlayPalUtility.setDebugMode(false);
 
-		self = this;
+		gameContext = this;
 		
 		Bundle bundle = getIntent().getExtras();
 		userName = bundle.getString("userName");
@@ -271,8 +263,7 @@ public class Practice4Activity extends Activity {
 		
 		teachHandView.setVisibility(ImageView.VISIBLE);
 		
-		teachHandView.setBackgroundResource(R.anim.game4_teach_hand_animation);
-		pressAnim = (AnimationDrawable) teachHandView.getBackground();
+		pressAnim = AnimationsContainer.getInstance().createGame4TeachHandAnim(teachHandView);
 		pressAnim.start();
 	}	
 
@@ -280,6 +271,12 @@ public class Practice4Activity extends Activity {
 	protected void onPause() {
 	    super.onPause();
 	    BackgroundMusicHandler.recyle();
+	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		BitmapHandler.recycleBitmaps();
 	}
 	
 	@Override
@@ -366,7 +363,7 @@ public class Practice4Activity extends Activity {
 				if(dist>=CREAM_DIST){
 					PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_POP, Practice4Activity.this);
 					curButterView = new ImageView(gameContext);
-					curButterView.setImageResource(creamArray[lonelyCookie.creamColor]);
+					curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, creamArray[lonelyCookie.creamColor]));
 					game4RelativeLayout.addView(curButterView);
 					
 					ratio = CREAM_INIT_RATIO;	
@@ -391,8 +388,8 @@ public class Practice4Activity extends Activity {
 				Log.d("Penpal","pressing");
 				butterSqueezing = true;				
 				
-				curButterView = new ImageView(gameContext);	
-				curButterView.setImageResource(creamArray[lonelyCookie.creamColor]);
+				curButterView = new ImageView(gameContext);
+				curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, creamArray[lonelyCookie.creamColor]));
 				game4RelativeLayout.addView(curButterView);
 				
 				ratio = CREAM_INIT_RATIO;
@@ -428,7 +425,7 @@ public class Practice4Activity extends Activity {
 		if(curProgress == DOUGH_PROGRESS_END){
 			score += PlayPalUtility.killTimeBar();
 			
-			laddleView.setImageResource(R.drawable.game4_thinknife);
+			laddleView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game4_thinknife));
 
 			PlayPalUtility.clearGestureSets();
 			PlayPalUtility.clearDrawView();
@@ -565,12 +562,12 @@ public class Practice4Activity extends Activity {
 						public void onAnimationEnd(Animation anim) {
 							if(isFirstCookie) {
 								//PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
-								laddleView.setImageResource(R.drawable.game4_squeezer);
+								laddleView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game4_squeezer));
 								isFirstCookie = false;
 							}
 							curCookie.view.clearAnimation();
 							
-							PlayPalUtility.playTeachVoice(self, 405, 406);
+							PlayPalUtility.playTeachVoice(gameContext, 405, 406);
 							
 							teachHandView.setVisibility(ImageView.VISIBLE);
 							LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
@@ -579,9 +576,7 @@ public class Practice4Activity extends Activity {
 							teachHandView.bringToFront();
 							game4RelativeLayout.invalidate();							
 							
-							
-							teachHandView.setBackgroundResource(R.anim.game4_teach_hand_btn_animation);
-							btnAnim = (AnimationDrawable) teachHandView.getBackground();
+							btnAnim = AnimationsContainer.getInstance().createGame4TeachHandBtnAnim(teachHandView);
 							btnAnim.start();
 							PlayPalUtility.setLineGesture(false);
 						}
@@ -645,8 +640,16 @@ public class Practice4Activity extends Activity {
 			
 			PlayPalUtility.playTeachVoice(this, 407);
 			
+			BackgroundMusicHandler.setCanRecycle(false);
+	    	
+	    	Intent newAct = new Intent();
+			newAct.setClass(Practice4Activity.this, MainActivity.class);
+			Bundle bundle = new Bundle();
+			bundle.putString("userName", userName);
+	        newAct.putExtras(bundle);
+			
 			Timer timer = new Timer(true);
-			timer.schedule(new WaitTimerTask(this, userName), 5000);
+			timer.schedule(new WaitTimerTask(this, newAct), 5000);
 			
 			return 0;
 		}
@@ -715,9 +718,7 @@ public class Practice4Activity extends Activity {
 		
 		public void beCutted(){
 			PlayPalUtility.eraseStroke(0);
-			
-			view.setBackgroundResource(cookieAnimArray[type]);
-			AnimationDrawable cutAnim = (AnimationDrawable) view.getBackground();
+			FramesSequenceAnimation cutAnim = AnimationsContainer.getInstance().createGame4CookieAnim(view, type);
 			cutAnim.start();
 		}
 		

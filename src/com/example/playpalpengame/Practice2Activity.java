@@ -81,9 +81,9 @@ public class Practice2Activity extends Activity {
 	protected DrawableRelativeLayout game2RelativeLayout;
 	protected TextView testProgressCountText;
 	
-	protected AnimationDrawable downAnim;
+	protected FramesSequenceAnimation downAnim;
 	
-	private Context self;
+	private static Context self;
 	
 	protected int progressCount;
 	protected static LinkedList<FishHandlerThread> fishThreadList;
@@ -159,7 +159,7 @@ public class Practice2Activity extends Activity {
                     	params.setMargins((int)event.getX(), (int)event.getY() , 0, 0);
                     	if(canPutInBasket) {
                     		if(event.getX() - 200 > 1960 && event.getY() - 200 > 380 && event.getY() - 200 < 1380) {
-                    			netView.setImageResource(R.drawable.game2_net);
+                    			netView.setImageBitmap(BitmapHandler.getLocalBitmap(self, R.drawable.game2_net));
                     			canPutInBasket = false;
                     			PlayPalUtility.setLineGesture(true);
                     			// Play the pu-ton animation
@@ -174,7 +174,7 @@ public class Practice2Activity extends Activity {
                     				teachHandView.setVisibility(View.INVISIBLE);
                     				
                     				PlayPalUtility.killTimeBar();
-                    				PlayPalUtility.playTeachVoice(self, 203, 204, 205);
+                    				PlayPalUtility.playTeachVoice(self, 204, 205, 206);
                     				
                     				PlayPalUtility.clearGestureSets();
                     				PlayPalUtility.setLineGesture(false);
@@ -195,7 +195,7 @@ public class Practice2Activity extends Activity {
                     		fishThreadList.get(curFishIndex).moveTo((int)event.getX() - fishW, (int)event.getY() - fishH);
                     		fishThreadList.get(curFishIndex).doResume();
                     		fishThreadList.get(curFishIndex).fishView.setVisibility(ImageView.VISIBLE);
-                    		netView.setImageResource(R.drawable.game2_net);
+                    		netView.setImageBitmap(BitmapHandler.getLocalBitmap(self, R.drawable.game2_net));
                     		canPutInBasket = false;
                     	}
                         break;
@@ -206,7 +206,7 @@ public class Practice2Activity extends Activity {
 		
 		createFish();
 		setDownAnim();
-		PlayPalUtility.playTeachVoice(self, 201, 202);
+		PlayPalUtility.playTeachVoice(self, 201, 202, 203);
 		
 		teachHandView.setVisibility(View.VISIBLE);
 		isReady = true;
@@ -217,6 +217,12 @@ public class Practice2Activity extends Activity {
 	    super.onPause();
 	    clearAll();
 	    BackgroundMusicHandler.recyle();
+	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		BitmapHandler.recycleBitmaps();
 	}
 	
 	@Override
@@ -233,9 +239,7 @@ public class Practice2Activity extends Activity {
 	}
 	
 	private void setDownAnim() {
-		
-		teachHandView.setBackgroundResource(R.anim.game2_teach_hand_animation);
-		downAnim = (AnimationDrawable) teachHandView.getBackground();
+		downAnim = AnimationsContainer.getInstance().createGame2TeachHandAnim(teachHandView);
 		downAnim.start();
 	}
 	
@@ -318,12 +322,10 @@ public class Practice2Activity extends Activity {
 		PlayPalUtility.setLineGesture(false);
 		fishThreadList.get(index).doPause();
 		fishThreadList.get(index).fishView.setVisibility(ImageView.INVISIBLE);
-		netView.setImageResource(R.drawable.game2_net2);
+		netView.setImageBitmap(BitmapHandler.getLocalBitmap(self, R.drawable.game2_net2));
 		
-		//((ImageView)findViewById(R.id.teachHandView)).setImageResource(R.drawable.teach_hand2);
-		((AnimationDrawable)teachHandView.getBackground()).stop();
-		teachHandView.setBackground(null);
-		teachHandView.setImageResource(R.drawable.teach_hand2);
+		downAnim.stop();
+		teachHandView.setImageBitmap(BitmapHandler.getLocalBitmap(self, R.drawable.teach_hand2_lift));
 		setTeachHandLinear(500 - TEACH_HAND_OFFSET_X, 1000 - TEACH_HAND_OFFSET_Y, 2000, 0);
 
 		PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_ID_TEST, this);
@@ -332,7 +334,7 @@ public class Practice2Activity extends Activity {
 	}
 	
 	protected void LoadStep2() {
-		netView.setImageResource(R.drawable.game2_thin_knife);
+		netView.setImageBitmap(BitmapHandler.getLocalBitmap(self, R.drawable.game2_thin_knife));
 		
 		basketView.setVisibility(ImageView.GONE);
 		grillView.setVisibility(ImageView.VISIBLE);
@@ -371,11 +373,11 @@ public class Practice2Activity extends Activity {
 		Point pnt1 = new Point(fishOffset[0].x + cutBeginOffset[0].x, fishOffset[0].y + cutBeginOffset[0].y);
 		Point pnt2 = new Point(fishOffset[0].x + cutEndOffset[0].x, fishOffset[0].y + cutEndOffset[0].y);
 		
-		((ImageView)findViewById(R.id.teachHandView)).setImageResource(R.drawable.teach_hand2_down);
-		teachHandView.setImageResource(R.drawable.teach_hand2_down);
+		teachHandView.setImageBitmap(BitmapHandler.getLocalBitmap(self, R.drawable.teach_hand2_down));
 		setTeachHandLinear(pnt1.x - TEACH_HAND_DOWN_OFFSET_X, pnt1.y - TEACH_HAND_DOWN_OFFSET_Y, pnt2.x - pnt1.x, pnt2.y - pnt1.y);
 		
 		PlayPalUtility.setLineGesture(true);
+		findViewById(R.id.fishView1).setVisibility(View.VISIBLE);
 		
 		return 0;
 	}
@@ -416,7 +418,6 @@ public class Practice2Activity extends Activity {
 			&& isFishCutArray[baseIndex * 4 + 2]		
 			&& isFishCutArray[baseIndex * 4 + 3]) {
 				ImageView fishView = (ImageView)findViewById(fishIdArray[baseIndex]);
-				ImageView fishViewDone = (ImageView)findViewById(fishDoneIdArray[baseIndex]);
 				PlayPalUtility.setAlphaAnimation(fishView, false, new Callable<Integer>() {
 					private int index = baseIndex;
 					@Override
@@ -424,8 +425,7 @@ public class Practice2Activity extends Activity {
 						return DoFishDone(index);
 					}
 				});
-				PlayPalUtility.setAlphaAnimation(fishViewDone, true);
-				//fishView.setImageResource(R.drawable.game2_fish_done);
+				//PlayPalUtility.setAlphaAnimation(fishViewDone, true);
 			}
 		}
 		redrawHintLine();
@@ -442,10 +442,7 @@ public class Practice2Activity extends Activity {
 	
 	private Integer DoFishDone(int index) {
 		ImageView fishView = (ImageView)findViewById(fishIdArray[index]);
-		ImageView fishViewDone = (ImageView)findViewById(fishDoneIdArray[index]);
 		fishView.setVisibility(ImageView.GONE);
-		fishViewDone.setVisibility(ImageView.VISIBLE);
-		
 
 		progressCount++;
 		testProgressCountText.setText(String.format("ProgressCount: %d", progressCount));
@@ -453,10 +450,18 @@ public class Practice2Activity extends Activity {
 			PlayPalUtility.killTimeBar();
 			
 			clearAll();
-			PlayPalUtility.playTeachVoice(self, 206);
+			PlayPalUtility.playTeachVoice(self, 207);
 
+			BackgroundMusicHandler.setCanRecycle(false);
+	    	
+	    	Intent newAct = new Intent();
+			newAct.setClass(Practice2Activity.this, MainActivity.class);
+			Bundle bundle = new Bundle();
+			bundle.putString("userName", mUserName);
+	        newAct.putExtras(bundle);
+			
 			Timer timer = new Timer(true);
-			timer.schedule(new WaitTimerTask(this, mUserName), 5000);
+			timer.schedule(new WaitTimerTask(this, newAct), 5000);
 		}
 		
 		
@@ -472,9 +477,9 @@ public class Practice2Activity extends Activity {
         	if(msg.getData().getInt("index") >= fishThreadList.size())
         		return;
         	if(msg.getData().getInt("fishType") == 1)
-            	fishThreadList.get(msg.getData().getInt("index")).fishView.setImageResource(R.drawable.game2_fish_2);
+        		fishThreadList.get(msg.getData().getInt("index")).fishView.setImageBitmap(BitmapHandler.getLocalBitmap(self, R.drawable.game2_fish_2));
     		else
-    			fishThreadList.get(msg.getData().getInt("index")).fishView.setImageResource(R.drawable.game2_fish_1);
+    			fishThreadList.get(msg.getData().getInt("index")).fishView.setImageBitmap(BitmapHandler.getLocalBitmap(self, R.drawable.game2_fish_1));
         	
             int rotateAngle = msg.getData().getInt("rotateAngle");
             if(rotateAngle != 0)
@@ -508,7 +513,7 @@ public class Practice2Activity extends Activity {
 		
         FishHandlerThread(Practice2Activity context) {
         	fishView = new ImageView(context);
-			fishView.setImageResource(R.drawable.game2_fish_1);
+        	fishView.setImageBitmap(BitmapHandler.getLocalBitmap(self, R.drawable.game2_fish_1));
 			LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT,
 					LayoutParams.WRAP_CONTENT);
 			curX = 500;

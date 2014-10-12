@@ -1,9 +1,11 @@
 package com.example.playpalpengame;
 
 import java.util.ArrayList;
+import java.util.Timer;
 import java.util.concurrent.Callable;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Point;
@@ -52,10 +54,13 @@ public class Game1Activity extends Activity {
 	protected boolean isDoneDropFood;
 	protected int progressCount;
 	private int score = 0;
+	private int timeReminderStat = 0;
+	private boolean isFirstAlarm = true;
 	
 	protected Game1Activity self;
 	
 	private MediaPlayer fireMP = null;
+	private MediaPlayer tickMP = null;
 	
 	private String mUserName = null;
 	private int mBadges = 0;
@@ -75,9 +80,9 @@ public class Game1Activity extends Activity {
 	
 	protected TextView progressCountText;
 
-	protected AnimationDrawable potDropAnim;
+	protected FramesSequenceAnimation potDropAnim;
 	protected AnimationDrawable potStirAnim;
-	protected AnimationDrawable fireAnim;
+	protected FramesSequenceAnimation fireAnim;
 	
 	protected Point[] carrotCutBeginPointArray = {new Point(231, 406), new Point(465, 340), new Point(740, 311), new Point(979, 300), new Point(1195, 318)};
 	protected Point[] carrotCutEndPointArray = {new Point(270, 715), new Point(650, 747), new Point(952, 759), new Point(1175, 736), new Point(1354, 677)};
@@ -125,11 +130,20 @@ public class Game1Activity extends Activity {
 				bundle.putInt("GameWinCount", mWinCount);
 				bundle.putInt("NewScore", -1);
 	            newAct.putExtras(bundle);
-				startActivityForResult(newAct, 0);
-				Game1Activity.this.finish();
+	            
+	            findViewById(R.id.failFeedbackView).setVisibility(View.VISIBLE);
+	            
+	            Timer timer = new Timer(true);
+				timer.schedule(new WaitTimerTask(self, newAct), 2000);
 				return 0;
 			}
+		}, new Callable<Integer>() {
+			public Integer call() {
+				return doTimeReminder();
+			}
 		});
+		isFirstAlarm = true;
+		findViewById(R.id.timeReminder).setVisibility(View.INVISIBLE);
 		PlayPalUtility.initialProgressBar(testTotalTime, PlayPalUtility.TIME_MODE);
 		
 		game1RelativeLayout.setOnHoverListener(new View.OnHoverListener() {
@@ -188,6 +202,12 @@ public class Game1Activity extends Activity {
 	}
 	
 	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		BitmapHandler.recycleBitmaps();
+	}
+	
+	@Override
 	protected void onResume() {
 		super.onResume();
 		BackgroundMusicHandler.initMusic(this);
@@ -219,6 +239,8 @@ public class Game1Activity extends Activity {
 			return;
 		}
 		else {
+			isFirstAlarm = true;
+			findViewById(R.id.timeReminder).setVisibility(View.INVISIBLE);
 			PlayPalUtility.initialProgressBar(settings.getInt("CUR_TIMEBAR_MAX", 0), PlayPalUtility.TIME_MODE);
 			PlayPalUtility.setProgressBarCurVal(settings.getInt("CUR_TIMEBAR_VAL", 0));
 			score = settings.getInt("CUR_SCORE", 0);
@@ -274,6 +296,10 @@ public class Game1Activity extends Activity {
 			fireMP.release();
 			fireMP = null;
 		}
+		if(tickMP != null) {
+			tickMP.release();
+			tickMP = null;
+		}
 		
 		score += PlayPalUtility.killTimeBar();
 		PlayPalUtility.setLineGesture(false);
@@ -297,14 +323,10 @@ public class Game1Activity extends Activity {
 		potView = (ImageView) findViewById(R.id.potView);
 		board2Layout = (RelativeLayout) findViewById(R.id.board2RelativeLayout);
 
-		
-		potView.setBackgroundResource(R.anim.pot_drop_animation);
-		potDropAnim = (AnimationDrawable) potView.getBackground();
+		potDropAnim = AnimationsContainer.getInstance().createGame1PotDropAnim(potView);
 
 		fireView = (ImageView) findViewById(R.id.fireView);
-		
-		fireView.setBackgroundResource(R.anim.pot_fire_animation);
-		fireAnim = (AnimationDrawable) fireView.getBackground();
+		fireAnim = AnimationsContainer.getInstance().createGame1FireAnim(fireView);
 
 		setHomeListener(findViewById(R.id.homeBtn));
 
@@ -345,10 +367,8 @@ public class Game1Activity extends Activity {
 		progressCount++;
 		progressCountText.setText("ProgressCount: " + new String("" + progressCount));
 		PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_SPLIT_POT, this);
-		//PlayPalUtility.doProgress();
 		
 		view.setVisibility(ImageView.GONE);
-		potDropAnim.setVisible(true, true);
 		potDropAnim.start();
 
 		if (progressCount == step2TotalProgressCount) {
@@ -361,15 +381,16 @@ public class Game1Activity extends Activity {
 					board2Layout.clearAnimation();
 					board2Layout.setVisibility(ImageView.GONE);
 					
-					knifeView.setImageResource(R.drawable.game1_ladle);
+					knifeView.setImageBitmap(BitmapHandler.getLocalBitmap(self, R.drawable.game1_ladle));
 
+					isFirstAlarm = true;
+					findViewById(R.id.timeReminder).setVisibility(View.INVISIBLE);
 					PlayPalUtility.initialProgressBar(testTotalTime, PlayPalUtility.TIME_MODE);
 					
 					fireView.setVisibility(ImageView.VISIBLE);
-					fireAnim.setVisible(true, true);
 					fireAnim.start();
 
-					potView.setImageResource(R.drawable.game1_pot_3);
+					potView.setImageBitmap(BitmapHandler.getLocalBitmap(self, R.drawable.game1_pot_3));
 
 					fireMP = PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_STIR_POT, self, true);
 					
@@ -467,6 +488,24 @@ public class Game1Activity extends Activity {
 			}
 		});
 	}
+	
+	protected Integer doTimeReminder() {
+		if(isFirstAlarm) {
+			PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_TIME_REMINDER, this, false);
+			tickMP = PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_TIMER_TICK, this, true);
+			isFirstAlarm = false;
+		}
+		findViewById(R.id.timeReminder).setVisibility(View.VISIBLE);
+		if(timeReminderStat == 1) {
+			((ImageView)findViewById(R.id.timeReminder)).setImageBitmap(BitmapHandler.getLocalBitmap(self, R.drawable.time_reminder_2));
+			timeReminderStat = 0;
+		}
+		else {
+			((ImageView)findViewById(R.id.timeReminder)).setImageBitmap(BitmapHandler.getLocalBitmap(self, R.drawable.time_reminder_1));
+			timeReminderStat = 1;
+		}
+		return 0;
+	}
 
 	protected Integer doPotStir() {
 		progressCount++;
@@ -510,7 +549,7 @@ public class Game1Activity extends Activity {
 		for (int i=0; i<5; i++) {
 			for (int j=0; j<3; j++) {
 				ImageView tmpFood = new ImageView(this);
-				tmpFood.setImageResource(foodResId[(int)(Math.random()*2)]);
+				tmpFood.setImageBitmap(BitmapHandler.getLocalBitmap(self, foodResId[(int)(Math.random()*2)]));
 				LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT,
 						LayoutParams.WRAP_CONTENT);
 				int xMargin = (int)(Math.random()*151);
@@ -543,8 +582,7 @@ public class Game1Activity extends Activity {
 			
 		PlayPalUtility.changeGestureParams(false, 0, beginPnt, endPnt);
 		
-		((ImageView) currentFoodView)
-				.setImageResource(foodResArray[progressCount]);
+		((ImageView) currentFoodView).setImageBitmap(BitmapHandler.getLocalBitmap(self, foodResArray[progressCount]));
 
 		if (progressCount == step1MidProgressCount) {
 			// Slide the cucumber
@@ -644,6 +682,7 @@ public class Game1Activity extends Activity {
 
 						@Override
 						public void onAnimationEnd(Animation arg0) {
+							findViewById(R.id.timeReminder).setVisibility(View.INVISIBLE);
 							PlayPalUtility.initialProgressBar(testTotalTime, PlayPalUtility.TIME_MODE);
 							PenRecorder.registerRecorder(game1RelativeLayout, Game1Activity.this, mUserName, "1-3");
 						}

@@ -18,7 +18,7 @@ public class BackgroundMusicHandler {
 	private static MediaPlayer music;
 	private static boolean musicSt = true;
 	private static boolean canRecycle = true;
-	private static final int[] musicId = { R.raw.background_music, R.raw.background_music_win, R.raw.background_music_win};
+	private static final int[] musicId = { R.raw.background_music, R.raw.background_music_win, R.raw.background_music_fail};
 
 	public static void initMusic(Context context) {
 		initMusic(context, 0);
@@ -27,7 +27,11 @@ public class BackgroundMusicHandler {
 	public static void initMusic(Context context, int r) {
 		if(canRecycle || currentMusicID != r) {
 			music = MediaPlayer.create(context, musicId[r]);
-			music.setLooping(true);
+			music.setVolume(.5f, .5f);
+			if(musicId[r] == R.raw.background_music_fail)
+				music.setLooping(false);
+			else
+				music.setLooping(true);
 			currentMusicID = r;
 		}
 		else

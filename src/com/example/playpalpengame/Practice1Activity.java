@@ -87,9 +87,9 @@ public class Practice1Activity extends Activity {
 	
 	protected TextView progressCountText;
 
-	protected AnimationDrawable potDropAnim;
+	protected FramesSequenceAnimation potDropAnim;
 	protected AnimationDrawable potStirAnim;
-	protected AnimationDrawable fireAnim;
+	protected FramesSequenceAnimation fireAnim;
 	protected AnimationDrawable downAnim;
 	
 	protected Point[] carrotCutBeginPointArray = {new Point(231, 406), new Point(465, 340), new Point(740, 311), new Point(979, 300), new Point(1195, 318)};
@@ -172,6 +172,12 @@ public class Practice1Activity extends Activity {
 	}
 	
 	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		BitmapHandler.recycleBitmaps();
+	}
+	
+	@Override
 	protected void onResume() {
 		super.onResume();
 		BackgroundMusicHandler.initMusic(this);
@@ -212,14 +218,11 @@ public class Practice1Activity extends Activity {
 		potView = (ImageView) findViewById(R.id.potView);
 		board2Layout = (RelativeLayout) findViewById(R.id.board2RelativeLayout);
 
-		
-		potView.setBackgroundResource(R.anim.pot_drop_animation);
-		potDropAnim = (AnimationDrawable) potView.getBackground();
+		potDropAnim = AnimationsContainer.getInstance().createGame1PotDropAnim(potView);
 
 		fireView = (ImageView) findViewById(R.id.fireView);
 		
-		fireView.setBackgroundResource(R.anim.pot_fire_animation);
-		fireAnim = (AnimationDrawable) fireView.getBackground();		
+		fireAnim = AnimationsContainer.getInstance().createGame1FireAnim(fireView);		
 		
 		setHomeListener(findViewById(R.id.homeBtn));
 
@@ -293,7 +296,6 @@ public class Practice1Activity extends Activity {
 		PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_SPLIT_POT, this);
 		
 		view.setVisibility(ImageView.GONE);
-		potDropAnim.setVisible(true, true);
 		potDropAnim.start();
 
 		if (progressCount == step2TotalProgressCount) {
@@ -310,21 +312,16 @@ public class Practice1Activity extends Activity {
 					board2Layout.clearAnimation();
 					board2Layout.setVisibility(ImageView.GONE);
 					
-					knifeView.setImageResource(R.drawable.game1_ladle);
+					knifeView.setImageBitmap(BitmapHandler.getLocalBitmap(self, R.drawable.game1_ladle));
 
 					fireView.setVisibility(ImageView.VISIBLE);
-					fireAnim.setVisible(true, true);
 					fireAnim.start();
 					
-					potView.setImageResource(R.drawable.game1_pot_3);
+					potView.setImageBitmap(BitmapHandler.getLocalBitmap(self, R.drawable.game1_pot_3));
 					
 					fireMP = PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_STIR_POT, self, true);
 					
 					setTeachHandCircular(780 + HELICAL_OFFSET_X - TEACH_HAND_DOWN_OFFSET_X, 380 + HELICAL_OFFSET_Y  - TEACH_HAND_DOWN_OFFSET_Y, 240);
-					//potView.setBackgroundResource(R.anim.pot_stir_animation);
-					//potStirAnim = (AnimationDrawable) potView.getBackground();
-					
-					
 					
 					PlayPalUtility.registerLineGesture(game1RelativeLayout, self, new Callable<Integer>() {
 						public Integer call() {
@@ -428,9 +425,17 @@ public class Practice1Activity extends Activity {
 			Log.d("EndTest", String.format("Game1Score: %d", score));
 			
 			PlayPalUtility.playTeachVoice(self, 110);
+
+	    	BackgroundMusicHandler.setCanRecycle(false);
+	    	
+	    	Intent newAct = new Intent();
+			newAct.setClass(Practice1Activity.this, MainActivity.class);
+			Bundle bundle = new Bundle();
+			bundle.putString("userName", mUserName);
+	        newAct.putExtras(bundle);
 			
 			Timer timer = new Timer(true);
-			timer.schedule(new WaitTimerTask(this, mUserName), 4000);
+			timer.schedule(new WaitTimerTask(this, newAct), 4000);
 		}
 		
 		return 1;
@@ -443,7 +448,7 @@ public class Practice1Activity extends Activity {
 		for (int i=0; i<1; i++) {
 			for (int j=0; j<1; j++) {
 				ImageView tmpFood = new ImageView(this);
-				tmpFood.setImageResource(foodResId[(int)(Math.random()*2)]);
+				tmpFood.setImageBitmap(BitmapHandler.getLocalBitmap(self, foodResId[(int)(Math.random()*2)]));
 				LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT,
 						LayoutParams.WRAP_CONTENT);
 				int xMargin = (int)(150);
@@ -475,8 +480,7 @@ public class Practice1Activity extends Activity {
 			
 		PlayPalUtility.changeGestureParams(false, 0, beginPnt, endPnt);
 		
-		((ImageView) currentFoodView)
-				.setImageResource(foodResArray[progressCount]);
+		((ImageView) currentFoodView).setImageBitmap(BitmapHandler.getLocalBitmap(self, foodResArray[progressCount]));
 
 		if (progressCount == step1MidProgressCount) {
 			// Slide the cucumber

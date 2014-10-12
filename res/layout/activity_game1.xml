@@ -37,6 +37,15 @@
             android:layout_marginLeft="25dp"
             android:layout_marginTop="25dp"
             android:src="@drawable/home" />
+        
+        <ImageView
+            android:id="@+id/timeReminder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="850dp"
+            android:layout_marginTop="25dp"
+            android:src="@drawable/time_reminder_1"
+            android:visibility="invisible" />
 
          <ImageView
             android:id="@+id/progressBottom"
@@ -114,6 +123,7 @@
 
         <ImageView
             android:id="@+id/potView"
+            android:src="@drawable/game1_pot_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"

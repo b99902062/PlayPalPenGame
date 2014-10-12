@@ -2,8 +2,10 @@ package com.example.playpalpengame;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Timer;
 import java.util.concurrent.Callable;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.FloatMath;
 import android.util.Log;
@@ -71,12 +73,15 @@ public class Game4Activity extends Activity {
 	protected int curCookieType;
 	
 	protected String userName;
-	protected Context gameContext;
+	protected Game4Activity gameContext;
 	
 	private int mBadges = 0;
 	private int mHighScore = 0;
 	private int mWinCount = 0;
 	private int score = 0;
+	private int timeReminderStat = 0;
+	private boolean isFirstAlarm = true;
+	private MediaPlayer tickMP = null;
 	
 	protected Point centerPoint = new Point(1280,800);
 	protected int dx = 300;
@@ -103,12 +108,6 @@ public class Game4Activity extends Activity {
 		R.drawable.game4_dough3,
 		R.drawable.game4_dough4_s,
 		R.drawable.game4_dough4,			
-	};
-	
-	protected int[] bigCookieAnimArray = {
-		R.anim.game4_large_cookie1_animation,
-		R.anim.game4_large_cookie2_animation,
-		R.anim.game4_large_cookie3_animation
 	};
 		
 	protected Cookie[] cookieArray = new Cookie[8]; 
@@ -140,12 +139,6 @@ public class Game4Activity extends Activity {
 		R.id.Game4_cookie5,
 		R.id.Game4_cookie6,
 		R.id.Game4_cookie7,
-	};
-	
-	protected int[] cookieAnimArray = {
-		R.anim.game4_cookie1_animation,
-		R.anim.game4_cookie2_animation,
-		R.anim.game4_cookie3_animation
 	};
 	
 	protected int[] creamArray = {
@@ -214,7 +207,6 @@ public class Game4Activity extends Activity {
 					return handleDoughAction(doughView);
 				}	
 			});
-
 		
 		PlayPalUtility.setLineGesture(true);
 		PlayPalUtility.initialLineGestureParams(false, true, boxSize, doughPosArray[curProgress][0], doughPosArray[curProgress][1], doughPosArray[curProgress][2], doughPosArray[curProgress][3]);
@@ -274,11 +266,20 @@ public class Game4Activity extends Activity {
 				bundle.putInt("GameWinCount", mWinCount);
 				bundle.putInt("NewScore", -1);
 	            newAct.putExtras(bundle);
-				startActivityForResult(newAct, 0);
-				Game4Activity.this.finish();
+				
+	            findViewById(R.id.failFeedbackView).setVisibility(View.VISIBLE);
+	            
+	            Timer timer = new Timer(true);
+				timer.schedule(new WaitTimerTask(gameContext, newAct), 2000);
 				return 0;
 			}
+		}, new Callable<Integer>() {
+			public Integer call() {
+				return doTimeReminder();
+			}
 		});
+		isFirstAlarm = true;
+		findViewById(R.id.timeReminder).setVisibility(View.INVISIBLE);
 		PlayPalUtility.initialProgressBar(DOUGH_TIME, PlayPalUtility.TIME_MODE);
 		PenRecorder.registerRecorder(game4RelativeLayout, this, userName, "4-1");
 		
@@ -290,6 +291,16 @@ public class Game4Activity extends Activity {
 	    super.onPause();
 	    BackgroundMusicHandler.recyle();
 	    writeToSettings();
+	    if(tickMP != null) {
+	    	tickMP.release();
+	    	tickMP = null;
+	    }
+	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		BitmapHandler.recycleBitmaps();
 	}
 	
 	@Override
@@ -323,6 +334,8 @@ public class Game4Activity extends Activity {
 			return;
 		}
 		else {
+			isFirstAlarm = true;
+			findViewById(R.id.timeReminder).setVisibility(View.INVISIBLE);
 			PlayPalUtility.initialProgressBar(settings.getInt("CUR_TIMEBAR_MAX", 0), PlayPalUtility.TIME_MODE);
 			PlayPalUtility.setProgressBarCurVal(settings.getInt("CUR_TIMEBAR_VAL", 0));
 			score = settings.getInt("CUR_SCORE", 0);
@@ -395,7 +408,7 @@ public class Game4Activity extends Activity {
 					if(dist>=CREAM_DIST){
 						PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_POP, Game4Activity.this);
 						curButterView = new ImageView(gameContext);
-						curButterView.setImageResource(creamArray[curCookie.creamColor]);
+						curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, creamArray[curCookie.creamColor]));
 						game4RelativeLayout.addView(curButterView);
 						ratio = CREAM_INIT_RATIO;	
 						startPoint = new Point((int)event.getX(),(int)event.getY());
@@ -420,8 +433,8 @@ public class Game4Activity extends Activity {
 					Log.d("Penpal","pressing");
 					butterSqueezing = true;				
 					
-					curButterView = new ImageView(gameContext);	
-					curButterView.setImageResource(R.drawable.game3_cream);
+					curButterView = new ImageView(gameContext);
+					curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game3_cream));
 					game4RelativeLayout.addView(curButterView);
 					ratio = 0;
 					
@@ -458,11 +471,13 @@ public class Game4Activity extends Activity {
 		if(curProgress == DOUGH_PROGRESS_END){
 			score += PlayPalUtility.killTimeBar();
 			
-			laddleView.setImageResource(R.drawable.game4_thinknife);
+			laddleView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game4_thinknife));
 			PenRecorder.outputJSON();
 
 			PlayPalUtility.clearGestureSets();
 			PlayPalUtility.clearDrawView();
+			isFirstAlarm = true;
+			findViewById(R.id.timeReminder).setVisibility(View.INVISIBLE);
 			PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
 			initCookieView();
 
@@ -478,6 +493,24 @@ public class Game4Activity extends Activity {
 		}
  		
 		return 1;
+	}
+	
+	protected Integer doTimeReminder() {
+		if(isFirstAlarm) {
+			PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_TIME_REMINDER, this, false);
+			tickMP = PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_TIMER_TICK, this, true);
+			isFirstAlarm = false;
+		}
+		findViewById(R.id.timeReminder).setVisibility(View.VISIBLE);
+		if(timeReminderStat == 1) {
+			((ImageView)findViewById(R.id.timeReminder)).setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.time_reminder_2));
+			timeReminderStat = 0;
+		}
+		else {
+			((ImageView)findViewById(R.id.timeReminder)).setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.time_reminder_1));
+			timeReminderStat = 1;
+		}
+		return 0;
 	}
 	
 	protected Integer handleDoughAction (View view){
@@ -583,8 +616,10 @@ public class Game4Activity extends Activity {
 							@Override
 							public void onAnimationEnd(Animation anim) {
 								if(isFirstCookie) {
+									isFirstAlarm = true;
+									findViewById(R.id.timeReminder).setVisibility(View.INVISIBLE);
 									PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
-									laddleView.setImageResource(R.drawable.game4_squeezer);
+									laddleView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game4_squeezer));
 									isFirstCookie = false;
 								}
 								curCookie.view.clearAnimation();
@@ -702,10 +737,8 @@ public class Game4Activity extends Activity {
 		}
 		
 		public void beCutted(){
-			PlayPalUtility.eraseStroke(this.id);
-			
-			view.setBackgroundResource(cookieAnimArray[type]);
-			AnimationDrawable cutAnim = (AnimationDrawable) view.getBackground();
+			PlayPalUtility.eraseStroke(this.id);			
+			FramesSequenceAnimation cutAnim = AnimationsContainer.getInstance().createGame4CookieAnim(view, type);
 			cutAnim.start();
 		}
 		
@@ -715,7 +748,6 @@ public class Game4Activity extends Activity {
 		}
 		
 		public void beBaked(){
-			
 			view.setBackgroundResource(cookieResArray3[type]);
 			
 			//this.setPos();
@@ -756,9 +788,7 @@ public class Game4Activity extends Activity {
 			numCream++;
 			
 			if(numCream == 10){
-				
-				view.setBackgroundResource(bigCookieAnimArray[type]);
-				AnimationDrawable largeAnim = (AnimationDrawable) view.getBackground();
+				FramesSequenceAnimation largeAnim = AnimationsContainer.getInstance().createGame4BigCookieAnim(view, type);
 				largeAnim.start();
 				curProgress++;
 			}

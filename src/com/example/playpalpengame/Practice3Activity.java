@@ -42,7 +42,6 @@ import com.samsung.spen.lib.input.SPenEventLibrary;
 import com.samsung.spensdk.applistener.SPenHoverListener;
 
 public class Practice3Activity extends Activity {
-	protected Context self;
 	protected Point centralPoint = new Point(1280,880);
 	protected Point[] pointArray = {
 		new Point(1480,880),
@@ -94,8 +93,6 @@ public class Practice3Activity extends Activity {
 	private int mWinCount = 0;
 	private int score = 0;
 	
-	
-	
 	TextView  progressCountText;
 	ImageView bowlView;
 	
@@ -111,8 +108,8 @@ public class Practice3Activity extends Activity {
 	ImageView cakeCreamHintView;
 	ImageView teachHandView;
 	
-	AnimationDrawable pressAnim;
-	AnimationDrawable btnAnim;
+	FramesSequenceAnimation pressAnim;
+	FramesSequenceAnimation btnAnim;
 	AnimationDrawable mixStirAnim;
 	AnimationDrawable ovenAnimation;
 	
@@ -124,7 +121,7 @@ public class Practice3Activity extends Activity {
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		
-		self = this;
+		gameContext = this;
 		
 		Bundle bundle = getIntent().getExtras();
 		userName = bundle.getString("userName");
@@ -224,7 +221,7 @@ public class Practice3Activity extends Activity {
 					if(dist>CREAM_DIST){
 						PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_POP, Practice3Activity.this);
 						curButterView = new ImageView(gameContext);
-						curButterView.setImageResource(R.drawable.game3_cream);
+						curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game3_cream));
 						game3RelativeLayout.addView(curButterView);
 						ratio = INIT_CREAM_RATIO;	
 						startPoint = new Point((int)event.getX(),(int)event.getY());
@@ -241,7 +238,7 @@ public class Practice3Activity extends Activity {
 				else{
 					if(ratio == INIT_CREAM_RATIO){
 						curButterView = new ImageView(gameContext);
-						curButterView.setImageResource(R.drawable.game3_cream2);
+						curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game3_cream2));
 						game3RelativeLayout.addView(curButterView);
 					}
 					if(ratio < CREAM_MAX_RATIO)
@@ -266,7 +263,7 @@ public class Practice3Activity extends Activity {
 				butterSqueezing = true;				
 				
 				curButterView = new ImageView(gameContext);	
-				curButterView.setImageResource(R.drawable.game3_cream);
+				curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game3_cream));
 				game3RelativeLayout.addView(curButterView);
 				ratio = 0;
 				
@@ -314,9 +311,7 @@ public class Practice3Activity extends Activity {
 		
 		teachHandView.setVisibility(ImageView.VISIBLE);
 		
-		teachHandView.setBackgroundResource(R.anim.game3_teach_hand_animation);
-		
-		pressAnim = (AnimationDrawable) teachHandView.getBackground();
+		pressAnim = AnimationsContainer.getInstance().createGame3TeachHandAnim(teachHandView);
 		pressAnim.start();
 		
 		teachHandView.setOnTouchListener(new View.OnTouchListener() {
@@ -336,6 +331,12 @@ public class Practice3Activity extends Activity {
 	protected void onPause() {
 	    super.onPause();
 	    BackgroundMusicHandler.recyle();
+	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		BitmapHandler.recycleBitmaps();
 	}
 	
 	@Override
@@ -407,7 +408,7 @@ public class Practice3Activity extends Activity {
 			anim = AnimationsContainer.getInstance().createGame3StirAnim(mixView2,2);
 		}
 		else if( curProgress == MIX_PROGRESS_END){
-			PlayPalUtility.playTeachVoice(self, 303, 304);
+			PlayPalUtility.playTeachVoice(gameContext, 303, 304);
 			
 			pressAnim.stop();
 			teachHandView.clearAnimation();
@@ -493,8 +494,6 @@ public class Practice3Activity extends Activity {
 		
 		PlayPalUtility.playTeachVoice(this, 308);
 		
-		teachHandView.setBackgroundResource(R.anim.game3_teach_hand_btn_animation);
-		btnAnim = (AnimationDrawable) teachHandView.getBackground();
 		btnAnim.start();
 		
 		setTeachHandLinear(creamPosArray[4].x-TEACH_HAND_BTN_OFFSET_X, creamPosArray[4].y-TEACH_HAND_BTN_OFFSET_Y, 0, 0);
@@ -539,8 +538,6 @@ public class Practice3Activity extends Activity {
 			setTeachHandLinear(1560-TEACH_HAND_OFFSET_X, 600-TEACH_HAND_OFFSET_Y, 0, 0);
 			teachHandView.setVisibility(ImageView.VISIBLE);
 			
-			teachHandView.setBackgroundResource(R.anim.game3_teach_hand_animation);
-			pressAnim = (AnimationDrawable) teachHandView.getBackground();
 			pressAnim.start();
 			
 			teachHandView.setOnTouchListener(new View.OnTouchListener() {
@@ -575,7 +572,7 @@ public class Practice3Activity extends Activity {
 			PlayPalUtility.initialLineGestureParams(false, false, boxSize, new Point(1560,600) ,centralPoint);
 			PlayPalUtility.setStraightStroke(new Point(1560,600) ,centralPoint);
 			
-			eggbeatView.setImageResource(R.drawable.game1_knife);
+			eggbeatView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game1_knife));
 		}
 		return 1;
 	}	
@@ -591,8 +588,16 @@ public class Practice3Activity extends Activity {
 		
 		PlayPalUtility.playTeachVoice(this, 311);
 		
+		BackgroundMusicHandler.setCanRecycle(false);
+    	
+    	Intent newAct = new Intent();
+		newAct.setClass(Practice3Activity.this, MainActivity.class);
+		Bundle bundle = new Bundle();
+		bundle.putString("userName", userName);
+        newAct.putExtras(bundle);
+		
 		Timer timer = new Timer(true);
-		timer.schedule(new WaitTimerTask(this, userName), 5000);
+		timer.schedule(new WaitTimerTask(this, newAct), 5000);
 				
 		return 1;
 	}
@@ -651,11 +656,10 @@ public class Practice3Activity extends Activity {
 					pressAnim.stop();
 					teachHandView.setVisibility(ImageView.VISIBLE);
 					
-					teachHandView.setBackgroundResource(R.anim.game3_teach_hand_btn_animation);
-					btnAnim = (AnimationDrawable) teachHandView.getBackground();
+					btnAnim = AnimationsContainer.getInstance().createGame3TeachHandBtnAnim(teachHandView);
 					btnAnim.start();
 					
-					PlayPalUtility.playTeachVoice(self,  305, 306, 307);
+					PlayPalUtility.playTeachVoice(gameContext,  305, 306, 307);
 					
 					setTeachHandLinear(dottedLineArray[0].x-TEACH_HAND_BTN_OFFSET_X, dottedLineArray[0].y-TEACH_HAND_BTN_OFFSET_Y, dottedLineArray[2].x-dottedLineArray[0].x, dottedLineArray[2].y-dottedLineArray[0].y);
 					
@@ -679,7 +683,7 @@ public class Practice3Activity extends Activity {
 			cakeAnim.setAnimationListener(new AnimationListener() {
 				@Override
 				public void onAnimationEnd(Animation anim) {
-					eggbeatView.setImageResource(R.drawable.game3_squeezer);
+					eggbeatView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game3_squeezer));
 					cakeDottedLineView.setVisibility(ImageView.VISIBLE);
 					PlayPalUtility.setLineGesture(true);
 					

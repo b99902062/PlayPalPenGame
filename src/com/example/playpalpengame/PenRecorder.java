@@ -250,7 +250,7 @@ class DrawableRelativeLayout extends RelativeLayout {
     	entryList = new ArrayList<RecordEntry>();
     	
     	p = new Paint();
-		p.setColor(Color.DKGRAY);
+		p.setColor(Color.argb(100, 255, 255, 255));
 		p.setStrokeWidth(10);
 		p.setAntiAlias(true);
 		
@@ -265,7 +265,7 @@ class DrawableRelativeLayout extends RelativeLayout {
 		int preY = -1;
 		synchronized(entryList) {
 			for(RecordEntry entry: entryList) {
-				canvas.drawCircle(entry.point.x, entry.point.y, 5, p);
+				//canvas.drawCircle(entry.point.x, entry.point.y, 5, p);
 				if(preX >= 0) 
 					canvas.drawLine(preX, preY, entry.point.x, entry.point.y, p);
 				preX = entry.point.x;

@@ -36,6 +36,7 @@ import android.widget.ImageView;
 
 public class AnimationActivity extends Activity {
 	FramesSequenceAnimation anim = null;
+	FramesSequenceAnimation blingAnim = null;
 	ImageView monsterView;
 	private String mUserName = null;
 	private int mBadges = 0;
@@ -84,7 +85,7 @@ public class AnimationActivity extends Activity {
 				mHighScore = (int) (mHighScore * 1.1);
 			for(int j=0; j<6; j++) {
 				if(((mBadges >> j) & 0x1) == 0) {
-					((ImageView)findViewById(R.id.starView)).setImageResource(starResArray[j]);
+					((ImageView)findViewById(R.id.starView)).setImageBitmap(BitmapHandler.getLocalBitmap(this, starResArray[j]));
 					mBadges |= (0x1 << j);
 					break;
 				}
@@ -94,6 +95,9 @@ public class AnimationActivity extends Activity {
 			
 			anim = AnimationsContainer.getInstance().createStarAnim(monsterView);
 			anim.start();
+			blingAnim = AnimationsContainer.getInstance().createBlingAnim((ImageView)findViewById(R.id.blingView));
+			blingAnim.start();
+			
 			PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_HOORAY, this);
 			monsterView.setOnTouchListener(new OnTouchListener() {
 				private boolean isSetEnd = false;
@@ -101,7 +105,9 @@ public class AnimationActivity extends Activity {
 				public boolean onTouch(View arg0, MotionEvent arg1) {
 					if(!isSetEnd) {
 						anim.stop();
-						((ImageView)findViewById(R.id.starView)).setVisibility(ImageView.GONE);
+						blingAnim.stop();
+						findViewById(R.id.starView).setVisibility(View.GONE);
+						findViewById(R.id.blingView).setVisibility(View.GONE);
 						setEndAnim();
 						isSetEnd = true;
 					}
@@ -122,6 +128,8 @@ public class AnimationActivity extends Activity {
 			public boolean onTouch(View v, MotionEvent event) {
 				if(anim != null)
 					anim.stop();
+				if(blingAnim != null)
+					blingAnim.stop();
 				Intent newAct = new Intent();
 				if(gameIndex == 1)
 					newAct.setClass(AnimationActivity.this, Game1Activity.class);
@@ -149,6 +157,12 @@ public class AnimationActivity extends Activity {
 	protected void onPause() {
 		super.onPause();
 		BackgroundMusicHandler.recyle();
+	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		BitmapHandler.recycleBitmaps();
 	}
 	
 	@Override
@@ -242,15 +256,12 @@ class FramesSequenceAnimation {
 	private Callable<Integer> mStopListener = null;
 
     public FramesSequenceAnimation(ImageView imageView, int[] frames, int fps) {
-        mHandler = new Handler();
         mFrames = frames;
-        mIndex = -1;
         mSoftReferenceImageView = new SoftReference<ImageView>(imageView);
-        mShouldRun = false;
-        mIsRunning = false;
         mDelayMillis = 1000 / fps;
+        mHandler = new Handler();
 
-        imageView.setImageResource(mFrames[0]);
+        init();
 
         // use in place bitmap to save GC work (when animation images are the same size & type)
         if (Build.VERSION.SDK_INT >= 11) {
@@ -283,10 +294,21 @@ class FramesSequenceAnimation {
         return mFrames[mIndex];
     }
 
+    private void init() {
+    	mIndex = -1;
+        mShouldRun = false;
+        mIsRunning = false;
+        
+        ImageView view = mSoftReferenceImageView.get();
+        if(view != null)
+        	view.setImageResource(mFrames[0]);
+    }
+    
     /**
      * Starts the animation
      */
     public synchronized void start() {
+    	init();
         mShouldRun = true;
         if (mIsRunning)
             return;
@@ -371,8 +393,11 @@ class FramesSequenceAnimation {
     }
 
 class AnimationsContainer {
+	public int HIGH_FPS = 30;
+	public int HIGHER_FPS = 15;
     public int FPS = 10;  // animation FPS
-    public int LOSE_FPS = 2;  // animation FPS
+    public int MEDIUM_FPS = 5;
+    public int LOW_FPS = 2;  // animation FPS
 
     // single instance procedures
     private static AnimationsContainer mInstance;
@@ -421,18 +446,62 @@ class AnimationsContainer {
     
     private int[] mStarAnimFrames = {R.drawable.star_ani_01, R.drawable.star_ani_02, R.drawable.star_ani_03, R.drawable.star_ani_04, R.drawable.star_ani_05, R.drawable.star_ani_06, R.drawable.star_ani_07, R.drawable.star_ani_08, R.drawable.star_ani_09, R.drawable.star_ani_10, R.drawable.star_ani_11, R.drawable.star_ani_12, R.drawable.star_ani_13, R.drawable.star_ani_14, R.drawable.star_ani_15, R.drawable.star_ani_16, R.drawable.star_ani_17};
     private int[] mWelcomeAnimFrames = {R.drawable.welcome_ani_01, R.drawable.welcome_ani_02, R.drawable.welcome_ani_03, R.drawable.welcome_ani_04, R.drawable.welcome_ani_05_x5, R.drawable.welcome_ani_06, R.drawable.welcome_ani_06_2, R.drawable.welcome_ani_07, R.drawable.welcome_ani_07_2, R.drawable.welcome_ani_08, R.drawable.welcome_ani_09, R.drawable.welcome_ani_10, R.drawable.welcome_ani_11, R.drawable.welcome_ani_12, R.drawable.welcome_ani_13, R.drawable.welcome_ani_14, R.drawable.welcome_ani_15, R.drawable.welcome_ani_16, R.drawable.welcome_ani_17, R.drawable.welcome_ani_18, R.drawable.welcome_ani_19, R.drawable.welcome_ani_20, R.drawable.welcome_ani_21, R.drawable.welcome_ani_22, R.drawable.welcome_ani_23, R.drawable.welcome_ani_24, R.drawable.welcome_ani_24_2, R.drawable.welcome_ani_25, R.drawable.welcome_ani_25_2, R.drawable.welcome_ani_26, R.drawable.welcome_ani_26_2, R.drawable.welcome_ani_27, R.drawable.welcome_ani_27_2, R.drawable.welcome_ani_28, R.drawable.welcome_ani_28_2, R.drawable.welcome_ani_29, R.drawable.welcome_ani_29_2, R.drawable.welcome_ani_30, R.drawable.welcome_ani_30_2, R.drawable.welcome_ani_31, R.drawable.welcome_ani_31_2, R.drawable.welcome_ani_32 };
+    private int[] mBlingAnimFrames = {R.drawable.bling1, R.drawable.bling2, R.drawable.bling3, R.drawable.bling4, R.drawable.bling5, R.drawable.bling6, R.drawable.bling7, R.drawable.bling8, R.drawable.bling9, R.drawable.bling10, R.drawable.bling11, R.drawable.bling12, R.drawable.bling13, R.drawable.bling14, R.drawable.bling15, R.drawable.bling16, R.drawable.bling17, R.drawable.bling18};
+    private int[] mLeftAnimFrames = {R.drawable.left1, R.drawable.left2};
+    private int[] mRightAnimFrames = {R.drawable.right1, R.drawable.right2};
     
-    private int[] mGame1PotStirAnimFrams = {R.drawable.game1_pot_3, R.drawable.game1_pot_4, R.drawable.game1_pot_5, R.drawable.game1_pot_6};
+    private int[] mGame1PotStirAnimFrames = {R.drawable.game1_pot_3, R.drawable.game1_pot_4, R.drawable.game1_pot_5, R.drawable.game1_pot_6};
+    private int[] mGame1PotDropAnimFrames = {R.drawable.game1_pot_1, R.drawable.game1_pot_2, R.drawable.game1_pot_1};
+    private int[] mGame1FireAnimFrames = {R.drawable.game1_fire_1, R.drawable.game1_fire_2};
+    private int[] mGame2TeachHandAnimFrames = {R.drawable.teach_hand2, R.drawable.teach_hand2_down};
+    private int[] mGame3TeachHandAnimFrames  = {R.drawable.teach_hand3, R.drawable.teach_hand3_down};
+    private int[] mGame3TeachHandBtnAnimFrames  = {R.drawable.teach_hand3, R.drawable.teach_hand3_down};
     private int[] mGame3MixAnimFrames  = {R.drawable.game3_mix2, R.drawable.game3_mix3, R.drawable.game3_mix4, R.drawable.game3_mix5};
     private int[] mGame3MixAnimFrames2 = {R.drawable.game3_mix6, R.drawable.game3_mix7, R.drawable.game3_mix8, R.drawable.game3_mix9};
+    private int[] mGame4Cookie1AnimFrames = {R.drawable.game4_cookie1, R.drawable.game4_cookie1_cutted};
+    private int[] mGame4Cookie2AnimFrames = {R.drawable.game4_cookie2, R.drawable.game4_cookie2_cutted};
+    private int[] mGame4Cookie3AnimFrames = {R.drawable.game4_cookie3, R.drawable.game4_cookie3_cutted};
+    private int[] mGame4BigCookie1AnimFrames = {R.drawable.game4_cookie1_baked, R.drawable.game4_cookie1_big, R.drawable.game4_cookie1_baked, R.drawable.game4_cookie1_big,R.drawable.game4_cookie1_baked, R.drawable.game4_cookie1_big};
+    private int[] mGame4BigCookie2AnimFrames = {R.drawable.game4_cookie2_baked, R.drawable.game4_cookie2_big, R.drawable.game4_cookie2_baked, R.drawable.game4_cookie2_big,R.drawable.game4_cookie2_baked, R.drawable.game4_cookie2_big};
+    private int[] mGame4BigCookie3AnimFrames = {R.drawable.game4_cookie3_baked, R.drawable.game4_cookie3_big, R.drawable.game4_cookie3_baked, R.drawable.game4_cookie3_big,R.drawable.game4_cookie3_baked, R.drawable.game4_cookie3_big};
+    private int[] mGame4TeachHandAnimFrames  = {R.drawable.teach_hand4, R.drawable.teach_hand4_down};
+    private int[] mGame4TeachHandBtnAnimFrames  = {R.drawable.teach_hand4, R.drawable.teach_hand4_down};
     
     public FramesSequenceAnimation createStarAnim(ImageView imageView) {
-    	return new FramesSequenceAnimation(imageView, mStarAnimFrames, FPS, true);
+    	return new FramesSequenceAnimation(imageView, mStarAnimFrames, HIGHER_FPS, true);
     }
     
     public FramesSequenceAnimation createWelcomeAnim(ImageView imageView) {
-    	return new FramesSequenceAnimation(imageView, mWelcomeAnimFrames, FPS, false);
+    	return new FramesSequenceAnimation(imageView, mWelcomeAnimFrames, HIGHER_FPS, false);
     } 
+    
+    public FramesSequenceAnimation createBlingAnim(ImageView imageView) {
+    	return new FramesSequenceAnimation(imageView, mBlingAnimFrames, HIGH_FPS, true);
+    }  
+    
+    public FramesSequenceAnimation createLeftAnim(ImageView imageView) {
+    	return new FramesSequenceAnimation(imageView, mLeftAnimFrames, LOW_FPS, true);
+    }
+    
+    public FramesSequenceAnimation createRightAnim(ImageView imageView) {
+    	return new FramesSequenceAnimation(imageView, mRightAnimFrames, LOW_FPS, true);
+    }  
+    
+    public FramesSequenceAnimation createGame1PotStirAnim(ImageView imageView){
+    	return new FramesSequenceAnimation(imageView, mGame1PotStirAnimFrames, FPS);
+    }
+    
+    public FramesSequenceAnimation createGame1PotDropAnim(ImageView imageView){
+    	return new FramesSequenceAnimation(imageView, mGame1PotDropAnimFrames, FPS);
+    }
+    
+    public FramesSequenceAnimation createGame1FireAnim(ImageView imageView){
+    	return new FramesSequenceAnimation(imageView, mGame1FireAnimFrames, LOW_FPS, true);
+    }
+    
+    public FramesSequenceAnimation createGame2TeachHandAnim(ImageView imageView){
+    	return new FramesSequenceAnimation(imageView, mGame2TeachHandAnimFrames, FPS);
+    }
     
     public FramesSequenceAnimation createGame3StirAnim(ImageView imageView, int stirIdx){
     	if(stirIdx == 1)
@@ -445,11 +514,39 @@ class AnimationsContainer {
     	}
     }
     
-    public FramesSequenceAnimation createGame1PotStirAnim(ImageView imageView){
-    	return new FramesSequenceAnimation(imageView, mGame1PotStirAnimFrams, FPS);
+    public FramesSequenceAnimation createGame3TeachHandAnim(ImageView imageView){
+    	return new FramesSequenceAnimation(imageView, mGame3TeachHandAnimFrames, FPS);
     }
     
-    	
+    public FramesSequenceAnimation createGame3TeachHandBtnAnim(ImageView imageView){
+    	return new FramesSequenceAnimation(imageView, mGame3TeachHandBtnAnimFrames, FPS);
+    }
+    
+    public FramesSequenceAnimation createGame4CookieAnim(ImageView imageView, int index){
+    	if(index == 0)
+    		return new FramesSequenceAnimation(imageView, mGame4Cookie1AnimFrames, FPS);
+    	else if(index == 1)
+    		return new FramesSequenceAnimation(imageView, mGame4Cookie2AnimFrames, FPS);
+    	else
+    		return new FramesSequenceAnimation(imageView, mGame4Cookie3AnimFrames, FPS);
+    }
+    
+    public FramesSequenceAnimation createGame4BigCookieAnim(ImageView imageView, int index){
+    	if(index == 0)
+    		return new FramesSequenceAnimation(imageView, mGame4BigCookie1AnimFrames, FPS);
+    	else if(index == 1)
+    		return new FramesSequenceAnimation(imageView, mGame4BigCookie2AnimFrames, FPS);
+    	else
+    		return new FramesSequenceAnimation(imageView, mGame4BigCookie3AnimFrames, FPS);
+    }
+    
+    public FramesSequenceAnimation createGame4TeachHandAnim(ImageView imageView){
+    	return new FramesSequenceAnimation(imageView, mGame4TeachHandAnimFrames, FPS);
+    }
+    
+    public FramesSequenceAnimation createGame4TeachHandBtnAnim(ImageView imageView){
+    	return new FramesSequenceAnimation(imageView, mGame4TeachHandBtnAnimFrames, FPS);
+    }
     /**
      * @param imageView
      * @return splash screen animation
@@ -457,24 +554,24 @@ class AnimationsContainer {
     public FramesSequenceAnimation createGameAnim(ImageView imageView, int gameIndex, boolean isWin) {
     	if(isWin) {
 	    	if(gameIndex == 1)
-	    		return new FramesSequenceAnimation(imageView, mGame1AnimFrames, FPS, true);
+	    		return new FramesSequenceAnimation(imageView, mGame1AnimFrames, FPS);
 	    	else if(gameIndex == 2)
-	    		return new FramesSequenceAnimation(imageView, mGame2AnimFrames, FPS, true);
+	    		return new FramesSequenceAnimation(imageView, mGame2AnimFrames, FPS);
 	    	else if(gameIndex == 3)
-	    		return new FramesSequenceAnimation(imageView, mGame3AnimFrames, FPS, true);
+	    		return new FramesSequenceAnimation(imageView, mGame3AnimFrames, FPS);
 	    	else if(gameIndex == 4)
-	    		return new FramesSequenceAnimation(imageView, mGame4AnimFrames, FPS, true);
+	    		return new FramesSequenceAnimation(imageView, mGame4AnimFrames, FPS);
 	    	else
 	    		return null;
     	} else {
     		if(gameIndex == 1)
-	    		return new FramesSequenceAnimation(imageView, mGame1LoseFrames, LOSE_FPS, true);
+	    		return new FramesSequenceAnimation(imageView, mGame1LoseFrames, LOW_FPS);
 	    	else if(gameIndex == 2)
-	    		return new FramesSequenceAnimation(imageView, mGame2LoseFrames, LOSE_FPS, true);
+	    		return new FramesSequenceAnimation(imageView, mGame2LoseFrames, LOW_FPS);
 	    	else if(gameIndex == 3)
-	    		return new FramesSequenceAnimation(imageView, mGame3LoseFrames, LOSE_FPS, true);
+	    		return new FramesSequenceAnimation(imageView, mGame3LoseFrames, LOW_FPS);
 	    	else if(gameIndex == 4)
-	    		return new FramesSequenceAnimation(imageView, mGame4LoseFrames, LOSE_FPS, true);
+	    		return new FramesSequenceAnimation(imageView, mGame4LoseFrames, LOW_FPS);
 	    	else
 	    		return null;
     	}

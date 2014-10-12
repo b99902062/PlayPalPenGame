@@ -5,6 +5,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Callable;
 
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -98,6 +99,9 @@ public class Game3Activity extends Activity {
 	private int mHighScore = 0;
 	private int mWinCount = 0;
 	private int score = 0;
+	private int timeReminderStat = 0;
+	private boolean isFirstAlarm = true;
+	private MediaPlayer tickMP = null;
 	
 	TextView  progressCountText;
 	ImageView bowlView;
@@ -116,7 +120,7 @@ public class Game3Activity extends Activity {
 	AnimationDrawable mixStirAnim;
 	AnimationDrawable ovenAnimation;
 	protected DrawableRelativeLayout game3RelativeLayout;
-	protected Context gameContext;
+	protected Game3Activity gameContext;
 	private SPenEventLibrary mSPenEventLibrary;
 	
 	@Override
@@ -216,7 +220,7 @@ public class Game3Activity extends Activity {
 					if(dist>=CREAM_DIST){
 						PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_POP, Game3Activity.this);
 						curButterView = new ImageView(gameContext);
-						curButterView.setImageResource(R.drawable.game3_cream);
+						curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game3_cream));
 						game3RelativeLayout.addView(curButterView);
 						ratio = INIT_CREAM_RATIO;	
 						startPoint = new Point((int)event.getX(),(int)event.getY());
@@ -233,7 +237,7 @@ public class Game3Activity extends Activity {
 				else{
 					if(ratio == INIT_CREAM_RATIO){
 						curButterView = new ImageView(gameContext);
-						curButterView.setImageResource(R.drawable.game3_cream2);
+						curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game3_cream2));
 						game3RelativeLayout.addView(curButterView);
 					}
 					if(ratio < CREAM_MAX_RATIO)
@@ -259,8 +263,8 @@ public class Game3Activity extends Activity {
 				Log.d("Penpal","pressing");
 				butterSqueezing = true;				
 				
-				curButterView = new ImageView(gameContext);	
-				curButterView.setImageResource(R.drawable.game3_cream);
+				curButterView = new ImageView(gameContext);
+				curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game3_cream));
 				game3RelativeLayout.addView(curButterView);
 				
 				ratio = 0;
@@ -320,11 +324,21 @@ public class Game3Activity extends Activity {
 				bundle.putInt("GameWinCount", mWinCount);
 				bundle.putInt("NewScore", -1);
 	            newAct.putExtras(bundle);
-				startActivityForResult(newAct, 0);
-				Game3Activity.this.finish();
+
+	            findViewById(R.id.failFeedbackView).setVisibility(View.VISIBLE);
+	            
+	            Timer timer = new Timer(true);
+				timer.schedule(new WaitTimerTask(gameContext, newAct), 2000);
+	            
 				return 0;
 			}
+		}, new Callable<Integer>() {
+			public Integer call() {
+				return doTimeReminder();
+			}
 		});
+		isFirstAlarm = true;
+		findViewById(R.id.timeReminder).setVisibility(View.INVISIBLE);
 		PlayPalUtility.initialProgressBar(MIX_TIME, PlayPalUtility.TIME_MODE);
 		
 		PlayPalUtility.setHoverTarget(true, eggbeatView);
@@ -335,7 +349,18 @@ public class Game3Activity extends Activity {
 	protected void onPause() {
 	    super.onPause();
 	    writeToSettings();
+	    
+	    if(tickMP != null) {
+	    	tickMP.release();
+	    	tickMP = null;
+	    }
 	    BackgroundMusicHandler.recyle();
+	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		BitmapHandler.recycleBitmaps();
 	}
 	
 	@Override
@@ -371,6 +396,8 @@ public class Game3Activity extends Activity {
 			return;
 		}
 		else{
+			isFirstAlarm = true;
+			findViewById(R.id.timeReminder).setVisibility(View.INVISIBLE);
 			PlayPalUtility.initialProgressBar(settings.getInt("CUR_TIMEBAR_MAX", 0), PlayPalUtility.TIME_MODE);
 			PlayPalUtility.setProgressBarCurVal(settings.getInt("CUR_TIMEBAR_VAL", 0));
 			score = settings.getInt("CUR_SCORE", 0);
@@ -519,6 +546,24 @@ public class Game3Activity extends Activity {
 		return 1;	
 	}
 	
+	protected Integer doTimeReminder() {
+		if(isFirstAlarm) {
+			PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_TIME_REMINDER, this, false);
+			tickMP = PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_TIMER_TICK, this, true);
+			isFirstAlarm = false;
+		}
+		findViewById(R.id.timeReminder).setVisibility(View.VISIBLE);
+		if(timeReminderStat == 1) {
+			((ImageView)findViewById(R.id.timeReminder)).setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.time_reminder_2));
+			timeReminderStat = 0;
+		}
+		else {
+			((ImageView)findViewById(R.id.timeReminder)).setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.time_reminder_1));
+			timeReminderStat = 1;
+		}
+		return 0;
+	}
+	
 	protected Integer handleCakeAction(View view){
 		curProgress++;
 		progressCountText.setText("ProgressCount: " + new String("" + curProgress));
@@ -529,6 +574,8 @@ public class Game3Activity extends Activity {
 		PlayPalUtility.clearGestureSets();
 		PlayPalUtility.unregisterHoverLineGesture(game3RelativeLayout);
 		score += PlayPalUtility.killTimeBar();
+		isFirstAlarm = true;
+		findViewById(R.id.timeReminder).setVisibility(View.INVISIBLE);
 		PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
 		
 		PlayPalUtility.registerSingleHoverPoint(false,game3RelativeLayout, this, new Callable<Integer>() {
@@ -580,7 +627,7 @@ public class Game3Activity extends Activity {
 			PlayPalUtility.initialLineGestureParams(false, false, boxSize, new Point(1560,600) ,centralPoint,  new Point(1560,1160));
 			PlayPalUtility.setStraightStroke(new Point(1560,600) ,centralPoint,  new Point(1560,1160));
 			
-			eggbeatView.setImageResource(R.drawable.game1_knife);
+			eggbeatView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game1_knife));
 		}
 		return 1;
 	}	
@@ -649,9 +696,11 @@ public class Game3Activity extends Activity {
 			cakeAnim.setAnimationListener(new AnimationListener() {
 				@Override
 				public void onAnimationEnd(Animation anim) {
-					eggbeatView.setImageResource(R.drawable.game3_squeezer);
+					eggbeatView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game3_squeezer));
 					cakeDottedLineView.setVisibility(ImageView.VISIBLE);
 					PlayPalUtility.setLineGesture(true);
+					isFirstAlarm = true;
+					findViewById(R.id.timeReminder).setVisibility(View.INVISIBLE);
 					PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
 				}
 

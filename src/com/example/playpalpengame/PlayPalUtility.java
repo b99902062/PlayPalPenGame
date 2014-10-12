@@ -60,6 +60,9 @@ public class PlayPalUtility {
 	protected final static int SOUND_ROLLING = 13;
 	protected final static int SOUND_CUT_DOUGH = 14;
 	
+	protected final static int SOUND_TIME_REMINDER = 15;
+	protected final static int SOUND_TIMER_TICK = 16;
+	protected final static int SOUND_TIMER_DING = 17;
 	
 	protected final static int FROM_OUTLEFT_TO_CUR = 1;
 	protected final static int FROM_CUR_TO_OUTRIGHT = 2;
@@ -88,10 +91,13 @@ public class PlayPalUtility {
 	protected static Timer timer;
 	protected static TimeBarTask timerTask;
 	
+	private static ArrayList<MediaPlayer> voiceList = new ArrayList<MediaPlayer>();
+	
 	private static boolean isPlayFeedback;
 	protected static ImageView feedbackView;
 
 	private static Callable<Integer> failFunc;
+	private static Callable<Integer> reminderFunc;
 	private static int totalProgress = 0;
 	private static int curProgress = 0;
 	private static ProgressBar progressBar;
@@ -117,10 +123,13 @@ public class PlayPalUtility {
 									 R.raw.game3_cream_pop,
 									 R.raw.game3_squeezing_cream,
 									 R.raw.game4_cartoon_rolling,
-									 R.raw.game4_cutting_dough};
+									 R.raw.game4_cutting_dough,
+									 R.raw.time_reminder,
+									 R.raw.timer_tick,
+									 R.raw.timer_ding};
 	
 	private static int[][] voiceRes = {{R.raw.voice_1_1, R.raw.voice_1_2, R.raw.voice_1_3, R.raw.voice_1_4, R.raw.voice_1_5, R.raw.voice_1_6, R.raw.voice_1_7, R.raw.voice_1_8, R.raw.voice_1_9, R.raw.voice_1_10},
-		{R.raw.voice_2_1, R.raw.voice_2_2, R.raw.voice_2_3, R.raw.voice_2_4, R.raw.voice_2_5, R.raw.voice_2_6},
+		{R.raw.voice_2_1, R.raw.voice_2_2, R.raw.voice_2_3, R.raw.voice_2_4, R.raw.voice_2_5, R.raw.voice_2_6, R.raw.voice_2_7},
 		{R.raw.voice_3_1, R.raw.voice_3_2, R.raw.voice_3_3, R.raw.voice_3_4, R.raw.voice_3_5, R.raw.voice_3_6, R.raw.voice_3_7, R.raw.voice_3_8, R.raw.voice_3_9, R.raw.voice_3_10, R.raw.voice_3_11}, 
 		{R.raw.voice_4_1, R.raw.voice_4_2, R.raw.voice_4_3, R.raw.voice_4_4, R.raw.voice_4_5, R.raw.voice_4_6, R.raw.voice_4_7}}; 
 	
@@ -799,10 +808,17 @@ public class PlayPalUtility {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 mp.release();
+                voiceList.remove(mp);
                 if(remainIndexs.length > 0)
                 	playTeachVoice(context, remainIndexs);
             }
-        });   
+        });
+        for(int i=0; i<voiceList.size(); i++) {
+        	voiceList.get(i).stop();
+        	voiceList.get(i).release();
+        }
+        voiceList.clear();
+        voiceList.add(mp);
         mp.start();
 	}
 	
@@ -815,6 +831,14 @@ public class PlayPalUtility {
 		progressMark = markView;
 		progressBack = progressBackView;
 		failFunc = func;
+	}
+	
+	protected static void registerProgressBar(ProgressBar barView, ImageView markView, ImageView progressBackView, final Callable<Integer> func, final Callable<Integer> func2) {
+		progressBar = barView;
+		progressMark = markView;
+		progressBack = progressBackView;
+		failFunc = func;
+		reminderFunc = func2;
 	}
 	
 	protected static void initialProgressBar(int total, int mode) {
@@ -862,16 +886,26 @@ public class PlayPalUtility {
 				curProgress = 0;
 			}
 			updateProgressBar();
-		}
-		if(isReachGoal) {
-			progressBack.setImageResource(R.drawable.progress_finish);
-			try {
-				failFunc.call();
-			} catch (Exception e) {
-				e.printStackTrace();
+			
+			if(curProgress <= totalProgress/2 && curProgress % 10 == 0) {
+				try {
+					reminderFunc.call();
+				}catch(Exception ex) {
+					ex.printStackTrace();
+				}
 			}
-			return true;
+			if(isReachGoal) {
+				progressBack.setImageResource(R.drawable.progress_finish);
+				try {
+					playSoundEffect(SOUND_TIMER_DING, targetContext, false);
+					failFunc.call();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				return true;
+			}
 		}
+		
 		return false;
 	}
 	
@@ -1131,22 +1165,15 @@ class CircularTranslateAnimation extends Animation {
 
 class WaitTimerTask extends TimerTask {
 	private Activity activity;
-	private String userName;
+	private Intent intent;
 	
-	public WaitTimerTask(Activity act, String name) {
+	public WaitTimerTask(Activity act, Intent inte) {
 		activity = act;
-		userName = name;
+		intent = inte;
 	}
 	
     public void run() {
-    	BackgroundMusicHandler.setCanRecycle(false);
-    	
-    	Intent newAct = new Intent();
-		newAct.setClass(activity, MainActivity.class);
-		Bundle bundle = new Bundle();
-		bundle.putString("userName", userName);
-        newAct.putExtras(bundle);
-		activity.startActivityForResult(newAct, 0);
+    	activity.startActivityForResult(intent, 0);
 		activity.finish();
     }
   };

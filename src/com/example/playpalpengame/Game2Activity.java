@@ -3,6 +3,7 @@ package com.example.playpalpengame;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
+import java.util.Timer;
 import java.util.concurrent.Callable;
 
 import android.app.Activity;
@@ -54,10 +55,13 @@ public class Game2Activity extends Activity {
 	private final Point[] cutEndOffset = {new Point(308, 438), new Point(123, 446), new Point(284, 600), new Point(134, 607)};
 
 	private int score = 0;
+	private int timeReminderStat = 0;
+	private boolean isFirstAlarm = true;
 	
 	public static boolean isReady;
 	
 	private MediaPlayer roastMP = null;
+	private MediaPlayer tickMP = null;
 	
 	private String mUserName = null;
 	private int mBadges = 0;
@@ -76,7 +80,7 @@ public class Game2Activity extends Activity {
 	protected DrawableRelativeLayout game2RelativeLayout;
 	protected TextView testProgressCountText;
 	
-	private Context self;
+	private static Game2Activity self;
 	
 	protected int progressCount;
 	protected static LinkedList<FishHandlerThread> fishThreadList;
@@ -125,11 +129,19 @@ public class Game2Activity extends Activity {
 				bundle.putInt("GameWinCount", mWinCount);
 	            newAct.putExtras(bundle);
 	            
-				startActivityForResult(newAct, 0);
-				Game2Activity.this.finish();
+	            findViewById(R.id.failFeedbackView).setVisibility(View.VISIBLE);
+	            
+	            Timer timer = new Timer(true);
+				timer.schedule(new WaitTimerTask(self, newAct), 2000);
 				return 0;
 			}
+		}, new Callable<Integer>() {
+			public Integer call() {
+				return doTimeReminder();
+			}
 		});
+		isFirstAlarm = true;
+		findViewById(R.id.timeReminder).setVisibility(View.INVISIBLE);
 		PlayPalUtility.initialProgressBar(testTotalTime, PlayPalUtility.TIME_MODE);
 		
 		View homeBtn = findViewById(R.id.homeBtn);
@@ -175,7 +187,7 @@ public class Game2Activity extends Activity {
                     	params.setMargins((int)event.getX(), (int)event.getY() , 0, 0);
                     	if(canPutInBasket) {
                     		if(event.getX() - 200 > 1960 && event.getY() - 200 > 380 && event.getY() - 200 < 1380) {
-                    			netView.setImageResource(R.drawable.game2_net);
+                    			netView.setImageBitmap(BitmapHandler.getLocalBitmap(self, R.drawable.game2_net));
                     			canPutInBasket = false;
                     			PlayPalUtility.setLineGesture(true);
                     			// Play the pu-ton animation
@@ -209,7 +221,7 @@ public class Game2Activity extends Activity {
                     		fishThreadList.get(curFishIndex).moveTo((int)event.getX() - fishW, (int)event.getY() - fishH);
                     		fishThreadList.get(curFishIndex).doResume();
                     		fishThreadList.get(curFishIndex).fishView.setVisibility(ImageView.VISIBLE);
-                    		netView.setImageResource(R.drawable.game2_net);
+                    		netView.setImageBitmap(BitmapHandler.getLocalBitmap(self, R.drawable.game2_net));
                     		canPutInBasket = false;
                     	}
                         break;
@@ -229,6 +241,12 @@ public class Game2Activity extends Activity {
 	    
 	    clearAll();
 	    BackgroundMusicHandler.recyle();
+	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		BitmapHandler.recycleBitmaps();
 	}
 	
 	@Override
@@ -283,6 +301,8 @@ public class Game2Activity extends Activity {
 			return;
 		}
 		else {
+			isFirstAlarm = true;
+			findViewById(R.id.timeReminder).setVisibility(View.INVISIBLE);
 			PlayPalUtility.initialProgressBar(settings.getInt("CUR_TIMEBAR_MAX", 0), PlayPalUtility.TIME_MODE);
 			PlayPalUtility.setProgressBarCurVal(settings.getInt("CUR_TIMEBAR_VAL", 0));
 			score = settings.getInt("CUR_SCORE", 0);
@@ -361,6 +381,10 @@ public class Game2Activity extends Activity {
 	    	roastMP.release();
 	    	roastMP = null;
 	    }
+		if(tickMP != null) {
+	    	tickMP.release();
+	    	tickMP = null;
+	    }
 		
 		for(int i=0; i<fishThreadList.size(); i++) {
 	    	if (fishThreadList.get(i) != null) {
@@ -424,7 +448,7 @@ public class Game2Activity extends Activity {
 		PlayPalUtility.setLineGesture(false);
 		fishThreadList.get(index).doPause();
 		fishThreadList.get(index).fishView.setVisibility(ImageView.INVISIBLE);
-		netView.setImageResource(R.drawable.game2_net2);
+		netView.setImageBitmap(BitmapHandler.getLocalBitmap(self, R.drawable.game2_net2));
 
 		PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_ID_TEST, this);
 		
@@ -432,7 +456,7 @@ public class Game2Activity extends Activity {
 	}
 	
 	protected void LoadStep2() {
-		netView.setImageResource(R.drawable.game2_thin_knife);
+		netView.setImageBitmap(BitmapHandler.getLocalBitmap(self, R.drawable.game2_thin_knife));
 		
 		basketView.setVisibility(ImageView.GONE);
 		grillView.setVisibility(ImageView.VISIBLE);
@@ -474,10 +498,13 @@ public class Game2Activity extends Activity {
 	}
 	
 	protected Integer prepareCutting() {
+		isFirstAlarm = true;
+		findViewById(R.id.timeReminder).setVisibility(View.INVISIBLE);
 		PlayPalUtility.initialProgressBar(testTotalTime, PlayPalUtility.TIME_MODE);
 		PlayPalUtility.setLineGesture(true);
 		PenRecorder.registerRecorder(game2RelativeLayout, this, mUserName, "2-2");
-		
+		for(int i=0; i<fishDoneIdArray.length; i++)
+			findViewById(fishDoneIdArray[i]).setVisibility(View.VISIBLE);
 		return 0;
 	}
 	
@@ -498,7 +525,6 @@ public class Game2Activity extends Activity {
 			&& isFishCutArray[baseIndex * 4 + 2]		
 			&& isFishCutArray[baseIndex * 4 + 3]) {
 				ImageView fishView = (ImageView)findViewById(fishIdArray[baseIndex]);
-				ImageView fishViewDone = (ImageView)findViewById(fishDoneIdArray[baseIndex]);
 				PlayPalUtility.setAlphaAnimation(fishView, false, new Callable<Integer>() {
 					private int index = baseIndex;
 					@Override
@@ -506,8 +532,7 @@ public class Game2Activity extends Activity {
 						return DoFishDone(index);
 					}
 				});
-				PlayPalUtility.setAlphaAnimation(fishViewDone, true);
-				//fishView.setImageResource(R.drawable.game2_fish_done);
+				//PlayPalUtility.setAlphaAnimation(fishViewDone, true);
 			}
 		}
 		redrawHintLine();
@@ -522,11 +547,27 @@ public class Game2Activity extends Activity {
 		}
 	}
 	
+	protected Integer doTimeReminder() {
+		if(isFirstAlarm) {
+			PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_TIME_REMINDER, this, false);
+			tickMP = PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_TIMER_TICK, this, true);
+			isFirstAlarm = false;
+		}
+		findViewById(R.id.timeReminder).setVisibility(View.VISIBLE);
+		if(timeReminderStat == 1) {
+			((ImageView)findViewById(R.id.timeReminder)).setImageBitmap(BitmapHandler.getLocalBitmap(self, R.drawable.time_reminder_2));
+			timeReminderStat = 0;
+		}
+		else {
+			((ImageView)findViewById(R.id.timeReminder)).setImageBitmap(BitmapHandler.getLocalBitmap(self, R.drawable.time_reminder_1));
+			timeReminderStat = 1;
+		}
+		return 0;
+	}
+	
 	private Integer DoFishDone(int index) {
 		ImageView fishView = (ImageView)findViewById(fishIdArray[index]);
-		ImageView fishViewDone = (ImageView)findViewById(fishDoneIdArray[index]);
 		fishView.setVisibility(ImageView.GONE);
-		fishViewDone.setVisibility(ImageView.VISIBLE);
 		
 		progressCount++;
 		testProgressCountText.setText(String.format("ProgressCount: %d", progressCount));
@@ -562,9 +603,9 @@ public class Game2Activity extends Activity {
         	if(msg.getData().getInt("index") >= fishThreadList.size())
         		return;
         	if(msg.getData().getInt("fishType") == 1)
-            	fishThreadList.get(msg.getData().getInt("index")).fishView.setImageResource(R.drawable.game2_fish_2);
+            	fishThreadList.get(msg.getData().getInt("index")).fishView.setImageBitmap(BitmapHandler.getLocalBitmap(self, R.drawable.game2_fish_2));
     		else
-    			fishThreadList.get(msg.getData().getInt("index")).fishView.setImageResource(R.drawable.game2_fish_1);
+    			fishThreadList.get(msg.getData().getInt("index")).fishView.setImageBitmap(BitmapHandler.getLocalBitmap(self, R.drawable.game2_fish_1));
         	
             int curX = msg.getData().getInt("nextX");
             int curY = msg.getData().getInt("nextY");
@@ -603,7 +644,7 @@ public class Game2Activity extends Activity {
         
         FishHandlerThread(Game2Activity context, int x, int y) {
         	fishView = new ImageView(context);
-			fishView.setImageResource(R.drawable.game2_fish_1);
+        	fishView.setImageBitmap(BitmapHandler.getLocalBitmap(self, R.drawable.game2_fish_1));
 			LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT,
 					LayoutParams.WRAP_CONTENT);
 			curX = x;
