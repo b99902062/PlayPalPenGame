@@ -13,7 +13,7 @@
 #define X_middle 300
 #define Y_middle 500
 
-#define U_Boundary 825
+#define U_Boundary 780
 #define D_Boundary 150
 #define L_Boundary 20
 #define R_Boundary 580

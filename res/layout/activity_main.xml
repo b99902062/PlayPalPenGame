@@ -438,28 +438,28 @@
 				    android:id="@+id/jarView"
 				    android:src="@drawable/jar_bottle"
 				    android:layout_centerHorizontal="true"
-				    android:layout_width="1000dp"
-				    android:layout_height="1000dp"
+				    android:layout_width="wrap_content"
+				    android:layout_height="wrap_content"
 				    android:visibility="visible"
-		        	android:layout_marginTop="200dp" />
+		        	android:layout_marginTop="315dp" />
                
                <ImageView
                    android:id="@+id/jarView2"
                    android:src="@drawable/jar_bottle2"
                    android:layout_centerHorizontal="true"
-                   android:layout_width="1000dp"
-				   android:layout_height="1000dp"
+                   android:layout_width="wrap_content"
+				   android:layout_height="wrap_content"
                    android:visibility="visible"
-                   android:layout_marginTop="200dp" />
+                   android:layout_marginTop="315dp"  />
 	
 				<ImageView
 				    android:id="@+id/jarTop"
+				    android:src="@drawable/jar_top"
 				    android:layout_width="wrap_content"
 				    android:layout_height="wrap_content"
 				    android:layout_alignTop="@+id/jarView"
-				    android:layout_centerHorizontal="true"
-				    android:layout_marginTop="75dp"
-				    android:src="@drawable/jar_top"
+				    android:layout_marginTop="-15dp"
+					android:layout_marginLeft="75dp"
 				    android:visibility="visible" />
            </RelativeLayout>
                
