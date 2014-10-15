@@ -795,6 +795,14 @@ public class PlayPalUtility {
         mp.start();
 	}
 	
+	protected static void clearAllVoice() {
+		for(int i=0; i<voiceList.size(); i++) {
+        	voiceList.get(i).stop();
+        	voiceList.get(i).release();
+        }
+        voiceList.clear();
+	}
+	
 	protected static void playTeachVoice(final Context context, int... voiceIndexs) {
 		int id = voiceIndexs[0];
 		  
@@ -813,11 +821,7 @@ public class PlayPalUtility {
                 	playTeachVoice(context, remainIndexs);
             }
         });
-        for(int i=0; i<voiceList.size(); i++) {
-        	voiceList.get(i).stop();
-        	voiceList.get(i).release();
-        }
-        voiceList.clear();
+        clearAllVoice();
         voiceList.add(mp);
         mp.start();
 	}

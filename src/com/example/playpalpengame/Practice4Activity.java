@@ -271,6 +271,7 @@ public class Practice4Activity extends Activity {
 	protected void onPause() {
 	    super.onPause();
 	    BackgroundMusicHandler.recyle();
+		PlayPalUtility.clearAllVoice();
 	}
 	
 	@Override

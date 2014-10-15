@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -28,15 +27,18 @@ import android.os.Message;
 import android.util.JsonReader;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver.OnScrollChangedListener;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.View.OnClickListener;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.RelativeLayout.LayoutParams;
+import android.widget.TextView;
 
 public class MainActivity extends Activity implements SensorEventListener {
+	protected static final int RIGHT_MOST_SCROLL_X = 1908;
+	
 	private static final int[] starResArray = {R.drawable.jar_star_1, R.drawable.jar_star_2, R.drawable.jar_star_3, R.drawable.jar_star_4};
 	private int[][] badgesID = {{R.id.mainBadges1_1, R.id.mainBadges1_2, R.id.mainBadges1_3, R.id.mainBadges1_4, R.id.mainBadges1_5, R.id.mainBadges1_6},
 								{R.id.mainBadges2_1, R.id.mainBadges2_2, R.id.mainBadges2_3, R.id.mainBadges2_4, R.id.mainBadges2_5, R.id.mainBadges2_6},
@@ -67,7 +69,10 @@ public class MainActivity extends Activity implements SensorEventListener {
 	public static final float PTM_Ratio = 1500;
 	public static final int FPS = 60;
 	
-	
+	protected ImageView leftHintView;
+	protected ImageView rightHintView;
+	protected FramesSequenceAnimation leftAnim;
+	protected FramesSequenceAnimation rightAnim;
 	
 	@Override
 	public void onBackPressed() {
@@ -108,6 +113,9 @@ public class MainActivity extends Activity implements SensorEventListener {
 		
 		timer.cancel();
 		
+		leftAnim.stop();
+		rightAnim.stop();
+		
 		RelativeLayout jarLayout = (RelativeLayout)findViewById(R.id.jarRelativeLayout);
 		for(StarStat star:starArr){
 			jarLayout.removeView(star.view);
@@ -128,6 +136,8 @@ public class MainActivity extends Activity implements SensorEventListener {
 		jarLayout.invalidate();
 		
 		initWorld();
+		setScrollHint();
+		
 		starArr = new LinkedList<StarStat>();
 		for(int i=0; i<winCount.length; i++) {
 			for(int j=0; j<winCount[i]; j++) {
@@ -195,6 +205,36 @@ public class MainActivity extends Activity implements SensorEventListener {
 		}
 		
 		((TextView)findViewById(R.id.mainExtraNameView)).setText(mUserName);
+	}
+	
+	private void setScrollHint() {
+		leftHintView = (ImageView)findViewById(R.id.leftView);
+		rightHintView = (ImageView)findViewById(R.id.rightView);
+		
+		leftAnim = AnimationsContainer.getInstance().createLeftAnim(leftHintView);
+		rightAnim = AnimationsContainer.getInstance().createRightAnim(rightHintView);
+
+		leftAnim.start();
+		rightAnim.start();
+		
+		final HorizontalScrollView scrollView = (HorizontalScrollView)findViewById(R.id.mainHorizontalScrollView);
+		scrollView.getViewTreeObserver().addOnScrollChangedListener(new OnScrollChangedListener() {
+		    @Override
+		    public void onScrollChanged() {
+		        int scrollX = scrollView.getScrollX(); //for horizontalScrollView
+		        
+		        if(scrollX != 0)
+		        	leftHintView.setVisibility(View.VISIBLE);
+		        else
+		        	leftHintView.setVisibility(View.INVISIBLE);
+		        if(scrollX != RIGHT_MOST_SCROLL_X)
+		        	rightHintView.setVisibility(View.VISIBLE);
+		        else
+		        	rightHintView.setVisibility(View.INVISIBLE);
+		        
+		        Log.d("ScrollHint", new String(scrollX + ""));
+		    }
+		});
 	}
 	
 	protected void setStallListener(View targetView, final int gameIndex, final boolean isPlayBtn) {
