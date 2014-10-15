@@ -65,6 +65,7 @@ public class BeginActivity extends Activity {
 		setContentView(R.layout.activity_begin);
 
 		isTheFirstRecord = false;
+		checkFolderExist();
 		
 		setAgeColor((NumberPicker)findViewById(R.id.agePicker));
 		setAgeColor((NumberPicker)findViewById(R.id.agePicker2));
@@ -216,6 +217,17 @@ public class BeginActivity extends Activity {
 	             }
 	         }
 	     }
+	 }
+	 
+	 private void checkFolderExist() {
+		 try {
+				File file = new File("/sdcard/Android/data/com.example.playpalgame");
+				if(!file.exists()){
+					file.mkdirs();
+				}
+		} catch(Exception ex) {
+			ex.printStackTrace();
+		}
 	 }
 	 
 	 private void setGenderBtn() {
