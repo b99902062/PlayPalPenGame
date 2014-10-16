@@ -97,23 +97,21 @@ public class AnimationActivity extends Activity {
 			anim.start();
 			blingAnim = AnimationsContainer.getInstance().createBlingAnim((ImageView)findViewById(R.id.blingView));
 			blingAnim.start();
-			
-			PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_HOORAY, this);
-			monsterView.setOnTouchListener(new OnTouchListener() {
+			blingAnim.setStoppedAnimListener(new Callable<Integer>() {
 				private boolean isSetEnd = false;
-				@Override
-				public boolean onTouch(View arg0, MotionEvent arg1) {
+				
+				public Integer call() {
 					if(!isSetEnd) {
 						anim.stop();
-						blingAnim.stop();
 						findViewById(R.id.starView).setVisibility(View.GONE);
 						findViewById(R.id.blingView).setVisibility(View.GONE);
 						setEndAnim();
 						isSetEnd = true;
 					}
-					return true;
+					return 0;
 				}
 			});
+			PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_HOORAY, this);
 		}
 		else if(isWin) {
 			mHighScore -= 5;
@@ -476,7 +474,7 @@ class AnimationsContainer {
     } 
     
     public FramesSequenceAnimation createBlingAnim(ImageView imageView) {
-    	return new FramesSequenceAnimation(imageView, mBlingAnimFrames, HIGH_FPS, true);
+    	return new FramesSequenceAnimation(imageView, mBlingAnimFrames, HIGH_FPS);
     }  
     
     public FramesSequenceAnimation createLeftAnim(ImageView imageView) {

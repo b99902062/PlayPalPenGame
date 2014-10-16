@@ -774,27 +774,21 @@ public class PlayPalUtility {
 	}
 	
 	protected static MediaPlayer playSoundEffect(int soundID, Context context, boolean isLoop) {
-		if(isLoop) {
-			MediaPlayer mp = MediaPlayer.create(context, soundRes[soundID]);
-			mp.setLooping(true);
-			mp.start();
-			return mp;
-		}
-		else {
-			playSoundEffect(soundID, context);
-			return null;
-		}
-	}
-	
-	protected static void playSoundEffect(int soundID, Context context) {
 		MediaPlayer mp = MediaPlayer.create(context, soundRes[soundID]);
-        mp.setOnCompletionListener(new OnCompletionListener() {
+		if(isLoop)
+			mp.setLooping(true);
+		mp.setOnCompletionListener(new OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 mp.release();
             }
         });   
         mp.start();
+        return mp;
+	}
+	
+	protected static void playSoundEffect(int soundID, Context context) {
+		playSoundEffect(soundID, context, false);
 	}
 	
 	protected static void clearAllVoice() {
