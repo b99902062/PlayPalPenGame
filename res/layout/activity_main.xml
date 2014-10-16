@@ -444,7 +444,7 @@
 					    android:layout_width="wrap_content"
 					    android:layout_height="wrap_content"
 					    android:visibility="visible"
-			        	android:layout_marginTop="315dp" />
+			        	android:layout_marginTop="330dp" />
 	               
 	               <ImageView
 	                   android:id="@+id/jarView2"
@@ -453,7 +453,7 @@
 	                   android:layout_width="wrap_content"
 					   android:layout_height="wrap_content"
 	                   android:visibility="visible"
-	                   android:layout_marginTop="315dp"  />
+	                   android:layout_marginTop="330dp"  />
 		
 					<ImageView
 					    android:id="@+id/jarTop"

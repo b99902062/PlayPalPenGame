@@ -63,6 +63,7 @@ public class PlayPalUtility {
 	protected final static int SOUND_TIME_REMINDER = 15;
 	protected final static int SOUND_TIMER_TICK = 16;
 	protected final static int SOUND_TIMER_DING = 17;
+	protected final static int SOUND_COOKIE_POP = 18;
 	
 	protected final static int FROM_OUTLEFT_TO_CUR = 1;
 	protected final static int FROM_CUR_TO_OUTRIGHT = 2;
@@ -126,7 +127,8 @@ public class PlayPalUtility {
 									 R.raw.game4_cutting_dough,
 									 R.raw.time_reminder,
 									 R.raw.timer_tick,
-									 R.raw.timer_ding};
+									 R.raw.timer_ding,
+									 R.raw.pop};
 	
 	private static int[][] voiceRes = {{R.raw.voice_1_1, R.raw.voice_1_2, R.raw.voice_1_3, R.raw.voice_1_4, R.raw.voice_1_5, R.raw.voice_1_6, R.raw.voice_1_7, R.raw.voice_1_8, R.raw.voice_1_9, R.raw.voice_1_10},
 		{R.raw.voice_2_1, R.raw.voice_2_2, R.raw.voice_2_3, R.raw.voice_2_4, R.raw.voice_2_5, R.raw.voice_2_6, R.raw.voice_2_7},

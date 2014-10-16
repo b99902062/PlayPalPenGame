@@ -3,9 +3,12 @@ package com.example.playpalpengame;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Callable;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.FloatMath;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -28,6 +31,7 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.AnimationDrawable;
 
+import com.example.playpalpengame.Game4Activity.cookieCuttingHandler;
 import com.samsung.spen.lib.input.SPenEventLibrary;
 import com.samsung.spensdk.applistener.SPenHoverListener;
 
@@ -37,7 +41,7 @@ public class Practice4Activity extends Activity {
 	protected final int CREAM_SIZE = 100;
 	protected final int CREAM_DIST = 10;
 	protected final int CREAM_INIT_RATIO = 5;
-	protected final int CREAM_MAX_RATIO = 10;
+	protected final int CREAM_MAX_RATIO = 8;
 	
 	protected boolean canTouchOven = false;
 	protected boolean butterSqueezing = false;
@@ -90,6 +94,7 @@ public class Practice4Activity extends Activity {
 	private int mWinCount = 0;
 	private int score = 0;
 	
+	protected static cookieCuttingHandler cookieCuttingHandler;
 	protected Point centerPoint = new Point(1280,800);
 	protected int dx = 275;
 	protected int dy = 150;
@@ -118,13 +123,13 @@ public class Practice4Activity extends Activity {
 	};
 		
 	protected Cookie lonelyCookie;
-	protected int[] cookieResArray = {
+	protected int[] cuttingCookieArray = {
 		R.drawable.game4_cookie1,	
 		R.drawable.game4_cookie2,
 		R.drawable.game4_cookie3
 	};
 	
-	protected int[] cookieResArray2 = {
+	protected int[] cuttedCookieArray = {
 		R.drawable.game4_cookie1_cutted,	
 		R.drawable.game4_cookie2_cutted,
 		R.drawable.game4_cookie3_cutted
@@ -179,7 +184,7 @@ public class Practice4Activity extends Activity {
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		
-		PlayPalUtility.setDebugMode(true);
+		PlayPalUtility.setDebugMode(false);
 
 		gameContext = this;
 		Bundle bundle = getIntent().getExtras();
@@ -203,7 +208,8 @@ public class Practice4Activity extends Activity {
 		laddleView = (ImageView)findViewById(R.id.Game4_ladle);		
 		game4RelativeLayout = (DrawableRelativeLayout) findViewById(R.id.Game4RelativeLayout);
 		teachHandView = (ImageView)findViewById(R.id.Game4_teachHand);
-				
+		cookieCuttingHandler = new cookieCuttingHandler();		
+		
 		curProgress = 0;
 		boxSize = 70;
 		
@@ -331,7 +337,7 @@ public class Practice4Activity extends Activity {
 	protected void initCookieView(){
 		teachHandView.clearAnimation();
 
-		lonelyCookie = new Cookie(4, 1, (ImageView)findViewById(cookieViewArray[4]));
+		lonelyCookie = new Cookie(4, 2, (ImageView)findViewById(cookieViewArray[4]));
 		lonelyCookie.setCreamColor();
 		lonelyCookie.setGesturePoint();
 		lonelyCookie.setGestureDottedLine();
@@ -387,7 +393,6 @@ public class Practice4Activity extends Activity {
 				butterSqueezing = true;				
 				
 				curButterView = new ImageView(gameContext);
-				curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, creamArray[lonelyCookie.creamColor]));
 				game4RelativeLayout.addView(curButterView);
 				
 				ratio = CREAM_INIT_RATIO;
@@ -429,15 +434,12 @@ public class Practice4Activity extends Activity {
 			PlayPalUtility.clearDrawView();
 			
 			teachHandView.clearAnimation();
-			teachHandView.setVisibility(ImageView.INVISIBLE);
-
 			PlayPalUtility.playTeachVoice(this, 403, 404);
 			
 			initCookieView();
 			
-			pressAnim.stop();
-			setTeachHandCircular(lonelyCookie.center.x-TEACH_HAND_OFFSET_X, lonelyCookie.center.y-TEACH_HAND_OFFSET_Y, 150);
-			teachHandView.setVisibility(ImageView.INVISIBLE);
+			setTeachHandCircular(lonelyCookie.center.x-TEACH_HAND_DOWN_OFFSET_X, lonelyCookie.center.y-TEACH_HAND_DOWN_OFFSET_Y, 175);
+			teachHandView.setVisibility(ImageView.VISIBLE);
 			
 		}
 		else if(curProgress < DOUGH_PROGRESS_END){
@@ -556,41 +558,21 @@ public class Practice4Activity extends Activity {
 					for(int j=0; j<16; j++)
 						PlayPalUtility.initialLineGestureParams(false, true, CREAM_BOX_SIZE, pointAddition(curCookie.center, cookieCreamOffsetArray[curCookie.type][j]));
 					
-					Animation cookieAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_OUTLEFT_TO_CUR);
-					cookieAnim.setAnimationListener(new AnimationListener() {
-						@Override
-						public void onAnimationEnd(Animation anim) {
-							if(isFirstCookie) {
-								//PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
-								laddleView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game4_squeezer));
-								isFirstCookie = false;
-							}
-							curCookie.view.clearAnimation();
-							
-							PlayPalUtility.playTeachVoice(gameContext, 405, 406);
-							
-							teachHandView.setVisibility(ImageView.VISIBLE);
-							LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-							params.setMargins(lonelyCookie.center.x-TEACH_HAND_BTN_OFFSET_X, lonelyCookie.center.y-TEACH_HAND_BTN_OFFSET_Y, 0, 0);
-							teachHandView.setLayoutParams(params);
-							teachHandView.bringToFront();
-							game4RelativeLayout.invalidate();							
-							
-							btnAnim = AnimationsContainer.getInstance().createGame4TeachHandBtnAnim(teachHandView);
-							btnAnim.start();
-							PlayPalUtility.setLineGesture(false);
-						}
-
-						@Override
-						public void onAnimationRepeat(Animation animation) {
-						}
-
-						@Override
-						public void onAnimationStart(Animation animation) {
-						}
-					});
-					curCookie.view.setAnimation(cookieAnim);
-					cookieAnim.startNow();
+					PlayPalUtility.setAlphaAnimation(curCookie.view, true);
+					
+					laddleView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game4_squeezer));
+					PlayPalUtility.playTeachVoice(gameContext, 405, 406);
+					
+					teachHandView.setVisibility(ImageView.VISIBLE);
+					LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+					params.setMargins(lonelyCookie.center.x-TEACH_HAND_BTN_OFFSET_X, lonelyCookie.center.y-TEACH_HAND_BTN_OFFSET_Y, 0, 0);
+					teachHandView.setLayoutParams(params);
+					teachHandView.bringToFront();
+					game4RelativeLayout.invalidate();							
+					
+					btnAnim = AnimationsContainer.getInstance().createGame4TeachHandBtnAnim(teachHandView);
+					btnAnim.start();
+					PlayPalUtility.setLineGesture(false);
 				}
 
 				@Override
@@ -606,7 +588,6 @@ public class Practice4Activity extends Activity {
 			
 			curCookie.view.setAnimation(cookieAnim);
 			cookieAnim.startNow();	
-			
 			
 			PlayPalUtility.clearGestureSets();
 			PlayPalUtility.registerSingleHoverPoint(true, game4RelativeLayout, this, new Callable<Integer>() {
@@ -711,15 +692,16 @@ public class Practice4Activity extends Activity {
 			view = _v;
 			view.setVisibility(ImageView.VISIBLE);
 			
-			view.setBackgroundResource(cookieResArray[type]);
 			center = new Point(view.getLeft()+200, view.getTop()+200);
-			
 		}
 		
 		public void beCutted(){
 			PlayPalUtility.eraseStroke(0);
-			FramesSequenceAnimation cutAnim = AnimationsContainer.getInstance().createGame4CookieAnim(view, type);
-			cutAnim.start();
+			//FramesSequenceAnimation cutAnim = AnimationsContainer.getInstance().createGame4CookieAnim(view, type);
+			//cutAnim.start();
+			this.view.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, cuttingCookieArray[this.type]));
+			Timer timer = new Timer(true);
+			timer.schedule(new cookieCuttingTask(id), 750, 500);
 		}
 		
 		public void beBaked(){
@@ -751,6 +733,27 @@ public class Practice4Activity extends Activity {
 			else{
 				PlayPalUtility.setCircleStroke(this.center, cookieRadius);
 			}
+		}
+	}
+	
+	public class cookieCuttingHandler extends Handler{
+		public void handleMessage(Message msg) {
+			int idx = msg.what;
+			Cookie curCookie = lonelyCookie;
+			curCookie.view.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, cuttedCookieArray[curCookie.type]));
+		}
+	}
+	
+	class cookieCuttingTask extends TimerTask{
+		int cookieIDX;
+		cookieCuttingTask(int idx){
+			cookieIDX = idx;
+		}
+		public void run(){
+			Message msg = new Message();
+			msg.what = cookieIDX;
+            Practice4Activity.cookieCuttingHandler.sendMessage(msg);
+            this.cancel();
 		}
 	}
 }

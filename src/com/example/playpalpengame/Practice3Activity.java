@@ -371,6 +371,7 @@ public class Practice3Activity extends Activity {
 			public void onClick(View view) {
 				PlayPalUtility.killTimeBar();
 				PlayPalUtility.setLineGesture(false);
+				PlayPalUtility.clearDrawView();
 				PlayPalUtility.unregisterLineGesture(game3RelativeLayout);
 				PlayPalUtility.clearGestureSets();
 				
@@ -478,7 +479,7 @@ public class Practice3Activity extends Activity {
 			PlayPalUtility.setLineGesture(false);
             PlayPalUtility.clearGestureSets();
 			PlayPalUtility.unregisterLineGesture(game3RelativeLayout);
-		
+
 			
 			anim = null;
 		}
@@ -507,6 +508,7 @@ public class Practice3Activity extends Activity {
 		game3RelativeLayout.invalidate();
 		PlayPalUtility.clearGestureSets();
 		PlayPalUtility.unregisterHoverLineGesture(game3RelativeLayout);
+		PlayPalUtility.clearDrawView();
 		
 		PlayPalUtility.registerSingleHoverPoint(false,game3RelativeLayout, this, new Callable<Integer>() {
 			@Override
@@ -713,7 +715,7 @@ public class Practice3Activity extends Activity {
 			
 			PlayPalUtility.initialLineGestureParams(false, false, creamBoxSize, 
 					dottedLineArray[0],
-					dottedLineArray[2]);
+					dottedLineArray[1]);
 		}
 	}
 	

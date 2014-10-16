@@ -533,11 +533,11 @@ class AnimationsContainer {
     
     public FramesSequenceAnimation createGame4BigCookieAnim(ImageView imageView, int index){
     	if(index == 0)
-    		return new FramesSequenceAnimation(imageView, mGame4BigCookie1AnimFrames, LOW_FPS);
+    		return new FramesSequenceAnimation(imageView, mGame4BigCookie1AnimFrames, MEDIUM_FPS);
     	else if(index == 1)
-    		return new FramesSequenceAnimation(imageView, mGame4BigCookie2AnimFrames, LOW_FPS);
+    		return new FramesSequenceAnimation(imageView, mGame4BigCookie2AnimFrames, MEDIUM_FPS);
     	else
-    		return new FramesSequenceAnimation(imageView, mGame4BigCookie3AnimFrames, LOW_FPS);
+    		return new FramesSequenceAnimation(imageView, mGame4BigCookie3AnimFrames, MEDIUM_FPS);
     }
     
     public FramesSequenceAnimation createGame4TeachHandAnim(ImageView imageView){
@@ -565,13 +565,13 @@ class AnimationsContainer {
 	    		return null;
     	} else {
     		if(gameIndex == 1)
-	    		return new FramesSequenceAnimation(imageView, mGame1LoseFrames, LOW_FPS);
+	    		return new FramesSequenceAnimation(imageView, mGame1LoseFrames, LOW_FPS, true);
 	    	else if(gameIndex == 2)
-	    		return new FramesSequenceAnimation(imageView, mGame2LoseFrames, LOW_FPS);
+	    		return new FramesSequenceAnimation(imageView, mGame2LoseFrames, LOW_FPS, true);
 	    	else if(gameIndex == 3)
-	    		return new FramesSequenceAnimation(imageView, mGame3LoseFrames, LOW_FPS);
+	    		return new FramesSequenceAnimation(imageView, mGame3LoseFrames, LOW_FPS, true);
 	    	else if(gameIndex == 4)
-	    		return new FramesSequenceAnimation(imageView, mGame4LoseFrames, LOW_FPS);
+	    		return new FramesSequenceAnimation(imageView, mGame4LoseFrames, LOW_FPS, true);
 	    	else
 	    		return null;
     	}

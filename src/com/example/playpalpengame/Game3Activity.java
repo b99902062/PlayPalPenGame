@@ -311,6 +311,7 @@ public class Game3Activity extends Activity {
 				PlayPalUtility.setLineGesture(false);
 				PlayPalUtility.unregisterLineGesture(game3RelativeLayout);
 				PlayPalUtility.clearGestureSets();
+				PlayPalUtility.clearDrawView();
 				
 				Intent newAct = new Intent();
 				newAct.setClass(Game3Activity.this, AnimationActivity.class);
@@ -531,6 +532,7 @@ public class Game3Activity extends Activity {
 			PlayPalUtility.clearDrawView();
 			PlayPalUtility.setLineGesture(false);
             PlayPalUtility.clearGestureSets();
+        	PlayPalUtility.clearDrawView();
 			PlayPalUtility.unregisterLineGesture(game3RelativeLayout);
 			
 			PenRecorder.outputJSON();
@@ -571,6 +573,7 @@ public class Game3Activity extends Activity {
 		cakeCreamHintView.bringToFront();
 		game3RelativeLayout.invalidate();
 		PlayPalUtility.clearGestureSets();
+		PlayPalUtility.clearDrawView();
 		PlayPalUtility.unregisterHoverLineGesture(game3RelativeLayout);
 		score += PlayPalUtility.killTimeBar();
 		isFirstAlarm = true;
