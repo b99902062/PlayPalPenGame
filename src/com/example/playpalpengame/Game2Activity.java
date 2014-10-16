@@ -45,7 +45,8 @@ public class Game2Activity extends Activity {
 	protected final int step1TotalProgressCount = 10;
 	protected final int step2TotalProgressCount = 14;
 	
-	protected final int testTotalTime = 1500;
+	private final int step1TotalTime = 1680;
+	private final int step2TotalTime = 540;
 	
 	private final static int fishW =  140;
 	private final static int fishH = 80;
@@ -142,7 +143,8 @@ public class Game2Activity extends Activity {
 		});
 		isFirstAlarm = true;
 		findViewById(R.id.timeReminder).setVisibility(View.INVISIBLE);
-		PlayPalUtility.initialProgressBar(testTotalTime, PlayPalUtility.TIME_MODE);
+		turnOffTick();
+		PlayPalUtility.initialProgressBar(step1TotalTime, PlayPalUtility.TIME_MODE);
 		
 		View homeBtn = findViewById(R.id.homeBtn);
 		setHomeListener(homeBtn);
@@ -378,13 +380,12 @@ public class Game2Activity extends Activity {
 	
 	private void clearAll() {
 		if(roastMP != null) {
+			if(roastMP.isPlaying())
+				roastMP.stop();
 	    	roastMP.release();
 	    	roastMP = null;
 	    }
-		if(tickMP != null) {
-	    	tickMP.release();
-	    	tickMP = null;
-	    }
+		turnOffTick();
 		
 		for(int i=0; i<fishThreadList.size(); i++) {
 	    	if (fishThreadList.get(i) != null) {
@@ -403,6 +404,15 @@ public class Game2Activity extends Activity {
 		PlayPalUtility.unregisterFailFeedback();
 	    
 	    isReady = false;
+	}
+	
+	private void turnOffTick() {
+		if(tickMP != null) {
+	    	if(tickMP.isPlaying())
+	    		tickMP.stop();
+	    	tickMP.release();
+	    	tickMP = null;
+	    }
 	}
 	
 	protected void setHomeListener(View targetView) {
@@ -500,7 +510,8 @@ public class Game2Activity extends Activity {
 	protected Integer prepareCutting() {
 		isFirstAlarm = true;
 		findViewById(R.id.timeReminder).setVisibility(View.INVISIBLE);
-		PlayPalUtility.initialProgressBar(testTotalTime, PlayPalUtility.TIME_MODE);
+		turnOffTick();
+		PlayPalUtility.initialProgressBar(step2TotalTime, PlayPalUtility.TIME_MODE);
 		PlayPalUtility.setLineGesture(true);
 		PenRecorder.registerRecorder(game2RelativeLayout, this, mUserName, "2-2");
 		for(int i=0; i<fishDoneIdArray.length; i++)

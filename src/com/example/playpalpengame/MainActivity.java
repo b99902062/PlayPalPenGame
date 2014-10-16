@@ -100,6 +100,10 @@ public class MainActivity extends Activity implements SensorEventListener {
 		setStallListener(findViewById(R.id.mainPlayBtn2), 2, true);
 		setStallListener(findViewById(R.id.mainPlayBtn3), 3, true);
 		setStallListener(findViewById(R.id.mainPlayBtn4), 4, true);
+		setStallListener(findViewById(R.id.mainMonster1), 1, true);
+		setStallListener(findViewById(R.id.mainMonster2), 2, true);
+		setStallListener(findViewById(R.id.mainMonster3), 3, true);
+		setStallListener(findViewById(R.id.mainMonster4), 4, true);
 		setStallListener(findViewById(R.id.mainPracticeBtn1), 1, false);
 		setStallListener(findViewById(R.id.mainPracticeBtn2), 2, false);
 		setStallListener(findViewById(R.id.mainPracticeBtn3), 3, false);

@@ -193,6 +193,8 @@ public class Practice1Activity extends Activity {
 	
 	private void clearAll() {
 		if(fireMP != null) {
+			if(fireMP.isPlaying())
+				fireMP.stop();
 			fireMP.release();
 			fireMP = null;
 		}

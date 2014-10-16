@@ -33,7 +33,9 @@ public class Game1Activity extends Activity {
 	protected final int step2TotalProgressCount = 	25;
 	protected final int step3TotalProgressCount = 35;
 	
-	protected final int testTotalTime = 600;
+	private final int step1TotalTime = 1200;
+	private final int step2TotalTime = 2700;
+	private final int step3TotalTime = 900;
 	
 	private final int foodOffsetX = 380;
 	private final int foodOffsetY = 380;
@@ -144,7 +146,8 @@ public class Game1Activity extends Activity {
 		});
 		isFirstAlarm = true;
 		findViewById(R.id.timeReminder).setVisibility(View.INVISIBLE);
-		PlayPalUtility.initialProgressBar(testTotalTime, PlayPalUtility.TIME_MODE);
+		turnOffTick();
+		PlayPalUtility.initialProgressBar(step1TotalTime, PlayPalUtility.TIME_MODE);
 		
 		game1RelativeLayout.setOnHoverListener(new View.OnHoverListener() {
             @Override
@@ -293,13 +296,12 @@ public class Game1Activity extends Activity {
 	
 	private void clearAll() {
 		if(fireMP != null) {
+			if(fireMP.isPlaying())
+				fireMP.stop();
 			fireMP.release();
 			fireMP = null;
 		}
-		if(tickMP != null) {
-			tickMP.release();
-			tickMP = null;
-		}
+		turnOffTick();
 		
 		score += PlayPalUtility.killTimeBar();
 		PlayPalUtility.setLineGesture(false);
@@ -307,6 +309,15 @@ public class Game1Activity extends Activity {
 		PlayPalUtility.unregisterFailFeedback();
 		PlayPalUtility.clearGestureSets();
 		PlayPalUtility.clearDrawView();
+	}
+	
+	private void turnOffTick() {
+		if(tickMP != null) {
+	    	if(tickMP.isPlaying())
+	    		tickMP.stop();
+	    	tickMP.release();
+	    	tickMP = null;
+	    }
 	}
 	
 	private void doInitial() {
@@ -385,7 +396,8 @@ public class Game1Activity extends Activity {
 
 					isFirstAlarm = true;
 					findViewById(R.id.timeReminder).setVisibility(View.INVISIBLE);
-					PlayPalUtility.initialProgressBar(testTotalTime, PlayPalUtility.TIME_MODE);
+					turnOffTick();
+					PlayPalUtility.initialProgressBar(step3TotalTime, PlayPalUtility.TIME_MODE);
 					
 					fireView.setVisibility(ImageView.VISIBLE);
 					fireAnim.start();
@@ -683,7 +695,8 @@ public class Game1Activity extends Activity {
 						@Override
 						public void onAnimationEnd(Animation arg0) {
 							findViewById(R.id.timeReminder).setVisibility(View.INVISIBLE);
-							PlayPalUtility.initialProgressBar(testTotalTime, PlayPalUtility.TIME_MODE);
+							turnOffTick();
+							PlayPalUtility.initialProgressBar(step2TotalTime, PlayPalUtility.TIME_MODE);
 							PenRecorder.registerRecorder(game1RelativeLayout, Game1Activity.this, mUserName, "1-3");
 						}
 

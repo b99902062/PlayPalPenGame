@@ -338,6 +338,7 @@ public class Game3Activity extends Activity {
 		});
 		isFirstAlarm = true;
 		findViewById(R.id.timeReminder).setVisibility(View.INVISIBLE);
+		turnOffTick();
 		PlayPalUtility.initialProgressBar(MIX_TIME, PlayPalUtility.TIME_MODE);
 		
 		PlayPalUtility.setHoverTarget(true, eggbeatView);
@@ -349,10 +350,7 @@ public class Game3Activity extends Activity {
 	    super.onPause();
 	    writeToSettings();
 	    
-	    if(tickMP != null) {
-	    	tickMP.release();
-	    	tickMP = null;
-	    }
+	    turnOffTick();
 	    BackgroundMusicHandler.recyle();
 	}
 	
@@ -376,6 +374,14 @@ public class Game3Activity extends Activity {
 	public void onBackPressed() {
 	}
 	
+	private void turnOffTick() {
+		if(tickMP != null) {
+	    	if(tickMP.isPlaying())
+	    		tickMP.stop();
+	    	tickMP.release();
+	    	tickMP = null;
+	    }
+	}
 	
 	private void writeToSettings(){
 		SharedPreferences settings = getSharedPreferences("PLAY_PAL_TMP_INFO", 0);
@@ -575,6 +581,7 @@ public class Game3Activity extends Activity {
 		score += PlayPalUtility.killTimeBar();
 		isFirstAlarm = true;
 		findViewById(R.id.timeReminder).setVisibility(View.INVISIBLE);
+		turnOffTick();
 		PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
 		
 		PlayPalUtility.registerSingleHoverPoint(false,game3RelativeLayout, this, new Callable<Integer>() {
@@ -699,6 +706,7 @@ public class Game3Activity extends Activity {
 					PlayPalUtility.setLineGesture(true);
 					isFirstAlarm = true;
 					findViewById(R.id.timeReminder).setVisibility(View.INVISIBLE);
+					turnOffTick();
 					PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
 				}
 

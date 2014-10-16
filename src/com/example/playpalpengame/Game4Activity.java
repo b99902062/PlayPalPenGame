@@ -280,6 +280,7 @@ public class Game4Activity extends Activity {
 		});
 		isFirstAlarm = true;
 		findViewById(R.id.timeReminder).setVisibility(View.INVISIBLE);
+		turnOffTick();
 		PlayPalUtility.initialProgressBar(DOUGH_TIME, PlayPalUtility.TIME_MODE);
 		PenRecorder.registerRecorder(game4RelativeLayout, this, userName, "4-1");
 		
@@ -291,10 +292,7 @@ public class Game4Activity extends Activity {
 	    super.onPause();
 	    BackgroundMusicHandler.recyle();
 	    writeToSettings();
-	    if(tickMP != null) {
-	    	tickMP.release();
-	    	tickMP = null;
-	    }
+	    turnOffTick();
 	}
 	
 	@Override
@@ -314,6 +312,15 @@ public class Game4Activity extends Activity {
 	
 	@Override
 	public void onBackPressed() {
+	}
+	
+	private void turnOffTick() {
+		if(tickMP != null) {
+	    	if(tickMP.isPlaying())
+	    		tickMP.stop();
+	    	tickMP.release();
+	    	tickMP = null;
+	    }
 	}
 	
 	private void writeToSettings() {
@@ -477,6 +484,7 @@ public class Game4Activity extends Activity {
 			PlayPalUtility.clearDrawView();
 			isFirstAlarm = true;
 			findViewById(R.id.timeReminder).setVisibility(View.INVISIBLE);
+			turnOffTick();
 			PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
 			initCookieView();
 
@@ -618,6 +626,7 @@ public class Game4Activity extends Activity {
 								if(isFirstCookie) {
 									isFirstAlarm = true;
 									findViewById(R.id.timeReminder).setVisibility(View.INVISIBLE);
+									turnOffTick();
 									PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
 									laddleView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game4_squeezer));
 									isFirstCookie = false;
