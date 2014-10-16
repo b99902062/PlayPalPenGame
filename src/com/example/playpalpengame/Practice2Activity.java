@@ -206,7 +206,7 @@ public class Practice2Activity extends Activity {
 		
 		createFish();
 		setDownAnim();
-		PlayPalUtility.playTeachVoice(self, 201, 202, 203);
+		PlayPalUtility.playTeachVoice(self, 201, 203);
 		
 		teachHandView.setVisibility(View.VISIBLE);
 		isReady = true;
@@ -217,6 +217,7 @@ public class Practice2Activity extends Activity {
 	    super.onPause();
 	    clearAll();
 	    BackgroundMusicHandler.recyle();
+		PlayPalUtility.clearAllVoice();
 	}
 	
 	@Override
@@ -377,7 +378,7 @@ public class Practice2Activity extends Activity {
 		setTeachHandLinear(pnt1.x - TEACH_HAND_DOWN_OFFSET_X, pnt1.y - TEACH_HAND_DOWN_OFFSET_Y, pnt2.x - pnt1.x, pnt2.y - pnt1.y);
 		
 		PlayPalUtility.setLineGesture(true);
-		findViewById(R.id.fishView1).setVisibility(View.VISIBLE);
+		findViewById(R.id.fishViewDone1).setVisibility(View.VISIBLE);
 		
 		return 0;
 	}

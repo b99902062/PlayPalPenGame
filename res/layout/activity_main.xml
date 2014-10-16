@@ -1,471 +1,501 @@
-<HorizontalScrollView 
+<FrameLayout
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content" >
 
-       android:id="@+id/mainHorizontalScrollView"
-       android:layout_width="fill_parent"
-       android:layout_height="wrap_content"
-       android:scrollbars="none" >
-
-       <LinearLayout
-           android:layout_width="match_parent"
-           android:layout_height="match_parent"
-           android:background="@drawable/background" >
-           
-           <RelativeLayout
-               android:layout_width="wrap_content"
-               android:layout_height="match_parent"
-               android:layout_marginLeft="50dp" >
-
-               <ImageView
-                   android:id="@+id/mainStall1"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_marginTop="275dp"
-                   android:src="@drawable/main_stall_1" />
-
-               <ImageView
-                   android:id="@+id/mainMonster1"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_marginLeft="150dp"
-                   android:layout_marginTop="325dp"
-                   android:src="@drawable/main_monster_1" />
-
-               <ImageView
-                   android:id="@+id/mainBadges1_1"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_marginTop="590dp"
-                   android:src="@drawable/main_badges_1" />
-
-               <ImageView
-                   android:id="@+id/mainBadges1_2"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentLeft="true"
-                   android:layout_alignParentTop="true"
-                   android:layout_marginLeft="60dp"
-                   android:layout_marginTop="590dp"
-                   android:src="@drawable/main_badges_2" />
-
-               <ImageView
-                   android:id="@+id/mainBadges1_3"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentLeft="true"
-                   android:layout_alignParentTop="true"
-                   android:layout_marginLeft="120dp"
-                   android:layout_marginTop="590dp"
-                   android:src="@drawable/main_badges_3" />
-
-               <ImageView
-                   android:id="@+id/mainBadges1_4"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentLeft="true"
-                   android:layout_alignParentTop="true"
-                   android:layout_marginLeft="180dp"
-                   android:layout_marginTop="590dp"
-                   android:src="@drawable/main_badges_4" />
-
-               <ImageView
-                   android:id="@+id/mainBadges1_5"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentLeft="true"
-                   android:layout_alignParentTop="true"
-                   android:layout_marginLeft="240dp"
-                   android:layout_marginTop="590dp"
-                   android:src="@drawable/main_badges_5" />
-
-               <ImageView
-                   android:id="@+id/mainBadges1_6"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentLeft="true"
-                   android:layout_alignParentTop="true"
-                   android:layout_marginLeft="300dp"
-                   android:layout_marginTop="590dp"
-                   android:src="@drawable/main_badges_6" />
-
-               <ImageView
-                   android:id="@+id/mainPlayBtn1"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignTop="@+id/mainPracticeBtn1"
-                   android:layout_alignParentRight="true"
-                   android:layout_marginRight="50dp"
-                   android:src="@drawable/main_play" />
-
-               <ImageView
-                   android:id="@+id/mainPracticeBtn1"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentLeft="true"
-                   android:layout_alignParentTop="true"
-                   android:layout_marginLeft="25dp"
-                   android:layout_marginTop="185dp"
-                   android:src="@drawable/main_practice" />
-
-           </RelativeLayout>
-
-           <RelativeLayout
-               android:layout_width="wrap_content"
-               android:layout_height="match_parent"
-               android:layout_marginLeft="100dp" >
-
-               <ImageView
-                   android:id="@+id/mainPracticeBtn2"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_marginTop="185dp"
-                   
-                   
-                   android:layout_alignParentLeft="true"
-                   android:layout_marginLeft="25dp"
-                   
-                   android:src="@drawable/main_practice" />
-
-               <ImageView
-                   android:id="@+id/mainPlayBtn2"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-           
-                   android:layout_marginTop="185dp"
-                   
-                   android:layout_alignParentRight="true"
-                   android:layout_marginRight="50dp"
-                   
-                   android:src="@drawable/main_play" />
-
-               <ImageView
-                   android:id="@+id/mainStall2"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentLeft="true"
-                   android:layout_marginTop="275dp"
-                   android:src="@drawable/main_stall_2" />
-
-               <ImageView
-                   android:id="@+id/mainMonster2"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentLeft="true"
-                   android:layout_marginLeft="150dp"
-                   android:layout_marginTop="325dp"
-                   android:src="@drawable/main_monster_2" />
-
-               <ImageView
-                   android:id="@+id/mainBadges2_1"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentLeft="true"
-                   android:layout_marginTop="590dp"
-                   android:src="@drawable/main_badges_1" />
-
-               <ImageView
-                   android:id="@+id/mainBadges2_2"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentLeft="true"
-                   android:layout_marginLeft="60dp"
-                   android:layout_marginTop="590dp"
-                   android:src="@drawable/main_badges_2" />
-
-               <ImageView
-                   android:id="@+id/mainBadges2_3"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentLeft="true"
-                   android:layout_marginLeft="120dp"
-                   android:layout_marginTop="590dp"
-                   android:src="@drawable/main_badges_3" />
-
-               <ImageView
-                   android:id="@+id/mainBadges2_4"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentLeft="true"
-                   android:layout_marginLeft="180dp"
-                   android:layout_marginTop="590dp"
-                   android:src="@drawable/main_badges_4" />
-
-               <ImageView
-                   android:id="@+id/mainBadges2_5"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentLeft="true"
-                   android:layout_marginLeft="240dp"
-                   android:layout_marginTop="590dp"
-                   android:src="@drawable/main_badges_5" />
-
-               <ImageView
-                   android:id="@+id/mainBadges2_6"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentLeft="true"
-                   android:layout_marginLeft="300dp"
-                   android:layout_marginTop="590dp"
-                   android:src="@drawable/main_badges_6" />
-
-           </RelativeLayout>
-
-           <RelativeLayout
-               android:layout_width="wrap_content"
-               android:layout_height="match_parent"
-               android:layout_marginLeft="100dp" >
-
-               <ImageView
-                   android:id="@+id/mainPracticeBtn3"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentLeft="true"
-                   android:layout_alignParentTop="true"
-                   android:layout_marginTop="185dp"
-                   android:layout_marginLeft="25dp"
-                   android:src="@drawable/main_practice" />
-
-               <ImageView
-                   android:id="@+id/mainPlayBtn3"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentRight="true"
-                   android:layout_marginRight="50dp"
-                   android:layout_marginTop="185dp"
-                   android:src="@drawable/main_play" />
-
-               <ImageView
-                   android:id="@+id/mainStall3"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentLeft="true"
-                   android:layout_marginTop="275dp"
-                   android:src="@drawable/main_stall_3" />
-
-               <ImageView
-                   android:id="@+id/mainMonster3"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentLeft="true"
-                   android:layout_marginLeft="150dp"
-                   android:layout_marginTop="325dp"
-                   android:src="@drawable/main_monster_3" />
-
-               <ImageView
-                   android:id="@+id/mainBadges3_1"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentLeft="true"
-                   android:layout_marginTop="590dp"
-                   android:src="@drawable/main_badges_1" />
-
-               <ImageView
-                   android:id="@+id/mainBadges3_2"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentLeft="true"
-                   android:layout_marginLeft="60dp"
-                   android:layout_marginTop="590dp"
-                   android:src="@drawable/main_badges_2" />
-
-               <ImageView
-                   android:id="@+id/mainBadges3_3"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentLeft="true"
-                   android:layout_marginLeft="120dp"
-                   android:layout_marginTop="590dp"
-                   android:src="@drawable/main_badges_3" />
-
-               <ImageView
-                   android:id="@+id/mainBadges3_4"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentLeft="true"
-                   android:layout_marginLeft="180dp"
-                   android:layout_marginTop="590dp"
-                   android:src="@drawable/main_badges_4" />
-
-               <ImageView
-                   android:id="@+id/mainBadges3_5"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentLeft="true"
-                   android:layout_marginLeft="240dp"
-                   android:layout_marginTop="590dp"
-                   android:src="@drawable/main_badges_5" />
-
-               <ImageView
-                   android:id="@+id/mainBadges3_6"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentLeft="true"
-                   android:layout_marginLeft="300dp"
-                   android:layout_marginTop="590dp"
-                   android:src="@drawable/main_badges_6" />
-
-           </RelativeLayout>
-
-           <RelativeLayout
-               android:layout_width="wrap_content"
-               android:layout_height="match_parent"
-               android:layout_marginLeft="100dp"
-               android:layout_marginRight="50dp" >
-
-               <ImageView
-                   android:id="@+id/mainPracticeBtn4"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentLeft="true"
-                   android:layout_marginTop="185dp"
-                   android:layout_marginLeft="25dp"
-                   android:src="@drawable/main_practice" />
-
-               <ImageView
-                   android:id="@+id/mainPlayBtn4"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentRight="true"
-                   android:layout_marginRight="50dp"
-                   android:layout_marginTop="185dp"
-                   android:src="@drawable/main_play" />
-
-               <ImageView
-                   android:id="@+id/mainStall4"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentLeft="true"
-                   android:layout_marginTop="275dp"
-                   android:src="@drawable/main_stall_4" />
-
-               <ImageView
-                   android:id="@+id/mainMonster4"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentLeft="true"
-                   android:layout_marginLeft="150dp"
-                   android:layout_marginTop="325dp"
-                   android:src="@drawable/main_monster_4" />
-
-               <ImageView
-                   android:id="@+id/mainBadges4_1"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentLeft="true"
-                   android:layout_marginTop="590dp"
-                   android:src="@drawable/main_badges_1" />
-
-               <ImageView
-                   android:id="@+id/mainBadges4_2"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentLeft="true"
-                   android:layout_marginLeft="60dp"
-                   android:layout_marginTop="590dp"
-                   android:src="@drawable/main_badges_2" />
-
-               <ImageView
-                   android:id="@+id/mainBadges4_3"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentLeft="true"
-                   android:layout_marginLeft="120dp"
-                   android:layout_marginTop="590dp"
-                   android:src="@drawable/main_badges_3" />
-
-               <ImageView
-                   android:id="@+id/mainBadges4_4"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentLeft="true"
-                   android:layout_marginLeft="180dp"
-                   android:layout_marginTop="590dp"
-                   android:src="@drawable/main_badges_4" />
-
-               <ImageView
-                   android:id="@+id/mainBadges4_5"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_alignParentLeft="true"
-                   android:layout_marginLeft="240dp"
-                   android:layout_marginTop="590dp"
-                   android:src="@drawable/main_badges_5" />
-
-               <ImageView
-                   android:id="@+id/mainBadges4_6"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:layout_marginLeft="300dp"
-                   android:layout_marginTop="590dp"
-                   android:src="@drawable/main_badges_6" />
-
-           </RelativeLayout>
-           
-           <RelativeLayout 
-               android:id="@+id/jarRelativeLayout"
-               android:layout_width="384dp"
-               android:layout_height="match_parent"
-               android:layout_marginLeft="50dp" >
-               
-               <ImageView 
-                   android:id="@+id/mainExtraHeadView"
-				    android:layout_width="wrap_content"
-				    android:layout_height="wrap_content"
-				    android:layout_alignParentLeft="true"
-                 	android:layout_marginLeft="137dp"
-                	android:layout_marginTop="55dp"
-				    android:visibility="visible" />
-               
-               <ImageView 
-                   android:id="@+id/mainExtraPanelView"
-				    android:src="@drawable/main_extra_panel"
-				    android:layout_width="wrap_content"
-				    android:layout_height="wrap_content"
-				    android:visibility="visible" />
-               
-               <TextView
-                   android:id="@+id/mainExtraNameView"
-				    android:layout_width="wrap_content"
-				    android:layout_height="wrap_content"
-		            android:layout_marginTop="190dp"
-		            android:layout_centerHorizontal="true"
-            		android:textAppearance="?android:attr/textAppearanceMedium"
-            		android:textColor="#682774" 
-				    android:visibility="visible" />
-               
-               <ImageView
-				    android:id="@+id/jarView"
-				    android:src="@drawable/jar_bottle"
-				    android:layout_centerHorizontal="true"
-				    android:layout_width="wrap_content"
-				    android:layout_height="wrap_content"
-				    android:visibility="visible"
-		        	android:layout_marginTop="330dp" />
-               
-               <ImageView
-                   android:id="@+id/jarView2"
-                   android:src="@drawable/jar_bottle2"
-                   android:layout_centerHorizontal="true"
-                   android:layout_width="wrap_content"
-				   android:layout_height="wrap_content"
-                   android:visibility="visible"
-                   android:layout_marginTop="330dp"  />
+	<HorizontalScrollView
+	       android:id="@+id/mainHorizontalScrollView"
+	       android:layout_width="fill_parent"
+	       android:layout_height="wrap_content"
+	       android:scrollbars="none" >
 	
-				<ImageView
-				    android:id="@+id/jarTop"
-				    android:src="@drawable/jar_top"
-				    android:layout_width="wrap_content"
-				    android:layout_height="wrap_content"
-				    android:layout_alignTop="@+id/jarView"
-				    android:layout_marginTop="-15dp"
-					android:layout_marginLeft="75dp"
-				    android:visibility="visible" />
-           </RelativeLayout>
-               
-           
+	       <LinearLayout
+	           android:layout_width="match_parent"
+	           android:layout_height="match_parent"
+	           android:background="@drawable/background" >
+	           
+	           <RelativeLayout
+	               android:layout_width="wrap_content"
+	               android:layout_height="match_parent"
+	               android:layout_marginLeft="50dp" >
+	
+	               <ImageView
+	                   android:id="@+id/mainStall1"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_marginTop="275dp"
+	                   android:src="@drawable/main_stall_1" />
+	
+	               <ImageView
+	                   android:id="@+id/mainMonster1"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_marginLeft="150dp"
+	                   android:layout_marginTop="325dp"
+	                   android:src="@drawable/main_monster_1" />
+	
+	               <ImageView
+	                   android:id="@+id/mainBadges1_1"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_marginTop="590dp"
+	                   android:src="@drawable/main_badges_1" />
+	
+	               <ImageView
+	                   android:id="@+id/mainBadges1_2"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_alignParentLeft="true"
+	                   android:layout_alignParentTop="true"
+	                   android:layout_marginLeft="60dp"
+	                   android:layout_marginTop="590dp"
+	                   android:src="@drawable/main_badges_2" />
+	
+	               <ImageView
+	                   android:id="@+id/mainBadges1_3"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_alignParentLeft="true"
+	                   android:layout_alignParentTop="true"
+	                   android:layout_marginLeft="120dp"
+	                   android:layout_marginTop="590dp"
+	                   android:src="@drawable/main_badges_3" />
+	
+	               <ImageView
+	                   android:id="@+id/mainBadges1_4"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_alignParentLeft="true"
+	                   android:layout_alignParentTop="true"
+	                   android:layout_marginLeft="180dp"
+	                   android:layout_marginTop="590dp"
+	                   android:src="@drawable/main_badges_4" />
+	
+	               <ImageView
+	                   android:id="@+id/mainBadges1_5"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_alignParentLeft="true"
+	                   android:layout_alignParentTop="true"
+	                   android:layout_marginLeft="240dp"
+	                   android:layout_marginTop="590dp"
+	                   android:src="@drawable/main_badges_5" />
+	
+	               <ImageView
+	                   android:id="@+id/mainBadges1_6"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_alignParentLeft="true"
+	                   android:layout_alignParentTop="true"
+	                   android:layout_marginLeft="300dp"
+	                   android:layout_marginTop="590dp"
+	                   android:src="@drawable/main_badges_6" />
+	
+	               <ImageView
+	                   android:id="@+id/mainPlayBtn1"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_alignTop="@+id/mainPracticeBtn1"
+	                   android:layout_alignParentRight="true"
+	                   android:layout_marginRight="50dp"
+	                   android:src="@drawable/main_play" />
+	
+	               <ImageView
+	                   android:id="@+id/mainPracticeBtn1"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_alignParentLeft="true"
+	                   android:layout_alignParentTop="true"
+	                   android:layout_marginLeft="25dp"
+	                   android:layout_marginTop="185dp"
+	                   android:src="@drawable/main_practice" />
+	
+	           </RelativeLayout>
+	
+	           <RelativeLayout
+	               android:layout_width="wrap_content"
+	               android:layout_height="match_parent"
+	               android:layout_marginLeft="100dp" >
+	
+	               <ImageView
+	                   android:id="@+id/mainPracticeBtn2"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_marginTop="185dp"
+	                   
+	                   
+	                   android:layout_alignParentLeft="true"
+	                   android:layout_marginLeft="25dp"
+	                   
+	                   android:src="@drawable/main_practice" />
+	
+	               <ImageView
+	                   android:id="@+id/mainPlayBtn2"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	           
+	                   android:layout_marginTop="185dp"
+	                   
+	                   android:layout_alignParentRight="true"
+	                   android:layout_marginRight="50dp"
+	                   
+	                   android:src="@drawable/main_play" />
+	
+	               <ImageView
+	                   android:id="@+id/mainStall2"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_alignParentLeft="true"
+	                   android:layout_marginTop="275dp"
+	                   android:src="@drawable/main_stall_2" />
+	
+	               <ImageView
+	                   android:id="@+id/mainMonster2"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_alignParentLeft="true"
+	                   android:layout_marginLeft="150dp"
+	                   android:layout_marginTop="325dp"
+	                   android:src="@drawable/main_monster_2" />
+	
+	               <ImageView
+	                   android:id="@+id/mainBadges2_1"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_alignParentLeft="true"
+	                   android:layout_marginTop="590dp"
+	                   android:src="@drawable/main_badges_1" />
+	
+	               <ImageView
+	                   android:id="@+id/mainBadges2_2"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_alignParentLeft="true"
+	                   android:layout_marginLeft="60dp"
+	                   android:layout_marginTop="590dp"
+	                   android:src="@drawable/main_badges_2" />
+	
+	               <ImageView
+	                   android:id="@+id/mainBadges2_3"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_alignParentLeft="true"
+	                   android:layout_marginLeft="120dp"
+	                   android:layout_marginTop="590dp"
+	                   android:src="@drawable/main_badges_3" />
+	
+	               <ImageView
+	                   android:id="@+id/mainBadges2_4"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_alignParentLeft="true"
+	                   android:layout_marginLeft="180dp"
+	                   android:layout_marginTop="590dp"
+	                   android:src="@drawable/main_badges_4" />
+	
+	               <ImageView
+	                   android:id="@+id/mainBadges2_5"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_alignParentLeft="true"
+	                   android:layout_marginLeft="240dp"
+	                   android:layout_marginTop="590dp"
+	                   android:src="@drawable/main_badges_5" />
+	
+	               <ImageView
+	                   android:id="@+id/mainBadges2_6"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_alignParentLeft="true"
+	                   android:layout_marginLeft="300dp"
+	                   android:layout_marginTop="590dp"
+	                   android:src="@drawable/main_badges_6" />
+	
+	           </RelativeLayout>
+	
+	           <RelativeLayout
+	               android:layout_width="wrap_content"
+	               android:layout_height="match_parent"
+	               android:layout_marginLeft="100dp" >
+	
+	               <ImageView
+	                   android:id="@+id/mainPracticeBtn3"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_alignParentLeft="true"
+	                   android:layout_alignParentTop="true"
+	                   android:layout_marginTop="185dp"
+	                   android:layout_marginLeft="25dp"
+	                   android:src="@drawable/main_practice" />
+	
+	               <ImageView
+	                   android:id="@+id/mainPlayBtn3"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_alignParentRight="true"
+	                   android:layout_marginRight="50dp"
+	                   android:layout_marginTop="185dp"
+	                   android:src="@drawable/main_play" />
+	
+	               <ImageView
+	                   android:id="@+id/mainStall3"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_alignParentLeft="true"
+	                   android:layout_marginTop="275dp"
+	                   android:src="@drawable/main_stall_3" />
+	
+	               <ImageView
+	                   android:id="@+id/mainMonster3"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_alignParentLeft="true"
+	                   android:layout_marginLeft="150dp"
+	                   android:layout_marginTop="325dp"
+	                   android:src="@drawable/main_monster_3" />
+	
+	               <ImageView
+	                   android:id="@+id/mainBadges3_1"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_alignParentLeft="true"
+	                   android:layout_marginTop="590dp"
+	                   android:src="@drawable/main_badges_1" />
+	
+	               <ImageView
+	                   android:id="@+id/mainBadges3_2"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_alignParentLeft="true"
+	                   android:layout_marginLeft="60dp"
+	                   android:layout_marginTop="590dp"
+	                   android:src="@drawable/main_badges_2" />
+	
+	               <ImageView
+	                   android:id="@+id/mainBadges3_3"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_alignParentLeft="true"
+	                   android:layout_marginLeft="120dp"
+	                   android:layout_marginTop="590dp"
+	                   android:src="@drawable/main_badges_3" />
+	
+	               <ImageView
+	                   android:id="@+id/mainBadges3_4"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_alignParentLeft="true"
+	                   android:layout_marginLeft="180dp"
+	                   android:layout_marginTop="590dp"
+	                   android:src="@drawable/main_badges_4" />
+	
+	               <ImageView
+	                   android:id="@+id/mainBadges3_5"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_alignParentLeft="true"
+	                   android:layout_marginLeft="240dp"
+	                   android:layout_marginTop="590dp"
+	                   android:src="@drawable/main_badges_5" />
+	
+	               <ImageView
+	                   android:id="@+id/mainBadges3_6"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_alignParentLeft="true"
+	                   android:layout_marginLeft="300dp"
+	                   android:layout_marginTop="590dp"
+	                   android:src="@drawable/main_badges_6" />
+	
+	           </RelativeLayout>
+	
+	           <RelativeLayout
+	               android:layout_width="wrap_content"
+	               android:layout_height="match_parent"
+	               android:layout_marginLeft="100dp"
+	               android:layout_marginRight="50dp" >
+	
+	               <ImageView
+	                   android:id="@+id/mainPracticeBtn4"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_alignParentLeft="true"
+	                   android:layout_marginTop="185dp"
+	                   android:layout_marginLeft="25dp"
+	                   android:src="@drawable/main_practice" />
+	
+	               <ImageView
+	                   android:id="@+id/mainPlayBtn4"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_alignParentRight="true"
+	                   android:layout_marginRight="50dp"
+	                   android:layout_marginTop="185dp"
+	                   android:src="@drawable/main_play" />
+	
+	               <ImageView
+	                   android:id="@+id/mainStall4"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_alignParentLeft="true"
+	                   android:layout_marginTop="275dp"
+	                   android:src="@drawable/main_stall_4" />
+	
+	               <ImageView
+	                   android:id="@+id/mainMonster4"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_alignParentLeft="true"
+	                   android:layout_marginLeft="150dp"
+	                   android:layout_marginTop="325dp"
+	                   android:src="@drawable/main_monster_4" />
+	
+	               <ImageView
+	                   android:id="@+id/mainBadges4_1"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_alignParentLeft="true"
+	                   android:layout_marginTop="590dp"
+	                   android:src="@drawable/main_badges_1" />
+	
+	               <ImageView
+	                   android:id="@+id/mainBadges4_2"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_alignParentLeft="true"
+	                   android:layout_marginLeft="60dp"
+	                   android:layout_marginTop="590dp"
+	                   android:src="@drawable/main_badges_2" />
+	
+	               <ImageView
+	                   android:id="@+id/mainBadges4_3"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_alignParentLeft="true"
+	                   android:layout_marginLeft="120dp"
+	                   android:layout_marginTop="590dp"
+	                   android:src="@drawable/main_badges_3" />
+	
+	               <ImageView
+	                   android:id="@+id/mainBadges4_4"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_alignParentLeft="true"
+	                   android:layout_marginLeft="180dp"
+	                   android:layout_marginTop="590dp"
+	                   android:src="@drawable/main_badges_4" />
+	
+	               <ImageView
+	                   android:id="@+id/mainBadges4_5"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_alignParentLeft="true"
+	                   android:layout_marginLeft="240dp"
+	                   android:layout_marginTop="590dp"
+	                   android:src="@drawable/main_badges_5" />
+	
+	               <ImageView
+	                   android:id="@+id/mainBadges4_6"
+	                   android:layout_width="wrap_content"
+	                   android:layout_height="wrap_content"
+	                   android:layout_marginLeft="300dp"
+	                   android:layout_marginTop="590dp"
+	                   android:src="@drawable/main_badges_6" />
+	
+	           </RelativeLayout>
+	           
+	           <RelativeLayout 
+	               android:id="@+id/jarRelativeLayout"
+	               android:layout_width="384dp"
+	               android:layout_height="match_parent"
+	               android:layout_marginLeft="50dp" >
+	               
+	               <ImageView 
+	                   android:id="@+id/mainExtraHeadView"
+					    android:layout_width="wrap_content"
+					    android:layout_height="wrap_content"
+					    android:layout_alignParentLeft="true"
+	                 	android:layout_marginLeft="137dp"
+	                	android:layout_marginTop="55dp"
+					    android:visibility="visible" />
+	               
+	               <ImageView 
+	                   android:id="@+id/mainExtraPanelView"
+					    android:src="@drawable/main_extra_panel"
+					    android:layout_width="wrap_content"
+					    android:layout_height="wrap_content"
+					    android:visibility="visible" />
+	               
+	               <TextView
+	                   android:id="@+id/mainExtraNameView"
+					    android:layout_width="wrap_content"
+					    android:layout_height="wrap_content"
+			            android:layout_marginTop="190dp"
+			            android:layout_centerHorizontal="true"
+	            		android:textAppearance="?android:attr/textAppearanceMedium"
+	            		android:textColor="#682774" 
+					    android:visibility="visible" />
+	               
+	               <ImageView
+					    android:id="@+id/jarView"
+					    android:src="@drawable/jar_bottle"
+					    android:layout_centerHorizontal="true"
+					    android:layout_width="wrap_content"
+					    android:layout_height="wrap_content"
+					    android:visibility="visible"
+			        	android:layout_marginTop="315dp" />
+	               
+	               <ImageView
+	                   android:id="@+id/jarView2"
+	                   android:src="@drawable/jar_bottle2"
+	                   android:layout_centerHorizontal="true"
+	                   android:layout_width="wrap_content"
+					   android:layout_height="wrap_content"
+	                   android:visibility="visible"
+	                   android:layout_marginTop="315dp"  />
+		
+					<ImageView
+					    android:id="@+id/jarTop"
+					    android:src="@drawable/jar_top"
+					    android:layout_width="wrap_content"
+					    android:layout_height="wrap_content"
+					    android:layout_alignTop="@+id/jarView"
+					    android:layout_marginTop="-15dp"
+						android:layout_marginLeft="75dp"
+					    android:visibility="visible" />
+	           </RelativeLayout>
+	               
+	           
+	
+	       </LinearLayout>
+	
+	       
+	       
+	
+	   </HorizontalScrollView>
 
-       </LinearLayout>
+	<ImageView
+	    android:id="@+id/leftView"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentLeft="true"
+	    android:layout_alignParentTop="true"
+	    android:layout_marginTop="0dp"
+	    android:layout_marginLeft="0dp"
+	    android:src="@drawable/left1"
+	    android:visibility="invisible" />
+	
+	<ImageView
+	    android:id="@+id/rightView"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentLeft="true"
+	    android:layout_alignParentTop="true"
+	    android:layout_marginTop="0dp"
+	    android:layout_marginLeft="1140dp"
+	    android:src="@drawable/right1" 
+	    android:visibility="visible" />
 
-   </HorizontalScrollView>
+</FrameLayout>
 

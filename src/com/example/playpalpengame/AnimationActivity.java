@@ -453,7 +453,7 @@ class AnimationsContainer {
     private int[] mGame1PotStirAnimFrames = {R.drawable.game1_pot_3, R.drawable.game1_pot_4, R.drawable.game1_pot_5, R.drawable.game1_pot_6};
     private int[] mGame1PotDropAnimFrames = {R.drawable.game1_pot_1, R.drawable.game1_pot_2, R.drawable.game1_pot_1};
     private int[] mGame1FireAnimFrames = {R.drawable.game1_fire_1, R.drawable.game1_fire_2};
-    private int[] mGame2TeachHandAnimFrames = {R.drawable.teach_hand2, R.drawable.teach_hand2_down};
+    private int[] mGame2TeachHandAnimFrames = {R.drawable.teach_hand2, R.drawable.teach_hand2_down, R.drawable.teach_hand2, R.drawable.teach_hand2};
     private int[] mGame3TeachHandAnimFrames  = {R.drawable.teach_hand3, R.drawable.teach_hand3_down};
     private int[] mGame3TeachHandBtnAnimFrames  = {R.drawable.teach_hand3_sq1, R.drawable.teach_hand3_sq2, R.drawable.teach_hand3_sq3, R.drawable.teach_hand3_sq4};
     private int[] mGame3MixAnimFrames  = {R.drawable.game3_mix2, R.drawable.game3_mix3, R.drawable.game3_mix4, R.drawable.game3_mix5};
@@ -500,7 +500,7 @@ class AnimationsContainer {
     }
     
     public FramesSequenceAnimation createGame2TeachHandAnim(ImageView imageView){
-    	return new FramesSequenceAnimation(imageView, mGame2TeachHandAnimFrames, FPS);
+    	return new FramesSequenceAnimation(imageView, mGame2TeachHandAnimFrames, LOW_FPS, true);
     }
     
     public FramesSequenceAnimation createGame3StirAnim(ImageView imageView, int stirIdx){
