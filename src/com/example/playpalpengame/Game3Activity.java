@@ -51,23 +51,16 @@ public class Game3Activity extends Activity {
 		
 	protected Point[] dottedLineArray = {
 		new Point(780+444, 380+216),
-		new Point(780+374, 380+260),
 		new Point(780+324, 380+370),
-		new Point(780+260, 380+420),
-		new Point(780+214, 380+500),
-		new Point(780+266, 380+588),
-		new Point(780+324, 380+620),
-		new Point(780+332, 380+698),
-		new Point(780+382, 380+786),
-		new Point(780+490, 380+748),
-		new Point(780+548, 380+690),
-		new Point(780+638, 380+704),
-		new Point(780+756, 380+682),
-		new Point(780+764, 380+614),
-		new Point(780+710, 380+512),
-		new Point(780+752, 380+412),
-		new Point(780+710, 380+316),
-		new Point(780+588, 380+310)};
+		new Point(780+214, 380+490),
+		new Point(780+315, 380+598),
+		new Point(780+332, 380+710),
+		new Point(780+480, 380+740),
+		new Point(780+630, 380+704),
+		new Point(780+760, 380+614),
+		new Point(780+752, 380+480),
+		new Point(780+715, 380+330),
+		new Point(780+580, 380+310)};
 	
 	protected Point[] creamPosArray = {
 		new Point(780+324, 380+370),
@@ -85,12 +78,12 @@ public class Game3Activity extends Activity {
 	protected final int MIX_PROGRESS_START = 1;
 	protected final int MIX_PROGRESS_HALF  = 5;
 	protected final int MIX_PROGRESS_END = 10;
-	protected final int CREAM_PROGRESS_END = 17;
+	protected final int CREAM_PROGRESS_END = 16;
 	
 	protected final int MIX_TIME   = 600;
 	protected final int CREAM_TIME = 600;
 	public static OvenHandler ovenHandler;
-	protected int boxSize;
+	protected int boxSize,creamBoxSize;
 	protected int curProgress;
 	protected boolean canTouchOven = false;
 	protected boolean butterSqueezing = false;
@@ -143,6 +136,7 @@ public class Game3Activity extends Activity {
 		
 		curProgress = 0;
 		boxSize = 100;
+		creamBoxSize = 70;
 		gameContext = this;
 		ovenHandler = new OvenHandler();
 		
@@ -210,7 +204,12 @@ public class Game3Activity extends Activity {
 				PlayPalUtility.curEntry = new RecordEntry(
 						new Point((int)event.getRawX(), (int)event.getRawY()), RecordEntry.STATE_HOVER_BTN_MOVE);
 				
-				if(curProgress < 12){
+				if(curProgress < MIX_PROGRESS_END+1){
+					if(ratio == INIT_CREAM_RATIO){
+						curButterView = new ImageView(gameContext);
+						curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game3_cream));
+						game3RelativeLayout.addView(curButterView);
+					}
 					if(ratio < CREAM_MAX_RATIO)
 						ratio++;
 					
@@ -255,7 +254,6 @@ public class Game3Activity extends Activity {
 
 			@Override
 			public void onHoverButtonDown(View arg0, MotionEvent event) {
-				
 				PlayPalUtility.curEntry = new RecordEntry(
 						new Point((int)event.getRawX(), (int)event.getRawY()), RecordEntry.STATE_HOVER_BTN_START);
 				PenRecorder.forceRecord();
@@ -264,10 +262,11 @@ public class Game3Activity extends Activity {
 				butterSqueezing = true;				
 				
 				curButterView = new ImageView(gameContext);
-				curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game3_cream));
-				game3RelativeLayout.addView(curButterView);
-				
-				ratio = 0;
+				if(curProgress < CREAM_PROGRESS_END-1)
+					curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game3_cream));
+				else
+					curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game3_cream2));
+				ratio = INIT_CREAM_RATIO;
 				
 				startPoint = new Point((int)event.getX(),(int)event.getY());
 			}
@@ -675,9 +674,6 @@ public class Game3Activity extends Activity {
 				public void onAnimationEnd(Animation anim) {	
 					ovenView2.setVisibility(ImageView.GONE);
 					ovenView2.clearAnimation();
-					
-					curProgress++;
-					progressCountText.setText("ProgressCount: " + new String("" + curProgress));
 				}
 
 				@Override
@@ -688,8 +684,10 @@ public class Game3Activity extends Activity {
 				public void onAnimationStart(Animation animation) {
 				}
 			});
-			currentFoodView.setAnimation(ovenAnim);
+			ovenView.setVisibility(ImageView.GONE);
+			ovenView2.setAnimation(ovenAnim);
 			ovenAnim.startNow();
+			
 			
 			setFoodListener(cakeView);
 			Animation cakeAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_OUTLEFT_TO_CUR);
@@ -722,7 +720,7 @@ public class Game3Activity extends Activity {
 				}
 			});
 			
-			PlayPalUtility.initialLineGestureParams(false, false, boxSize/2, 
+			PlayPalUtility.initialLineGestureParams(false, false, creamBoxSize, 
 					dottedLineArray[0],
 					dottedLineArray[1],
 					dottedLineArray[2],
@@ -733,14 +731,7 @@ public class Game3Activity extends Activity {
 					dottedLineArray[7],
 					dottedLineArray[8],
 					dottedLineArray[9],
-					dottedLineArray[10],
-					dottedLineArray[11],
-					dottedLineArray[12],
-					dottedLineArray[13],
-					dottedLineArray[14],
-					dottedLineArray[15],
-					dottedLineArray[16],
-					dottedLineArray[17]);
+					dottedLineArray[10]);
 		}
 	};
 	

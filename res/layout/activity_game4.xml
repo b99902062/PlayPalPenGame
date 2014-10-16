@@ -96,58 +96,58 @@
             android:id="@+id/Game4_cookie0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="210dp"
-            android:layout_marginTop="220dp"/>
+            android:layout_marginLeft="220dp"
+            android:layout_marginTop="240dp"/>
          
          <ImageView
             android:id="@+id/Game4_cookie1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="210dp"
-            android:layout_marginTop="460dp" />
+            android:layout_marginLeft="220dp"
+            android:layout_marginTop="450dp" />
          
          <ImageView
             android:id="@+id/Game4_cookie2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="430dp"
-            android:layout_marginTop="220dp" />
+            android:layout_marginTop="240dp" />
          
          <ImageView
             android:id="@+id/Game4_cookie3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="430dp"
-            android:layout_marginTop="460dp"/>
+            android:layout_marginTop="450dp"/>
              
          
          <ImageView
             android:id="@+id/Game4_cookie4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="650dp"
-            android:layout_marginTop="220dp" />
+            android:layout_marginLeft="640dp"
+            android:layout_marginTop="240dp" />
          
          <ImageView
             android:id="@+id/Game4_cookie5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="650dp"
-            android:layout_marginTop="460dp" />
+            android:layout_marginLeft="640dp"
+            android:layout_marginTop="450dp" />
          
          <ImageView
             android:id="@+id/Game4_cookie6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="870dp"
-            android:layout_marginTop="220dp" />
+            android:layout_marginLeft="850dp"
+            android:layout_marginTop="240dp" />
          
          <ImageView
             android:id="@+id/Game4_cookie7"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="870dp"
-            android:layout_marginTop="460dp" />
+            android:layout_marginLeft="850dp"
+            android:layout_marginTop="450dp" />
          
          <TextView
             android:id="@+id/testProgressCount"

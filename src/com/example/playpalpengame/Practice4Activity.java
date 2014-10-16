@@ -49,6 +49,8 @@ public class Practice4Activity extends Activity {
 	
 	private final static int TEACH_HAND_OFFSET_X = 45;
 	private final static int TEACH_HAND_OFFSET_Y = 665;
+	private final static int TEACH_HAND_DOWN_OFFSET_X = 70;
+	private final static int TEACH_HAND_DOWN_OFFSET_Y = 720;
 	private final static int TEACH_HAND_BTN_OFFSET_X = 260;
 	private final static int TEACH_HAND_BTN_OFFSET_Y = 790;
 	
@@ -89,8 +91,8 @@ public class Practice4Activity extends Activity {
 	private int score = 0;
 	
 	protected Point centerPoint = new Point(1280,800);
-	protected int dx = 300;
-	protected int dy = 160;
+	protected int dx = 275;
+	protected int dy = 150;
 	protected Point[][] doughPosArray = {
 			{centerPoint, new Point(centerPoint.x + 1*dx, centerPoint.y -1*dy), new Point(centerPoint.x + 2*dx, centerPoint.y -2*dy), new Point(centerPoint.x + 3*dx, centerPoint.y -3*dy)},
 			{centerPoint, new Point(centerPoint.x + 1*dx, centerPoint.y +1*dy), new Point(centerPoint.x + 2*dx, centerPoint.y +2*dy), new Point(centerPoint.x + 3*dx, centerPoint.y +3*dy)},
@@ -177,10 +179,9 @@ public class Practice4Activity extends Activity {
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		
-		PlayPalUtility.setDebugMode(false);
+		PlayPalUtility.setDebugMode(true);
 
 		gameContext = this;
-		
 		Bundle bundle = getIntent().getExtras();
 		userName = bundle.getString("userName");
 		mBadges = bundle.getInt("GameBadges");
@@ -203,7 +204,6 @@ public class Practice4Activity extends Activity {
 		game4RelativeLayout = (DrawableRelativeLayout) findViewById(R.id.Game4RelativeLayout);
 		teachHandView = (ImageView)findViewById(R.id.Game4_teachHand);
 				
-		
 		curProgress = 0;
 		boxSize = 70;
 		
@@ -259,12 +259,10 @@ public class Practice4Activity extends Activity {
 		
 		PlayPalUtility.setHoverTarget(true, laddleView);
 		
-		setTeachHandLinear(centerPoint.x - TEACH_HAND_OFFSET_X, centerPoint.y - TEACH_HAND_OFFSET_Y, doughPosArray[0][3].x - centerPoint.x, doughPosArray[0][3].y - centerPoint.y);
-		
+		setTeachHandLinear(centerPoint.x - TEACH_HAND_DOWN_OFFSET_X, centerPoint.y - TEACH_HAND_DOWN_OFFSET_Y, doughPosArray[0][3].x - centerPoint.x, doughPosArray[0][3].y - centerPoint.y);
+		teachHandView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.teach_hand4_down));
 		teachHandView.setVisibility(ImageView.VISIBLE);
 		
-		pressAnim = AnimationsContainer.getInstance().createGame4TeachHandAnim(teachHandView);
-		pressAnim.start();
 	}	
 
 	@Override
@@ -332,8 +330,7 @@ public class Practice4Activity extends Activity {
 	protected void initCookieView(){
 		teachHandView.clearAnimation();
 
-		//the circle cookie(_t=2)
-		lonelyCookie = new Cookie(4, 2, (ImageView)findViewById(cookieViewArray[4]));
+		lonelyCookie = new Cookie(4, 1, (ImageView)findViewById(cookieViewArray[4]));
 		lonelyCookie.setCreamColor();
 		lonelyCookie.setGesturePoint();
 		lonelyCookie.setGestureDottedLine();
@@ -454,6 +451,8 @@ public class Practice4Activity extends Activity {
 		return 1;
 	}
 	
+	
+	//dealing with its size
 	protected Integer handleDoughAction (View view){
 		int x,y,w,h,dxy=100;
 		ImageView curDough = (ImageView)findViewById(doughViewArray[Math.min(curProgress+1, DOUGH_NUM-1)]);
@@ -723,7 +722,7 @@ public class Practice4Activity extends Activity {
 		}
 		
 		public void beBaked(){
-			view.setBackgroundResource(cookieResArray3[type]);//Color.TRANSPARENT
+			view.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, cookieResArray3[type]));
 		}
 		
 		public void setCreamColor(){

@@ -455,7 +455,7 @@ class AnimationsContainer {
     private int[] mGame1FireAnimFrames = {R.drawable.game1_fire_1, R.drawable.game1_fire_2};
     private int[] mGame2TeachHandAnimFrames = {R.drawable.teach_hand2, R.drawable.teach_hand2_down};
     private int[] mGame3TeachHandAnimFrames  = {R.drawable.teach_hand3, R.drawable.teach_hand3_down};
-    private int[] mGame3TeachHandBtnAnimFrames  = {R.drawable.teach_hand3, R.drawable.teach_hand3_down};
+    private int[] mGame3TeachHandBtnAnimFrames  = {R.drawable.teach_hand3_sq1, R.drawable.teach_hand3_sq2, R.drawable.teach_hand3_sq3, R.drawable.teach_hand3_sq4};
     private int[] mGame3MixAnimFrames  = {R.drawable.game3_mix2, R.drawable.game3_mix3, R.drawable.game3_mix4, R.drawable.game3_mix5};
     private int[] mGame3MixAnimFrames2 = {R.drawable.game3_mix6, R.drawable.game3_mix7, R.drawable.game3_mix8, R.drawable.game3_mix9};
     private int[] mGame4Cookie1AnimFrames = {R.drawable.game4_cookie1, R.drawable.game4_cookie1_cutted};
@@ -465,7 +465,7 @@ class AnimationsContainer {
     private int[] mGame4BigCookie2AnimFrames = {R.drawable.game4_cookie2_baked, R.drawable.game4_cookie2_big, R.drawable.game4_cookie2_baked, R.drawable.game4_cookie2_big,R.drawable.game4_cookie2_baked, R.drawable.game4_cookie2_big};
     private int[] mGame4BigCookie3AnimFrames = {R.drawable.game4_cookie3_baked, R.drawable.game4_cookie3_big, R.drawable.game4_cookie3_baked, R.drawable.game4_cookie3_big,R.drawable.game4_cookie3_baked, R.drawable.game4_cookie3_big};
     private int[] mGame4TeachHandAnimFrames  = {R.drawable.teach_hand4, R.drawable.teach_hand4_down};
-    private int[] mGame4TeachHandBtnAnimFrames  = {R.drawable.teach_hand4, R.drawable.teach_hand4_down};
+    private int[] mGame4TeachHandBtnAnimFrames  = {R.drawable.teach_hand4_sq1, R.drawable.teach_hand4_sq2, R.drawable.teach_hand4_sq3, R.drawable.teach_hand4_sq4};;
     
     public FramesSequenceAnimation createStarAnim(ImageView imageView) {
     	return new FramesSequenceAnimation(imageView, mStarAnimFrames, HIGHER_FPS, true);
@@ -519,25 +519,25 @@ class AnimationsContainer {
     }
     
     public FramesSequenceAnimation createGame3TeachHandBtnAnim(ImageView imageView){
-    	return new FramesSequenceAnimation(imageView, mGame3TeachHandBtnAnimFrames, FPS);
+    	return new FramesSequenceAnimation(imageView, mGame3TeachHandBtnAnimFrames, MEDIUM_FPS,true);
     }
     
     public FramesSequenceAnimation createGame4CookieAnim(ImageView imageView, int index){
     	if(index == 0)
-    		return new FramesSequenceAnimation(imageView, mGame4Cookie1AnimFrames, FPS);
+    		return new FramesSequenceAnimation(imageView, mGame4Cookie1AnimFrames, LOW_FPS);
     	else if(index == 1)
-    		return new FramesSequenceAnimation(imageView, mGame4Cookie2AnimFrames, FPS);
+    		return new FramesSequenceAnimation(imageView, mGame4Cookie2AnimFrames, LOW_FPS);
     	else
-    		return new FramesSequenceAnimation(imageView, mGame4Cookie3AnimFrames, FPS);
+    		return new FramesSequenceAnimation(imageView, mGame4Cookie3AnimFrames, LOW_FPS);
     }
     
     public FramesSequenceAnimation createGame4BigCookieAnim(ImageView imageView, int index){
     	if(index == 0)
-    		return new FramesSequenceAnimation(imageView, mGame4BigCookie1AnimFrames, FPS);
+    		return new FramesSequenceAnimation(imageView, mGame4BigCookie1AnimFrames, LOW_FPS);
     	else if(index == 1)
-    		return new FramesSequenceAnimation(imageView, mGame4BigCookie2AnimFrames, FPS);
+    		return new FramesSequenceAnimation(imageView, mGame4BigCookie2AnimFrames, LOW_FPS);
     	else
-    		return new FramesSequenceAnimation(imageView, mGame4BigCookie3AnimFrames, FPS);
+    		return new FramesSequenceAnimation(imageView, mGame4BigCookie3AnimFrames, LOW_FPS);
     }
     
     public FramesSequenceAnimation createGame4TeachHandAnim(ImageView imageView){
@@ -545,7 +545,7 @@ class AnimationsContainer {
     }
     
     public FramesSequenceAnimation createGame4TeachHandBtnAnim(ImageView imageView){
-    	return new FramesSequenceAnimation(imageView, mGame4TeachHandBtnAnimFrames, FPS);
+    	return new FramesSequenceAnimation(imageView, mGame4TeachHandBtnAnimFrames, MEDIUM_FPS, true);
     }
     /**
      * @param imageView

@@ -107,11 +107,6 @@ class Star{
 		xPos = xPos/body_num;
 		yPos = yPos/body_num;
 
-
-		char s[100];
-		sprintf(s,"%f %f\n",xPos,yPos);
-		__android_log_write(ANDROID_LOG_DEBUG, "gravity", s);
-
 		if(xPos<(L_Boundary-DXY)/PTM_Ratio || xPos>(R_Boundary+DXY)/PTM_Ratio){
 			//__android_log_write(ANDROID_LOG_DEBUG, "jar", "1:(");
 			for(int i=0; i<body_num; i++)
