@@ -45,8 +45,8 @@ public class Game2Activity extends Activity {
 	protected final int step1TotalProgressCount = 10;
 	protected final int step2TotalProgressCount = 14;
 	
-	private final int step1TotalTime = 1680;
-	private final int step2TotalTime = 540;
+	private final int step1TotalTime = 2700;
+	private final int step2TotalTime = 1440;
 	
 	private final static int fishW =  140;
 	private final static int fishH = 80;
@@ -223,7 +223,7 @@ public class Game2Activity extends Activity {
                     		fishThreadList.get(curFishIndex).moveTo((int)event.getX() - fishW, (int)event.getY() - fishH);
                     		fishThreadList.get(curFishIndex).doResume();
                     		fishThreadList.get(curFishIndex).fishView.setVisibility(ImageView.VISIBLE);
-                    		netView.setImageBitmap(BitmapHandler.getLocalBitmap(self, R.drawable.game2_net));
+                    		netView.setImageBitmap(BitmapHandler.getLocalBitmap(self, R.drawable.game2_net, true));
                     		canPutInBasket = false;
                     	}
                         break;
