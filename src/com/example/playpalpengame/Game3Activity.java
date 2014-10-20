@@ -81,7 +81,7 @@ public class Game3Activity extends Activity {
 	protected final int CREAM_PROGRESS_END = 16;
 	
 	protected final int MIX_TIME   = 600;
-	protected final int CREAM_TIME = 600;
+	protected final int CREAM_TIME = 900;
 	public static OvenHandler ovenHandler;
 	protected int boxSize,creamBoxSize;
 	protected int curProgress;
