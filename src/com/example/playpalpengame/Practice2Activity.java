@@ -8,6 +8,7 @@ import java.util.concurrent.Callable;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.drawable.AnimationDrawable;
@@ -65,6 +66,11 @@ public class Practice2Activity extends Activity {
 	public static boolean isReady;
 	
 	private MediaPlayer roastMP = null;
+	
+	private static Bitmap netBitmap = null;
+	private static Bitmap netBitmap2 = null;
+	private static Bitmap fishBitmap = null;
+	private static Bitmap fishBitmap2 = null;
 	
 	private String mUserName = null;
 	
@@ -159,7 +165,7 @@ public class Practice2Activity extends Activity {
                     	params.setMargins((int)event.getX(), (int)event.getY() , 0, 0);
                     	if(canPutInBasket) {
                     		if(event.getX() - 200 > 1960 && event.getY() - 200 > 380 && event.getY() - 200 < 1380) {
-                    			netView.setImageBitmap(BitmapHandler.getLocalBitmap(self, R.drawable.game2_net));
+                    			netView.setImageBitmap(netBitmap);
                     			canPutInBasket = false;
                     			PlayPalUtility.setLineGesture(true);
                     			// Play the pu-ton animation
@@ -195,7 +201,7 @@ public class Practice2Activity extends Activity {
                     		fishThreadList.get(curFishIndex).moveTo((int)event.getX() - fishW, (int)event.getY() - fishH);
                     		fishThreadList.get(curFishIndex).doResume();
                     		fishThreadList.get(curFishIndex).fishView.setVisibility(ImageView.VISIBLE);
-                    		netView.setImageBitmap(BitmapHandler.getLocalBitmap(self, R.drawable.game2_net));
+                    		netView.setImageBitmap(netBitmap);
                     		canPutInBasket = false;
                     	}
                         break;
@@ -237,6 +243,13 @@ public class Practice2Activity extends Activity {
 	
 	@Override
 	public void onBackPressed() {
+	}
+	
+	private void initBitmap() {
+		netBitmap = BitmapHandler.getLocalBitmap(self, R.drawable.game2_net);
+		netBitmap2 = BitmapHandler.getLocalBitmap(self, R.drawable.game2_net2);
+		fishBitmap = BitmapHandler.getLocalBitmap(self, R.drawable.game2_fish_1);
+		fishBitmap2 = BitmapHandler.getLocalBitmap(self, R.drawable.game2_fish_2);
 	}
 	
 	private void setDownAnim() {
@@ -323,7 +336,7 @@ public class Practice2Activity extends Activity {
 		PlayPalUtility.setLineGesture(false);
 		fishThreadList.get(index).doPause();
 		fishThreadList.get(index).fishView.setVisibility(ImageView.INVISIBLE);
-		netView.setImageBitmap(BitmapHandler.getLocalBitmap(self, R.drawable.game2_net2));
+		netView.setImageBitmap(netBitmap2);
 		
 		downAnim.stop();
 		teachHandView.setImageBitmap(BitmapHandler.getLocalBitmap(self, R.drawable.teach_hand2_lift));
@@ -478,9 +491,9 @@ public class Practice2Activity extends Activity {
         	if(msg.getData().getInt("index") >= fishThreadList.size())
         		return;
         	if(msg.getData().getInt("fishType") == 1)
-        		fishThreadList.get(msg.getData().getInt("index")).fishView.setImageBitmap(BitmapHandler.getLocalBitmap(self, R.drawable.game2_fish_2));
+        		fishThreadList.get(msg.getData().getInt("index")).fishView.setImageBitmap(fishBitmap2);
     		else
-    			fishThreadList.get(msg.getData().getInt("index")).fishView.setImageBitmap(BitmapHandler.getLocalBitmap(self, R.drawable.game2_fish_1));
+    			fishThreadList.get(msg.getData().getInt("index")).fishView.setImageBitmap(fishBitmap);
         	
             int rotateAngle = msg.getData().getInt("rotateAngle");
             if(rotateAngle != 0)
@@ -514,7 +527,7 @@ public class Practice2Activity extends Activity {
 		
         FishHandlerThread(Practice2Activity context) {
         	fishView = new ImageView(context);
-        	fishView.setImageBitmap(BitmapHandler.getLocalBitmap(self, R.drawable.game2_fish_1));
+        	fishView.setImageBitmap(fishBitmap);
 			LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT,
 					LayoutParams.WRAP_CONTENT);
 			curX = 500;

@@ -9,21 +9,11 @@ import android.graphics.BitmapFactory;
 
 public class BitmapHandler {
 	public static ArrayList<Bitmap> bitmapArr = new ArrayList<Bitmap>();
-	public static ArrayList<Bitmap> focusArr = new ArrayList<Bitmap>();
 	
 	public static Bitmap getLocalBitmap(Context con, int resourceId){
-	    return getLocalBitmap(con, resourceId, false);
-	}
-	
-	public static Bitmap getLocalBitmap(Context con, int resourceId, boolean willDoManyTime){
 	    InputStream inputStream = con.getResources().openRawResource(resourceId);
 	    Bitmap bitmap = BitmapFactory.decodeStream(inputStream, null, getBitmapOptions());
 	    bitmapArr.add(bitmap);
-	    if(willDoManyTime) {
-	    	recycleFocusArr();
-	    	focusArr.add(bitmap);
-	    }
-	    
 	    return bitmap;
 	}
 	
@@ -40,14 +30,5 @@ public class BitmapHandler {
 				bitmapArr.get(i).recycle();
 		}
 		bitmapArr.clear();
-	}
-	
-	public static void recycleFocusArr() {
-		for(int i=0; i<focusArr.size(); i++) {
-			if(!focusArr.get(i).isRecycled())
-				focusArr.get(i).recycle();
-			bitmapArr.remove(focusArr.get(i));
-		}
-		focusArr.clear();
 	}
 }
