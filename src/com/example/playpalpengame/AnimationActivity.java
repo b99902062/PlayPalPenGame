@@ -563,13 +563,13 @@ class AnimationsContainer {
 	    		return null;
     	} else {
     		if(gameIndex == 1)
-	    		return new FramesSequenceAnimation(imageView, mGame1LoseFrames, LOW_FPS, true);
+	    		return new FramesSequenceAnimation(imageView, mGame1LoseFrames, LOW_FPS);
 	    	else if(gameIndex == 2)
-	    		return new FramesSequenceAnimation(imageView, mGame2LoseFrames, LOW_FPS, true);
+	    		return new FramesSequenceAnimation(imageView, mGame2LoseFrames, LOW_FPS);
 	    	else if(gameIndex == 3)
-	    		return new FramesSequenceAnimation(imageView, mGame3LoseFrames, LOW_FPS, true);
+	    		return new FramesSequenceAnimation(imageView, mGame3LoseFrames, LOW_FPS);
 	    	else if(gameIndex == 4)
-	    		return new FramesSequenceAnimation(imageView, mGame4LoseFrames, LOW_FPS, true);
+	    		return new FramesSequenceAnimation(imageView, mGame4LoseFrames, LOW_FPS);
 	    	else
 	    		return null;
     	}

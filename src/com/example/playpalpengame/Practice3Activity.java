@@ -210,7 +210,7 @@ public class Practice3Activity extends Activity {
 					
 			@Override
 			public boolean onHover(View arg0, MotionEvent event) {
-				if(curButterView == null || !butterSqueezing){
+				if(!butterSqueezing){
 					return false;
 				}
 
@@ -218,7 +218,7 @@ public class Practice3Activity extends Activity {
 						new Point((int)event.getRawX(), (int)event.getRawY()), RecordEntry.STATE_HOVER_BTN_MOVE);
 				
 				if(curProgress < CREAM_PROGRESS_END-1){
-					if(ratio == INIT_CREAM_RATIO){
+					if(ratio == INIT_CREAM_RATIO || curButterView == null){
 						curButterView = new ImageView(gameContext);
 						curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game3_cream));
 						game3RelativeLayout.addView(curButterView);
@@ -230,15 +230,6 @@ public class Practice3Activity extends Activity {
 					Point curPoint = new Point((int)event.getX(),(int)event.getY());
 					float dist = calcDistance(startPoint, curPoint);
 				
-					if(dist>CREAM_DIST){
-						PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_POP, Practice3Activity.this);
-						curButterView = new ImageView(gameContext);
-						curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game3_cream));
-						game3RelativeLayout.addView(curButterView);
-						ratio = INIT_CREAM_RATIO;	
-						startPoint = new Point((int)event.getX(),(int)event.getY());
-					}
-					
 					RelativeLayout.LayoutParams params = (LayoutParams) curButterView.getLayoutParams();			
 					params.width = params.height = (int)(SMALL_CREAM_SIZE*ratio/20.0);
 					params.setMargins(	cakeView.getLeft()+(int)event.getX()-params.height/2, 
@@ -246,8 +237,16 @@ public class Practice3Activity extends Activity {
 										0, 0);
 					
 					curButterView.setLayoutParams(params);
+					
+					if(dist>=CREAM_DIST){
+						PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_POP, Practice3Activity.this);
+						curButterView = null;
+						
+						ratio = INIT_CREAM_RATIO;	
+						startPoint = new Point((int)event.getX(),(int)event.getY());
+					}
 				}
-				else{
+				else {
 					if(ratio == INIT_CREAM_RATIO){
 						curButterView = new ImageView(gameContext);
 						curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game3_cream2));
@@ -274,13 +273,7 @@ public class Practice3Activity extends Activity {
 				Log.d("Penpal","pressing");
 				butterSqueezing = true;				
 				
-				curButterView = new ImageView(gameContext);	
-				if(curProgress < CREAM_PROGRESS_END-1)
-					curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game3_cream));
-				else
-					curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game3_cream2));
 				ratio = INIT_CREAM_RATIO;
-				
 				startPoint = new Point((int)event.getX(),(int)event.getY());
 				
 				if(btnAnim!=null)
@@ -409,11 +402,12 @@ public class Practice3Activity extends Activity {
 			PlayPalUtility.setAlphaAnimation(mixView, false);
 			PlayPalUtility.setAlphaAnimation(mixView2, true);
 			
-			mixView.setVisibility(ImageView.GONE);
+			
 			anim = AnimationsContainer.getInstance().createGame3StirAnim(mixView2,2);
 		}
 		else if( curProgress == MIX_PROGRESS_END){
 			PlayPalUtility.playTeachVoice(gameContext, 303, 304);
+			mixView.setVisibility(ImageView.GONE);
 			
 			teachHandView.clearAnimation();
 			teachHandView.setVisibility(ImageView.INVISIBLE);
@@ -445,6 +439,7 @@ public class Practice3Activity extends Activity {
 			currentFoodView.setAnimation(mixAnim);
 			mixAnim.startNow();
 			
+			
 			Animation bowlAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTLEFT);
 			bowlAnim.setAnimationListener(new AnimationListener() {
 				@Override
@@ -455,7 +450,7 @@ public class Practice3Activity extends Activity {
 					PlayPalUtility.setLineGesture(false);
 					PlayPalUtility.clearGestureSets();
 					
-					ovenView.setVisibility(ImageView.VISIBLE);
+					PlayPalUtility.setAlphaAnimation(ovenView, false);
 					PlayPalUtility.setAlphaAnimation(ovenView2, true);
 					
 					setOvenListener(ovenView2);
@@ -534,6 +529,7 @@ public class Practice3Activity extends Activity {
 		
 		if(curProgress == CREAM_PROGRESS_END){
 			
+			mSPenEventLibrary.setSPenHoverListener(cakeView,null);
 			teachHandView.clearAnimation();
 			teachHandView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.teach_hand3_down));
 			
@@ -659,7 +655,7 @@ public class Practice3Activity extends Activity {
 					ovenView2.setVisibility(ImageView.GONE);
 					ovenView2.clearAnimation();
 					
-					PlayPalUtility.playTeachVoice(gameContext,  305, 306, 307);
+					PlayPalUtility.playTeachVoice(gameContext, 306, 307); 
 				}
 
 				@Override
@@ -670,7 +666,8 @@ public class Practice3Activity extends Activity {
 				public void onAnimationStart(Animation animation) {
 				}
 			});
-			ovenView.setVisibility(ImageView.GONE);
+			
+			ovenView.setAnimation(ovenAnim);;
 			ovenView2.setAnimation(ovenAnim);
 			ovenAnim.startNow();
 			
@@ -724,6 +721,7 @@ public class Practice3Activity extends Activity {
 		public void run(){
 			Message msg = new Message();
             Practice3Activity.ovenHandler.sendMessage(msg);
+            PlayPalUtility.playTeachVoice(gameContext, 305);
             this.cancel();
 		}
 	}

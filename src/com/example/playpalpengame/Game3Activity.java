@@ -80,8 +80,10 @@ public class Game3Activity extends Activity {
 	protected final int MIX_PROGRESS_END = 10;
 	protected final int CREAM_PROGRESS_END = 16;
 	
-	protected final int MIX_TIME   = 600;
-	protected final int CREAM_TIME = 600;
+	protected final int MIX_TIME   = 900;
+	protected final int CREAM_TIME = 900;
+	protected final int CAKE_TIME = 300;
+	protected final int CUT_TIME = 150;
 	public static OvenHandler ovenHandler;
 	protected int boxSize,creamBoxSize;
 	protected int curProgress;
@@ -197,7 +199,7 @@ public class Game3Activity extends Activity {
 					
 			@Override
 			public boolean onHover(View arg0, MotionEvent event) {
-				if(curButterView == null || !butterSqueezing){
+				if(!butterSqueezing){
 					return false;
 				}
 
@@ -205,25 +207,18 @@ public class Game3Activity extends Activity {
 						new Point((int)event.getRawX(), (int)event.getRawY()), RecordEntry.STATE_HOVER_BTN_MOVE);
 				
 				if(curProgress < MIX_PROGRESS_END+1){
-					if(ratio == INIT_CREAM_RATIO){
+					if(ratio == INIT_CREAM_RATIO || curButterView == null){
 						curButterView = new ImageView(gameContext);
 						curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game3_cream));
 						game3RelativeLayout.addView(curButterView);
 					}
+					
 					if(ratio < CREAM_MAX_RATIO)
 						ratio++;
 					
 					Point curPoint = new Point((int)event.getX(),(int)event.getY());
 					float dist = calcDistance(startPoint, curPoint);
 				
-					if(dist>=CREAM_DIST){
-						PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_POP, Game3Activity.this);
-						curButterView = new ImageView(gameContext);
-						curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game3_cream));
-						game3RelativeLayout.addView(curButterView);
-						ratio = INIT_CREAM_RATIO;	
-						startPoint = new Point((int)event.getX(),(int)event.getY());
-					}
 					
 					RelativeLayout.LayoutParams params = (LayoutParams) curButterView.getLayoutParams();			
 					params.width = params.height = (int)(SMALL_CREAM_SIZE*ratio/CREAM_MAX_RATIO);
@@ -232,6 +227,14 @@ public class Game3Activity extends Activity {
 										0, 0);
 					
 					curButterView.setLayoutParams(params);
+					
+					if(dist>=CREAM_DIST){
+						PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_POP, Game3Activity.this);
+						curButterView = null;
+						
+						ratio = INIT_CREAM_RATIO;	
+						startPoint = new Point((int)event.getX(),(int)event.getY());
+					}
 				}
 				else{
 					if(ratio == INIT_CREAM_RATIO){
@@ -261,13 +264,7 @@ public class Game3Activity extends Activity {
 				Log.d("Penpal","pressing");
 				butterSqueezing = true;				
 				
-				curButterView = new ImageView(gameContext);
-				if(curProgress < CREAM_PROGRESS_END-1)
-					curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game3_cream));
-				else
-					curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game3_cream2));
 				ratio = INIT_CREAM_RATIO;
-				
 				startPoint = new Point((int)event.getX(),(int)event.getY());
 			}
 
@@ -585,7 +582,7 @@ public class Game3Activity extends Activity {
 		isFirstAlarm = true;
 		findViewById(R.id.timeReminder).setVisibility(View.INVISIBLE);
 		turnOffTick();
-		PlayPalUtility.initialProgressBar(CREAM_TIME, PlayPalUtility.TIME_MODE);
+		PlayPalUtility.initialProgressBar(CAKE_TIME, PlayPalUtility.TIME_MODE);
 		
 		PlayPalUtility.registerSingleHoverPoint(false,game3RelativeLayout, this, new Callable<Integer>() {
 			@Override
@@ -613,6 +610,8 @@ public class Game3Activity extends Activity {
 		PlayPalUtility.cancelGestureSet(idx);
 		
 		if(curProgress == CREAM_PROGRESS_END){
+			
+			mSPenEventLibrary.setSPenHoverListener(cakeView, null);
 			cakeDottedLineView.setVisibility(ImageView.INVISIBLE);
 			cakeStrawberryView.setVisibility(ImageView.VISIBLE);
 			cakeStrawberryView.bringToFront();
@@ -623,6 +622,7 @@ public class Game3Activity extends Activity {
 			PlayPalUtility.clearGestureSets();
 			PlayPalUtility.unregisterHoverLineGesture(game3RelativeLayout);
 			
+			PlayPalUtility.initialProgressBar(CUT_TIME, PlayPalUtility.TIME_MODE);
 			PlayPalUtility.registerLineGesture(game3RelativeLayout, this, new Callable<Integer>() {
 				public Integer call() {
 					return handleCutting(null);		

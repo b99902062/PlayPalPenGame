@@ -97,7 +97,7 @@ public class Practice4Activity extends Activity {
 	protected static cookieCuttingHandler cookieCuttingHandler;
 	protected Point centerPoint = new Point(1280,800);
 	protected int dx = 275;
-	protected int dy = 150;
+	protected int dy = 120;
 	protected Point[][] doughPosArray = {
 			{centerPoint, new Point(centerPoint.x + 1*dx, centerPoint.y -1*dy), new Point(centerPoint.x + 2*dx, centerPoint.y -2*dy), new Point(centerPoint.x + 3*dx, centerPoint.y -3*dy)},
 			{centerPoint, new Point(centerPoint.x + 1*dx, centerPoint.y +1*dy), new Point(centerPoint.x + 2*dx, centerPoint.y +2*dy), new Point(centerPoint.x + 3*dx, centerPoint.y +3*dy)},
@@ -460,7 +460,9 @@ public class Practice4Activity extends Activity {
 		int x,y,w,h,dxy=100;
 		ImageView curDough = (ImageView)findViewById(doughViewArray[Math.min(curProgress+1, DOUGH_NUM-1)]);
 		curDough.setVisibility(ImageView.VISIBLE);
-		Point p = PlayPalUtility.curEntry.point;
+		
+		int subProgress = PlayPalUtility.getLastTriggerPointIndex();
+		Point p = doughPosArray[curProgress][subProgress+1];
 		
 		switch(curProgress){
 			case 0:
@@ -674,17 +676,20 @@ public class Practice4Activity extends Activity {
 		protected int temp_Length  = (int)(cookieRadius/Math.sqrt(2));
 		protected int temp_Length2 = (int)(cookieRadius*Math.sin(Math.PI/3));
 		protected int temp_Length3 = (int)(cookieRadius*Math.cos(Math.PI/3));
+		protected int sqrt_Length = (int)(cookieRadius*Math.cos(Math.PI/4));
 		
 		protected Point center;
 		protected ImageView view;
 		protected Point[][] offsetArray = new Point[][]{
 				//TRIANGULAR_COOKIE
-				{new Point(0,-cookieRadius), new Point(-temp_Length2,temp_Length3), new Point(temp_Length2,temp_Length3), new Point(0,-cookieRadius)},
+				{new Point(0,-cookieRadius), new Point(-temp_Length2,temp_Length3), new Point(temp_Length2,temp_Length3), new Point(0,-cookieRadius),
+				 new Point(0,-cookieRadius), new Point(-temp_Length2,temp_Length3), new Point(temp_Length2,temp_Length3), new Point(0,-cookieRadius)},
 				//SQUARE_COOKIE
-				{new Point(temp_Length,temp_Length), new Point(temp_Length,-temp_Length), new Point(-temp_Length,-temp_Length), new Point(-temp_Length,temp_Length) },
+				{new Point(temp_Length,temp_Length), new Point(temp_Length,-temp_Length), new Point(-temp_Length,-temp_Length), new Point(-temp_Length,temp_Length),
+				 new Point(temp_Length,temp_Length), new Point(temp_Length,-temp_Length), new Point(-temp_Length,-temp_Length), new Point(-temp_Length,temp_Length),},
 				//CIRCLE_COOKIE
-				{new Point(cookieRadius,0),  new Point(0,-cookieRadius),  new Point(-cookieRadius,0), new Point(0,cookieRadius)}};
-		
+				{new Point(cookieRadius,0),  new Point(sqrt_Length,-sqrt_Length), new Point(0,-cookieRadius), new Point(-sqrt_Length,-sqrt_Length),
+				 new Point(-cookieRadius,0), new Point(-sqrt_Length,sqrt_Length), new Point(0,cookieRadius),  new Point(sqrt_Length, sqrt_Length)}};
 		
 		public Cookie(int _id, int _t, ImageView _v){
 			id   = _id;
@@ -715,10 +720,14 @@ public class Practice4Activity extends Activity {
 		
 		public void setGesturePoint(){ 
 			PlayPalUtility.initialLineGestureParams(false, false, boxSize,
-				pointAddition(this.center, offsetArray[this.type][0]), 
-				pointAddition(this.center, offsetArray[this.type][1]),
-				pointAddition(this.center, offsetArray[this.type][2]),
-				pointAddition(this.center, offsetArray[this.type][3]));
+					pointAddition(this.center, offsetArray[this.type][0]), 
+					pointAddition(this.center, offsetArray[this.type][1]),
+					pointAddition(this.center, offsetArray[this.type][2]),
+					pointAddition(this.center, offsetArray[this.type][3]),
+					pointAddition(this.center, offsetArray[this.type][4]),
+					pointAddition(this.center, offsetArray[this.type][5]),
+					pointAddition(this.center, offsetArray[this.type][6]),
+					pointAddition(this.center, offsetArray[this.type][7]));
 		}
 		
 		public void setGestureDottedLine(){
