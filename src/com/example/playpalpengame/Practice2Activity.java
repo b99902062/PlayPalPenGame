@@ -116,6 +116,8 @@ public class Practice2Activity extends Activity {
 		setContentView(R.layout.activity_game2);
 		PlayPalUtility.setDebugMode(false);
 		
+		initBitmap();
+		
 		fishThreadList = new LinkedList<FishHandlerThread>();
 
 		Bundle bundle = getIntent().getExtras();
