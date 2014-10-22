@@ -152,10 +152,15 @@ public class Practice2Activity extends Activity {
 		PlayPalUtility.initDrawView(game2RelativeLayout, this);
 		
 		game2RelativeLayout.setOnHoverListener(new View.OnHoverListener() {
+			boolean isStartFromPool = false;
             @Override
             public boolean onHover(View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_HOVER_ENTER:
+                    	if(event.getX() - 200 > 1960 && event.getY() - 200 > 380 && event.getY() - 200 < 1380) 
+                    		isStartFromPool = true;
+                    	else
+                    		isStartFromPool = false;
                     	PlayPalUtility.curEntry = new RecordEntry(
     							new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_START);
                     	netView.setVisibility(ImageView.VISIBLE);
@@ -166,29 +171,38 @@ public class Practice2Activity extends Activity {
                     	RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
                     	params.setMargins((int)event.getX(), (int)event.getY() , 0, 0);
                     	if(canPutInBasket) {
-                    		if(event.getX() - 200 > 1960 && event.getY() - 200 > 380 && event.getY() - 200 < 1380) {
-                    			netView.setImageBitmap(netBitmap);
-                    			canPutInBasket = false;
+                    		if(!isStartFromPool) {
+	                    		if(event.getX() - 200 > 1960 && event.getY() - 200 > 380 && event.getY() - 200 < 1380) {
+	                    			netView.setImageBitmap(netBitmap);
+	                    			canPutInBasket = false;
+	                    			PlayPalUtility.setLineGesture(true);
+	                    			// Play the pu-ton animation
+	                    			PlayPalUtility.cancelGestureSet(curFishIndex);
+	                    			fishThreadList.get(curFishIndex).killThread();
+	                    			
+	                    			PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_SPLIT_POT, self);             			
+	                    			progressCount++;
+	                    			testProgressCountText.setText(String.format("ProgressCount: %d", progressCount));
+	                    			if(progressCount == step1TotalProgressCount) {
+	                    				teachHandView.clearAnimation();
+	                    				teachHandView.setVisibility(View.INVISIBLE);
+	                    				
+	                    				PlayPalUtility.killTimeBar();
+	                    				PlayPalUtility.playTeachVoice(self, 204, 205, 206);
+	                    				
+	                    				PlayPalUtility.clearGestureSets();
+	                    				PlayPalUtility.setLineGesture(false);
+	                    				PlayPalUtility.unregisterLineGesture(game2RelativeLayout);
+	                    				LoadStep2();
+	                    			}
+	                    		}
+                    		}
+                    		else {
                     			PlayPalUtility.setLineGesture(true);
-                    			// Play the pu-ton animation
-                    			PlayPalUtility.cancelGestureSet(curFishIndex);
-                    			fishThreadList.get(curFishIndex).killThread();
-                    			
-                    			PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_SPLIT_POT, self);             			
-                    			progressCount++;
-                    			testProgressCountText.setText(String.format("ProgressCount: %d", progressCount));
-                    			if(progressCount == step1TotalProgressCount) {
-                    				teachHandView.clearAnimation();
-                    				teachHandView.setVisibility(View.INVISIBLE);
-                    				
-                    				PlayPalUtility.killTimeBar();
-                    				PlayPalUtility.playTeachVoice(self, 204, 205, 206);
-                    				
-                    				PlayPalUtility.clearGestureSets();
-                    				PlayPalUtility.setLineGesture(false);
-                    				PlayPalUtility.unregisterLineGesture(game2RelativeLayout);
-                    				LoadStep2();
-                    			}
+                        		fishThreadList.get(curFishIndex).doResume();
+                        		fishThreadList.get(curFishIndex).fishView.setVisibility(ImageView.VISIBLE);
+                        		netView.setImageBitmap(netBitmap);
+                        		canPutInBasket = false;
                     		}
                     	}
                     		
