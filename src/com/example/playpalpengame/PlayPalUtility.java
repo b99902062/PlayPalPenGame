@@ -330,6 +330,7 @@ public class PlayPalUtility {
 		});
 	}
 	
+	
 	protected static void registerHoverLineGesture(View view, Context context, final Callable<Integer> func) {
 		targetView = view;
 		targetContext = context;
@@ -360,6 +361,9 @@ public class PlayPalUtility {
 					curEntry = new RecordEntry(
 							new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_END);
 				}
+				
+				
+				
 				if(!isLineGestureOn || !isPressing)
 					return false;
 				
@@ -954,6 +958,8 @@ public class PlayPalUtility {
 		isDebugMode = value;
 	}
 	
+	
+	
 	/*DrawView utility*/
 	protected static void initDrawView(RelativeLayout layout, Context context){
 
@@ -962,6 +968,8 @@ public class PlayPalUtility {
 		drawview.setMinimumWidth(1600);
 		
 		layout.addView(drawview);
+		drawview.bringToFront();
+		drawview.invalidate();
 	}
 	
 	protected static void setStraightStroke(Point... points){
@@ -1062,6 +1070,7 @@ class DrawView extends View{
 	@Override  
     protected void onDraw(Canvas canvas) {  
         super.onDraw(canvas);
+        this.bringToFront();
         
         for(int setIndex=0; setIndex<PlayPalUtility.strokeSetList.size(); setIndex++)
         {

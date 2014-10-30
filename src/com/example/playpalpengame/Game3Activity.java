@@ -37,6 +37,8 @@ import android.graphics.PathEffect;
 import android.graphics.Point;
 import android.graphics.drawable.AnimationDrawable;
 
+import com.example.playpalpengame.Game3Activity.OvenHandler;
+import com.example.playpalpengame.Game3Activity.ovenTimerTask;
 import com.samsung.spen.lib.input.SPenEventLibrary;
 import com.samsung.spensdk.applistener.SPenHoverListener;
 
@@ -78,11 +80,12 @@ public class Game3Activity extends Activity {
 	protected final int MIX_PROGRESS_START = 1;
 	protected final int MIX_PROGRESS_HALF  = 5;
 	protected final int MIX_PROGRESS_END = 10;
-	protected final int CREAM_PROGRESS_END = 16;
+	protected final int DOTTED_LINE_PROGRESS_END = 21;
+	protected final int CREAM_PROGRESS_END = 26;
 	
 	protected final int MIX_TIME   = 900;
 	protected final int CREAM_TIME = 900;
-	protected final int CAKE_TIME = 300;
+	protected final int CAKE_TIME = 450;
 	protected final int CUT_TIME = 150;
 	public static OvenHandler ovenHandler;
 	protected int boxSize,creamBoxSize;
@@ -206,7 +209,7 @@ public class Game3Activity extends Activity {
 				PlayPalUtility.curEntry = new RecordEntry(
 						new Point((int)event.getRawX(), (int)event.getRawY()), RecordEntry.STATE_HOVER_BTN_MOVE);
 				
-				if(curProgress < MIX_PROGRESS_END+1){
+				if(curProgress < DOTTED_LINE_PROGRESS_END){
 					if(ratio == INIT_CREAM_RATIO || curButterView == null){
 						curButterView = new ImageView(gameContext);
 						curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game3_cream));
@@ -572,32 +575,34 @@ public class Game3Activity extends Activity {
 		curProgress++;
 		progressCountText.setText("ProgressCount: " + new String("" + curProgress));
 		
-		cakeCreamHintView.setVisibility(ImageView.VISIBLE);
-		cakeCreamHintView.bringToFront();
-		game3RelativeLayout.invalidate();
-		PlayPalUtility.clearGestureSets();
-		PlayPalUtility.clearDrawView();
-		PlayPalUtility.unregisterHoverLineGesture(game3RelativeLayout);
-		score += PlayPalUtility.killTimeBar();
-		isFirstAlarm = true;
-		findViewById(R.id.timeReminder).setVisibility(View.INVISIBLE);
-		turnOffTick();
-		PlayPalUtility.initialProgressBar(CAKE_TIME, PlayPalUtility.TIME_MODE);
 		
-		PlayPalUtility.registerSingleHoverPoint(false,game3RelativeLayout, this, new Callable<Integer>() {
-			@Override
-			public Integer call() throws Exception {
-				return handleCream(cakeCreamView);
-			}
-		});
-		
-		PlayPalUtility.setLineGesture(true);
-		for(int i=0; i<5; i++)
-			PlayPalUtility.initialLineGestureParams(false, false, boxSize/2, creamPosArray[i]);
-		
-		PenRecorder.outputJSON();
-		PenRecorder.registerRecorder(game3RelativeLayout, this, userName, "3-3");
-		
+		if(curProgress == DOTTED_LINE_PROGRESS_END){
+			cakeCreamHintView.setVisibility(ImageView.VISIBLE);
+			cakeCreamHintView.bringToFront();
+			game3RelativeLayout.invalidate();
+			PlayPalUtility.clearGestureSets();
+			PlayPalUtility.clearDrawView();
+			PlayPalUtility.unregisterHoverLineGesture(game3RelativeLayout);
+			score += PlayPalUtility.killTimeBar();
+			isFirstAlarm = true;
+			findViewById(R.id.timeReminder).setVisibility(View.INVISIBLE);
+			turnOffTick();
+			PlayPalUtility.initialProgressBar(CAKE_TIME, PlayPalUtility.TIME_MODE);
+			
+			PlayPalUtility.registerSingleHoverPoint(false,game3RelativeLayout, this, new Callable<Integer>() {
+				@Override
+				public Integer call() throws Exception {
+					return handleCream(cakeCreamView);
+				}
+			});
+			
+			PlayPalUtility.setLineGesture(true);
+			for(int i=0; i<5; i++)
+				PlayPalUtility.initialLineGestureParams(false, false, boxSize/2, creamPosArray[i]);
+			
+			PenRecorder.outputJSON();
+			PenRecorder.registerRecorder(game3RelativeLayout, this, userName, "3-3");
+		}
 		return 1;
 	}
 	
@@ -725,24 +730,14 @@ public class Game3Activity extends Activity {
 			cakeView.setAnimation(cakeAnim);
 			cakeAnim.startNow();
 			
-			PlayPalUtility.registerHoverLineGesture(game3RelativeLayout, gameContext, new Callable<Integer>() {
+			PlayPalUtility.registerSingleHoverPoint(true, game3RelativeLayout, gameContext, new Callable<Integer>() {
 				public Integer call() {
 					return handleCakeAction(cakeView);
 				}
 			});
 			
-			PlayPalUtility.initialLineGestureParams(false, false, creamBoxSize, 
-					dottedLineArray[0],
-					dottedLineArray[1],
-					dottedLineArray[2],
-					dottedLineArray[3],
-					dottedLineArray[4],
-					dottedLineArray[5],
-					dottedLineArray[6],
-					dottedLineArray[7],
-					dottedLineArray[8],
-					dottedLineArray[9],
-					dottedLineArray[10]);
+			for(int i=0; i<11; i++)
+				PlayPalUtility.initialLineGestureParams(false, false, creamBoxSize, dottedLineArray[i]);	
 		}
 	};
 	
