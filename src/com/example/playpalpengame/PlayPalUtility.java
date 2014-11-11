@@ -1070,8 +1070,6 @@ class DrawView extends View{
 	@Override  
     protected void onDraw(Canvas canvas) {  
         super.onDraw(canvas);
-        this.bringToFront();
-        
         for(int setIndex=0; setIndex<PlayPalUtility.strokeSetList.size(); setIndex++)
         {
         	StrokeSet curSet = PlayPalUtility.strokeSetList.get(setIndex);
@@ -1089,7 +1087,8 @@ class DrawView extends View{
         	else{
         		canvas.drawCircle(curSet.pointList.get(0).x, curSet.pointList.get(0).y, radius, paint);
         	}
-        }	
+        }
+        this.bringToFront();
 	}
 };
 

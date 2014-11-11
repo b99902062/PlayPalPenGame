@@ -83,12 +83,14 @@ public class Game3Activity extends Activity {
 	protected final int DOTTED_LINE_PROGRESS_END = 21;
 	protected final int CREAM_PROGRESS_END = 26;
 	
-	protected final int MIX_TIME   = 900;
-	protected final int CREAM_TIME = 900;
-	protected final int CAKE_TIME = 450;
+	protected final int MIX_TIME    = 900;
+	protected final int CREAM_TIME  = 900;
+	protected final int CREAM_TIME2 = 900;
 	protected final int CUT_TIME = 150;
 	public static OvenHandler ovenHandler;
-	protected int boxSize,creamBoxSize;
+	protected int boxSize = 100;
+	protected int creamBoxSize = 75;
+	protected int singleCreamBoxSize = 100; 
 	protected int curProgress;
 	protected boolean canTouchOven = false;
 	protected boolean butterSqueezing = false;
@@ -114,6 +116,7 @@ public class Game3Activity extends Activity {
 	ImageView helicalView;
 	ImageView currentFoodView;
 	ImageView cakeCreamHintView;
+	ImageView curButterView;
 
 	AnimationDrawable mixStirAnim;
 	AnimationDrawable ovenAnimation;
@@ -140,8 +143,6 @@ public class Game3Activity extends Activity {
 		setHomeListener(homeBtn);
 		
 		curProgress = 0;
-		boxSize = 100;
-		creamBoxSize = 70;
 		gameContext = this;
 		ovenHandler = new OvenHandler();
 		
@@ -195,17 +196,17 @@ public class Game3Activity extends Activity {
 		mSPenEventLibrary = new SPenEventLibrary();
 		mSPenEventLibrary.setSPenHoverListener(cakeView, new SPenHoverListener(){
 			Point startPoint;
-			ImageView curButterView;
 			int ratio = INIT_CREAM_RATIO;
 			int w = 50;
 			int h = 50;
 					
 			@Override
 			public boolean onHover(View arg0, MotionEvent event) {
+				cakeCreamHintView.bringToFront();
 				if(!butterSqueezing){
 					return false;
 				}
-
+				
 				PlayPalUtility.curEntry = new RecordEntry(
 						new Point((int)event.getRawX(), (int)event.getRawY()), RecordEntry.STATE_HOVER_BTN_MOVE);
 				
@@ -577,9 +578,14 @@ public class Game3Activity extends Activity {
 		
 		
 		if(curProgress == DOTTED_LINE_PROGRESS_END){
+
 			cakeCreamHintView.setVisibility(ImageView.VISIBLE);
 			cakeCreamHintView.bringToFront();
+			
+			curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game3_cream2));
 			game3RelativeLayout.invalidate();
+			
+			
 			PlayPalUtility.clearGestureSets();
 			PlayPalUtility.clearDrawView();
 			PlayPalUtility.unregisterHoverLineGesture(game3RelativeLayout);
@@ -587,7 +593,7 @@ public class Game3Activity extends Activity {
 			isFirstAlarm = true;
 			findViewById(R.id.timeReminder).setVisibility(View.INVISIBLE);
 			turnOffTick();
-			PlayPalUtility.initialProgressBar(CAKE_TIME, PlayPalUtility.TIME_MODE);
+			PlayPalUtility.initialProgressBar(CREAM_TIME2, PlayPalUtility.TIME_MODE);
 			
 			PlayPalUtility.registerSingleHoverPoint(false,game3RelativeLayout, this, new Callable<Integer>() {
 				@Override
@@ -598,7 +604,7 @@ public class Game3Activity extends Activity {
 			
 			PlayPalUtility.setLineGesture(true);
 			for(int i=0; i<5; i++)
-				PlayPalUtility.initialLineGestureParams(false, false, boxSize/2, creamPosArray[i]);
+				PlayPalUtility.initialLineGestureParams(false, false, creamBoxSize, creamPosArray[i]);
 			
 			PenRecorder.outputJSON();
 			PenRecorder.registerRecorder(game3RelativeLayout, this, userName, "3-3");

@@ -406,6 +406,7 @@ public class Practice2Activity extends Activity {
 		teachHandView.setImageBitmap(BitmapHandler.getLocalBitmap(self, R.drawable.teach_hand2_down));
 		setTeachHandLinear(pnt1.x - TEACH_HAND_DOWN_OFFSET_X, pnt1.y - TEACH_HAND_DOWN_OFFSET_Y, pnt2.x - pnt1.x, pnt2.y - pnt1.y);
 		
+		
 		PlayPalUtility.setLineGesture(true);
 		findViewById(R.id.fishViewDone1).setVisibility(View.VISIBLE);
 		

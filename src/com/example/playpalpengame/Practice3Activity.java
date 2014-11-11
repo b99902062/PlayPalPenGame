@@ -168,6 +168,7 @@ public class Practice3Activity extends Activity {
 		teachHandView = (ImageView)findViewById(R.id.Game3_teachHand);
 		
 		game3RelativeLayout = (DrawableRelativeLayout) findViewById(R.id.Game3RelativeLayout);
+
 		game3RelativeLayout.setOnHoverListener(new View.OnHoverListener() {
             @Override
             public boolean onHover(View v, MotionEvent event) {

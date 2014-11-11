@@ -158,9 +158,10 @@ public class Practice1Activity extends Activity {
 		PlayPalUtility.initialLineGestureParams(false, false, boxSize, beginPnt, endPnt);
 
 		PlayPalUtility.initDrawView(game1RelativeLayout, this);
-		DrawGestureLine();
 		
 		setTeachHandLinear(beginPnt.x - TEACH_HAND_DOWN_OFFSET_X, beginPnt.y - TEACH_HAND_DOWN_OFFSET_Y, endPnt.x - beginPnt.x, endPnt.y - beginPnt.y);
+		DrawGestureLine();
+		
 		PlayPalUtility.playTeachVoice(this, 101, 102, 103);
 	}
 	
@@ -518,9 +519,9 @@ public class Practice1Activity extends Activity {
 							Point beginPnt = new Point(foodOffsetX + cucumberCutBeginPointArray[0].x, foodOffsetY + cucumberCutBeginPointArray[0].y);
 							Point endPnt = new Point(foodOffsetX + cucumberCutEndPointArray[0].x, foodOffsetY + cucumberCutEndPointArray[0].y);
 							PlayPalUtility.initialLineGestureParams(false, false, boxSize, beginPnt, endPnt);
-							DrawGestureLine();
-							
+
 							setTeachHandLinear(beginPnt.x - TEACH_HAND_DOWN_OFFSET_X, beginPnt.y - TEACH_HAND_DOWN_OFFSET_Y, endPnt.x - beginPnt.x, endPnt.y - beginPnt.y);
+							DrawGestureLine();
 						}
 
 						@Override
