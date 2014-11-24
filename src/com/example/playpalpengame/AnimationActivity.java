@@ -78,11 +78,15 @@ public class AnimationActivity extends Activity {
 		if(isWin)
 			mWinCount++;
 		
-		if(isWin && newScore >= mHighScore * 1.1) {
+		if(isWin && mBadges != 0x111111 && ((gameIndex == 1 && newScore >= mHighScore * 1.1) || (gameIndex != 1 && newScore >= mHighScore * 1.05))) {
 			if(mHighScore == 0)
 				mHighScore = newScore;
-			else
-				mHighScore = (int) (mHighScore * 1.1);
+			else {
+				if(gameIndex == 1)
+					mHighScore = (int) (mHighScore * 1.1);
+				else
+					mHighScore = (int) (mHighScore * 1.05);
+			}
 			for(int j=0; j<6; j++) {
 				if(((mBadges >> j) & 0x1) == 0) {
 					((ImageView)findViewById(R.id.starView)).setImageBitmap(BitmapHandler.getLocalBitmap(this, starResArray[j]));
@@ -114,7 +118,8 @@ public class AnimationActivity extends Activity {
 			PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_HOORAY, this);
 		}
 		else if(isWin) {
-			mHighScore -= 5;
+			if(mBadges != 0x111111)
+				mHighScore -= 5;
 			updateRecordJson();
 			setEndAnim();
 		}
@@ -141,6 +146,7 @@ public class AnimationActivity extends Activity {
 				bundle.putString("userName", mUserName);
 				bundle.putInt("GameBadges", mBadges);
 				bundle.putInt("GameHighScore", mHighScore);
+				bundle.putInt("GameWinCount", mWinCount);
 	            newAct.putExtras(bundle);
 				startActivityForResult(newAct, 0);
 				AnimationActivity.this.finish();
