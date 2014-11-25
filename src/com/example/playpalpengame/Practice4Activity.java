@@ -656,7 +656,7 @@ public class Practice4Activity extends Activity {
 		
 		Animation am = new CircularTranslateAnimation(teachHandView, range);
 		am.setDuration(2000);
-		am.setRepeatCount(-1);
+		am.setRepeatCount(1);//bug #13
 		am.setFillEnabled(true);
 		am.setFillAfter(true);
 		am.setFillBefore(true);
