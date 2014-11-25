@@ -563,6 +563,10 @@ public class Game2Activity extends Activity {
 			&& isFishCutArray[baseIndex * 4 + 2]		
 			&& isFishCutArray[baseIndex * 4 + 3]) {
 				ImageView fishView = (ImageView)findViewById(fishIdArray[baseIndex]);
+				progressCount++;
+				testProgressCountText.setText(String.format("ProgressCount: %d", progressCount));
+				if(progressCount == step2TotalProgressCount) 
+					score += PlayPalUtility.killTimeBar();
 				PlayPalUtility.setAlphaAnimation(fishView, false, new Callable<Integer>() {
 					private int index = baseIndex;
 					@Override
@@ -607,11 +611,7 @@ public class Game2Activity extends Activity {
 		ImageView fishView = (ImageView)findViewById(fishIdArray[index]);
 		fishView.setVisibility(ImageView.GONE);
 		
-		progressCount++;
-		testProgressCountText.setText(String.format("ProgressCount: %d", progressCount));
 		if(progressCount == step2TotalProgressCount) {
-			score += PlayPalUtility.killTimeBar();
-			
 			clearAll();
 			
 			PenRecorder.outputJSON();
