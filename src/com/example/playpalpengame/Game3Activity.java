@@ -289,7 +289,7 @@ public class Game3Activity extends Activity {
 
 		PlayPalUtility.setDebugMode(false);
 		PenRecorder.registerRecorder(game3RelativeLayout, this, userName, "3-1");
-		PlayPalUtility.initDrawView(game3RelativeLayout, this);
+		PlayPalUtility.initDrawView(game3RelativeLayout, this, (DrawView)findViewById(R.id.drawLineView));
 		setFoodListener(mixView);
 		
 		PlayPalUtility.registerLineGesture(game3RelativeLayout, this, new Callable<Integer>() {

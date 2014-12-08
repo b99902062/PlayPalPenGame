@@ -157,7 +157,7 @@ public class Practice1Activity extends Activity {
 		Point endPnt = new Point(foodOffsetX + carrotCutEndPointArray[progressCount].x, foodOffsetY + carrotCutEndPointArray[progressCount].y);
 		PlayPalUtility.initialLineGestureParams(false, false, boxSize, beginPnt, endPnt);
 
-		PlayPalUtility.initDrawView(game1RelativeLayout, this);
+		PlayPalUtility.initDrawView(game1RelativeLayout, this, (DrawView)findViewById(R.id.drawLineView));
 		
 		setTeachHandLinear(beginPnt.x - TEACH_HAND_DOWN_OFFSET_X, beginPnt.y - TEACH_HAND_DOWN_OFFSET_Y, endPnt.x - beginPnt.x, endPnt.y - beginPnt.y);
 		DrawGestureLine();

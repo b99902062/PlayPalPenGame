@@ -299,7 +299,7 @@ public class Practice3Activity extends Activity {
 		});
 
 		PlayPalUtility.setDebugMode(false);
-		PlayPalUtility.initDrawView(game3RelativeLayout, this);
+		PlayPalUtility.initDrawView(game3RelativeLayout, this, (DrawView)findViewById(R.id.drawLineView));
 		setFoodListener(mixView);
 		
 		PlayPalUtility.registerLineGesture(game3RelativeLayout, this, new Callable<Integer>() {

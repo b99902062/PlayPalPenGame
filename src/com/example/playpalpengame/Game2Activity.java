@@ -176,7 +176,7 @@ public class Game2Activity extends Activity {
 		PlayPalUtility.registerFailFeedback((ImageView)findViewById(R.id.failFeedbackView));
 		PenRecorder.registerRecorder(game2RelativeLayout, this, mUserName, "2-1");
 		PlayPalUtility.setLineGesture(true);
-		PlayPalUtility.initDrawView(game2RelativeLayout, this);
+		PlayPalUtility.initDrawView(game2RelativeLayout, this, (DrawView)findViewById(R.id.drawLineView));
 		
 		game2RelativeLayout.setOnHoverListener(new View.OnHoverListener() {
 			boolean isStartFromPool = false;
@@ -357,7 +357,7 @@ public class Game2Activity extends Activity {
 			PlayPalUtility.registerFailFeedback((ImageView)findViewById(R.id.failFeedbackView));
 			
 			PlayPalUtility.setLineGesture(true);
-			PlayPalUtility.initDrawView(game2RelativeLayout, this);
+			PlayPalUtility.initDrawView(game2RelativeLayout, this, (DrawView)findViewById(R.id.drawLineView));
 			
 			fishThreadList = new LinkedList<FishHandlerThread>();
 			for(int i=0; i<fishLocSet.length; i++) {

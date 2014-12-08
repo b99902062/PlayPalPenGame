@@ -229,7 +229,7 @@ public class Practice4Activity extends Activity {
 		PlayPalUtility.setLineGesture(true);
 		PlayPalUtility.initialLineGestureParams(false, true, boxSize, doughPosArray[curProgress][0], doughPosArray[curProgress][1], doughPosArray[curProgress][2], doughPosArray[curProgress][3]);
 
-		PlayPalUtility.initDrawView(game4RelativeLayout, this);
+		PlayPalUtility.initDrawView(game4RelativeLayout, this, (DrawView)findViewById(R.id.drawLineView));
 		PlayPalUtility.setStraightStroke(doughPosArray[curProgress][0],doughPosArray[curProgress][3]);
 		
 		game4RelativeLayout.setOnHoverListener(new View.OnHoverListener() {

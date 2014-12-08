@@ -185,5 +185,11 @@
             android:layout_alignParentTop="true"
             android:src="@drawable/teach_hand1_down" 
             android:visibility="invisible" />
+    
+    <view
+       		class="com.example.playpalpengame.DrawView"
+        	android:id="@+id/drawLineView"
+        	android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
 </FrameLayout>

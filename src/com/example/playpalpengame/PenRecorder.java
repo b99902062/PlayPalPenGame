@@ -255,6 +255,7 @@ class DrawableRelativeLayout extends RelativeLayout {
 		p.setAntiAlias(true);
 		
 		setWillNotDraw(false);
+		
     }
 
     @Override

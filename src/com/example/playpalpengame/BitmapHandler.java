@@ -26,7 +26,7 @@ public class BitmapHandler {
 	
 	public static void recycleBitmaps() {
 		for(int i=0; i<bitmapArr.size(); i++) {
-			if(!bitmapArr.get(i).isRecycled())
+			if(!bitmapArr.get(i).isRecycled()) 
 				bitmapArr.get(i).recycle();
 		}
 		bitmapArr.clear();

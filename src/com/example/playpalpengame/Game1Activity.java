@@ -189,7 +189,7 @@ public class Game1Activity extends Activity {
 		Point endPnt = new Point(foodOffsetX + carrotCutEndPointArray[progressCount].x, foodOffsetY + carrotCutEndPointArray[progressCount].y);
 		PlayPalUtility.initialLineGestureParams(false, false, boxSize, beginPnt, endPnt);
 
-		PlayPalUtility.initDrawView(game1RelativeLayout, this);
+		PlayPalUtility.initDrawView(game1RelativeLayout, this, (DrawView)findViewById(R.id.drawLineView));
 		DrawGestureLine();
 		PenRecorder.registerRecorder(game1RelativeLayout, this, mUserName, "1-1");
 	}
@@ -276,7 +276,7 @@ public class Game1Activity extends Activity {
 			}
 			PlayPalUtility.initialLineGestureParams(false, false, boxSize, beginPnt, endPnt);
 
-			PlayPalUtility.initDrawView((RelativeLayout) findViewById(R.id.game1RelativeLayout), this);
+			PlayPalUtility.initDrawView((RelativeLayout) findViewById(R.id.game1RelativeLayout), this, (DrawView)findViewById(R.id.drawLineView));
 			DrawGestureLine();
 		}
 		else if(progressCount < step2TotalProgressCount) {

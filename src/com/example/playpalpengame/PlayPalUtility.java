@@ -22,6 +22,7 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.AttributeSet;
 import android.util.FloatMath;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -958,18 +959,18 @@ public class PlayPalUtility {
 		isDebugMode = value;
 	}
 	
-	
+	protected static void invalidateView() {
+		drawview.invalidate();
+	}
 	
 	/*DrawView utility*/
-	protected static void initDrawView(RelativeLayout layout, Context context){
+	protected static void initDrawView(RelativeLayout layout, Context context, DrawView view){
 
-		drawview = new DrawView(context);
+		drawview = view;
 		drawview.setMinimumHeight(2160);
 		drawview.setMinimumWidth(1600);
-		
-		layout.addView(drawview);
+
 		drawview.bringToFront();
-		drawview.invalidate();
 	}
 	
 	protected static void setStraightStroke(Point... points){
@@ -1046,11 +1047,25 @@ class DrawView extends View{
 	
 	public DrawView(Context context) {
 		super(context);
-		canvas= new Canvas();
+		init();
+	}
+	
+	public DrawView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init();
+    }
+    
+    public DrawView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+        init();
+    }
+    
+    private void init() {
+    	canvas= new Canvas();
 		paint = new Paint();
         initPenEffect(paint);
         radius = 175;
-	}
+    }
 	
 	private void initPenEffect(Paint paint){
         paint.setAntiAlias(true);    

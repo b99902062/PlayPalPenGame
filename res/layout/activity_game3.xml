@@ -208,5 +208,11 @@
         <ImageView android:id="@+id/Game3_beat" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/game3_eggbeat" android:visibility="invisible" />
             
     </view>
+    
+    <view
+       		class="com.example.playpalpengame.DrawView"
+        	android:id="@+id/drawLineView"
+        	android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
 </FrameLayout>

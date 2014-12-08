@@ -149,7 +149,7 @@ public class Practice2Activity extends Activity {
 		PlayPalUtility.setHoverTarget(true, netView);
 		PlayPalUtility.registerFailFeedback((ImageView)findViewById(R.id.failFeedbackView));
 		PlayPalUtility.setLineGesture(true);
-		PlayPalUtility.initDrawView(game2RelativeLayout, this);
+		PlayPalUtility.initDrawView(game2RelativeLayout, this, (DrawView)findViewById(R.id.drawLineView));
 		
 		game2RelativeLayout.setOnHoverListener(new View.OnHoverListener() {
 			boolean isStartFromPool = false;
