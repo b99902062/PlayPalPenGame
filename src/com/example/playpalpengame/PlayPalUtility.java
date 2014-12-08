@@ -285,7 +285,6 @@ public class PlayPalUtility {
 				if(isHovering && isPressing){
 					for(int setIndex=0; setIndex<gestureSetList.size(); setIndex++) {
 						GestureSet curSet = gestureSetList.get(setIndex);
-						ArrayList<Integer> pointPassedList = curSet.passedList;
 						if(!curSet.isValid)
 							continue;
 						
@@ -295,7 +294,6 @@ public class PlayPalUtility {
 							lastTriggerSetIndex = setIndex;
 							try {
 								func.call();
-								pointPassedList.clear();
 							} catch(Exception ex) {
 								ex.printStackTrace();
 							}
@@ -330,161 +328,6 @@ public class PlayPalUtility {
 		});
 	}
 	
-	
-	protected static void registerHoverLineGesture(View view, Context context, final Callable<Integer> func) {
-		targetView = view;
-		targetContext = context;
-		
-		mSPenEventLibrary.setSPenHoverListener(targetView, new SPenHoverListener(){
-			Point startPoint;
-			ImageView curButterView;
-			
-			GestureSet curSet;
-			ArrayList<Integer> pointPassedList;
-			
-			@Override
-			public boolean onHover(View arg0, MotionEvent event) {
-				if(event.getAction()  == MotionEvent.ACTION_HOVER_ENTER) {
-					hoverTarget.setVisibility(ImageView.VISIBLE);
-					curEntry = new RecordEntry(
-							new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_START);
-				} 
-				else if(event.getAction()  == MotionEvent.ACTION_HOVER_MOVE) {
-					RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-                	params.setMargins((int)event.getX(), (int)event.getY(), 0, 0);
-                	hoverTarget.setLayoutParams(params);
-					curEntry = new RecordEntry(
-							new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_MOVE);
-				}
-				else {
-					hoverTarget.setVisibility(ImageView.INVISIBLE);
-					curEntry = new RecordEntry(
-							new Point((int)event.getX(), (int)event.getY()), RecordEntry.STATE_HOVER_END);
-				}
-				
-				
-				
-				if(!isLineGestureOn || !isPressing)
-					return false;
-				
-				for(int setIndex=0; setIndex<gestureSetList.size(); setIndex++) {
-					curSet = gestureSetList.get(setIndex);
-					pointPassedList = curSet.passedList;
-					
-					if(!curSet.isValid)
-						continue;
-					
-					if (!curSet.isContinuous && pointPassedList.size() == 0)
-						continue;
-					
-					if(curSet.isInOrder) {
-						if (pointPassedList.get(0) != 0) 
-							continue;
-						int lastIndex = pointPassedList.get(pointPassedList.size() - 1);
-						if(isWithinBox(setIndex, lastIndex+1, new Point((int)event.getX(), (int)event.getY()))) {
-							pointPassedList.add(lastIndex+1);
-							if(curSet.isContinuous && pointPassedList.size() >= curSet.pointList.size()) {
-								try {
-									func.call();
-									pointPassedList.clear();
-								} catch(Exception ex) {
-									ex.printStackTrace();
-								}
-							}
-						}
-					}
-					else {
-						for(int pointIndex = 0; pointIndex < curSet.pointList.size(); pointIndex++) {
-							if(!pointPassedList.contains(pointIndex) && isWithinBox(setIndex, pointIndex, new Point((int)event.getX(), (int)event.getY()))) {
-								Log.d("Utility","Passed"+setIndex+","+(pointIndex+1));
-								pointPassedList.add(pointIndex);
-								
-								if(curSet.isContinuous && pointPassedList.size() >= curSet.pointList.size()) {
-									try {
-										func.call();
-										pointPassedList.clear();
-									} catch(Exception ex) {
-										ex.printStackTrace();
-									}
-								}
-								continue;
-							}
-						}
-					}
-				}
-				return false;
-			}
-			@Override
-			public void onHoverButtonDown(View v, MotionEvent event) {
-				PenRecorder.forceRecord();
-				//PenRecorder.startRecorder();
-				
-				if(!isLineGestureOn)
-					return;
-				
-				for(int setIndex=0; setIndex<gestureSetList.size(); setIndex++) {
-					if(!gestureSetList.get(setIndex).isValid)
-						continue;
-					GestureSet curSet = gestureSetList.get(setIndex);
-					ArrayList<Integer> pointPassedList = curSet.passedList;
-					if(curSet.isInOrder) {
-						if(isWithinBox(setIndex, 0, new Point((int)event.getX(), (int)event.getY())))
-							pointPassedList.add(0);
-					}
-					else {
-						for(int pointIndex = 0; pointIndex < curSet.pointList.size(); pointIndex++) {
-							if(isWithinBox(setIndex, pointIndex, new Point((int)event.getX(), (int)event.getY()))) {
-								pointPassedList.add(pointIndex);
-								break;
-							}
-						}
-					}
-				}
-				isPressing = true;
-			}
-				
-			@Override
-			public void onHoverButtonUp(View v, MotionEvent event) {
-				PenRecorder.forceRecord();
-				//PenRecorder.stopRecorder();
-				
-				if(!isLineGestureOn)
-					return;
-				
-				for(int setIndex=0; setIndex<gestureSetList.size(); setIndex++) {
-					if(!gestureSetList.get(setIndex).isValid)
-						continue;
-					GestureSet curSet = gestureSetList.get(setIndex);
-					ArrayList<Integer> pointPassedList = curSet.passedList;
-					
-					if(curSet.isContinuous) {
-						pointPassedList.clear();
-						continue;
-					}
-					if(pointPassedList.size() >= curSet.pointList.size()) {
-						lastTriggerSetIndex = setIndex;
-						try {
-							func.call();
-						} catch(Exception ex) {
-							ex.printStackTrace();
-						}
-					}
-					pointPassedList.clear();
-					break;	
-				}
-				isPressing = false;
-			}
-		});
-		
-	}
-	
-	/* func  : called after finish line gesture finished
-	 * func2 : always called when touched (default null)
-	 * */
-	protected static void registerLineGesture(View view, Context context, final Callable<Integer> func){
-		registerLineGesture(view, context, func, null);
-	}
-	
 	protected static void registerFailFeedback(ImageView view) {
 		feedbackView = view;
 	}
@@ -515,7 +358,15 @@ public class PlayPalUtility {
 			}
 		}, 300);
 	}
-
+	
+	
+	/* func  : called after finish line gesture finished
+	 * func2 : always called when touched (default null)
+	 * */
+	protected static void registerLineGesture(View view, Context context, final Callable<Integer> func){
+		registerLineGesture(view, context, func, null);
+	}
+	
 	protected static void registerLineGesture(View view, Context context, final Callable<Integer> func, final Callable<Integer> func2 ){
 		targetView = view;
 		targetContext = context;

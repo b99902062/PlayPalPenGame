@@ -703,17 +703,15 @@ public class Practice3Activity extends Activity {
 			
 			cakeView.setAnimation(cakeAnim);
 			cakeAnim.startNow();
-			
-			PlayPalUtility.registerHoverLineGesture(game3RelativeLayout, gameContext, new Callable<Integer>() {
+						
+			PlayPalUtility.registerSingleHoverPoint(true, game3RelativeLayout, gameContext, new Callable<Integer>() {
 				public Integer call() {
 					return handleCakeAction(cakeView);
 				}
 			});
-			
-			
-			PlayPalUtility.initialLineGestureParams(false, false, creamBoxSize, 
-					dottedLineArray[0],
-					dottedLineArray[1]);
+				
+			for(int i=0; i<2; i++)
+				PlayPalUtility.initialLineGestureParams(false, false, creamBoxSize, dottedLineArray[i]);
 		}
 	}
 	
