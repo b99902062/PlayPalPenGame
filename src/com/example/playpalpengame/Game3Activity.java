@@ -52,24 +52,24 @@ public class Game3Activity extends Activity {
 		new Point(1280,1080)};
 		
 	protected Point[] dottedLineArray = {
-		new Point(780+444, 380+216),
-		new Point(780+324, 380+370),
+		new Point(780+440, 380+216),
+		new Point(780+324, 380+360),
 		new Point(780+214, 380+490),
-		new Point(780+315, 380+598),
-		new Point(780+332, 380+710),
+		new Point(780+310, 380+598),
+		new Point(780+330, 380+730),
 		new Point(780+480, 380+740),
 		new Point(780+630, 380+704),
-		new Point(780+760, 380+614),
-		new Point(780+752, 380+480),
-		new Point(780+715, 380+330),
-		new Point(780+580, 380+310)};
+		new Point(780+760, 380+640),
+		new Point(780+752, 380+490),
+		new Point(780+715, 380+340),
+		new Point(780+590, 380+300)};
 	
 	protected Point[] creamPosArray = {
 		new Point(780+324, 380+370),
 		new Point(780+324, 380+620),
-		new Point(780+548, 380+690),
-		new Point(780+710, 380+512),	
-		new Point(780+588, 380+310)};
+		new Point(780+558, 380+690),
+		new Point(780+720, 380+475),	
+		new Point(780+590, 380+300)};
 		
 	protected final int CREAM_DIST = 30;
 	protected final int INIT_CREAM_RATIO = 10;
@@ -576,24 +576,25 @@ public class Game3Activity extends Activity {
 		curProgress++;
 		progressCountText.setText("ProgressCount: " + new String("" + curProgress));
 		
+		int idx = PlayPalUtility.getLastTriggerSetIndex();
+		PlayPalUtility.cancelGestureSet(idx);
 		
 		if(curProgress == DOTTED_LINE_PROGRESS_END){
-
+			
 			cakeCreamHintView.setVisibility(ImageView.VISIBLE);
 			cakeCreamHintView.bringToFront();
 			
-			curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game3_cream2));
-			game3RelativeLayout.invalidate();
-			
-			
 			PlayPalUtility.clearGestureSets();
 			PlayPalUtility.clearDrawView();
-			PlayPalUtility.unregisterHoverLineGesture(game3RelativeLayout);
+			
+			
 			score += PlayPalUtility.killTimeBar();
 			isFirstAlarm = true;
+			
 			findViewById(R.id.timeReminder).setVisibility(View.INVISIBLE);
 			turnOffTick();
 			PlayPalUtility.initialProgressBar(CREAM_TIME2, PlayPalUtility.TIME_MODE);
+			
 			
 			PlayPalUtility.registerSingleHoverPoint(false,game3RelativeLayout, this, new Callable<Integer>() {
 				@Override
@@ -601,13 +602,19 @@ public class Game3Activity extends Activity {
 					return handleCream(cakeCreamView);
 				}
 			});
-			
 			PlayPalUtility.setLineGesture(true);
+			
 			for(int i=0; i<5; i++)
 				PlayPalUtility.initialLineGestureParams(false, false, creamBoxSize, creamPosArray[i]);
 			
 			PenRecorder.outputJSON();
 			PenRecorder.registerRecorder(game3RelativeLayout, this, userName, "3-3");
+			
+			progressCountText.setText("ProgressCount: " + new String("" + curProgress)+"hahaha");
+			game3RelativeLayout.invalidate();
+			
+			if(curButterView != null)
+				curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game3_cream2));
 		}
 		return 1;
 	}
