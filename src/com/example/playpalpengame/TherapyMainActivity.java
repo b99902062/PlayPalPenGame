@@ -54,6 +54,8 @@ public class TherapyMainActivity extends Activity {
 	private Timer replayTimer;
 	private static ReplayTimerTask replayTimerTask;
 	public static DrawCanvasView canvasView;
+	public static ArrayList<String> dateList = new ArrayList<String>();
+	public static Spinner dateSpinner = null;
 	public static Spinner playerSpinner = null;
 	public static Spinner stageSpinner = null;
 	public static Spinner recordSpinner = null;
@@ -66,6 +68,7 @@ public class TherapyMainActivity extends Activity {
 	public static TextView genderLabel = null;
 	public static TextView ageLabel = null;
 	public static ImageView headImage = null;
+	public static Context context;
 	
 	public static boolean isPause = true;
 	
@@ -99,9 +102,11 @@ public class TherapyMainActivity extends Activity {
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 		setContentView(R.layout.activity_therapy_main);
+		context = this;
 
 		canvasView = ((DrawCanvasView)findViewById(R.id.canvasView));
 		srcBackgroundView = (ImageView)findViewById(R.id.srcBackgroundView);
+		dateSpinner = (Spinner) findViewById(R.id.dateSpinner);
 		playerSpinner = (Spinner) findViewById(R.id.playerSpinner);
 		stageSpinner = (Spinner) findViewById(R.id.stageSpinner);
 		recordSpinner = (Spinner) findViewById(R.id.recordSpinner);
@@ -145,59 +150,83 @@ public class TherapyMainActivity extends Activity {
 			}
 		});
 		
-		new RecordLoader().execute();
+		replayTrackBtn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				//((DrawCanvasView)findViewById(R.id.canvasView)).setLimit(0);
+				if(isPause) {
+					if(timeBar.getProgress() == timeBar.getMax())
+						timeBar.setProgress(0);
+					replayTrackBtn.setImageResource(R.drawable.pause_btn);
+					setReplayTimer();
+					isPause = false;
+				}
+				else {
+					if(replayTimer != null)
+						replayTimer.cancel();
+					if(replayTimerTask != null)
+						replayTimerTask.cancel();
+					replayTrackBtn.setImageResource(R.drawable.replay_btn);
+					isPause = true;
+				}
+			}
+		});
+		
+		replaySpeedBar.setOnSeekBarChangeListener(
+				new OnSeekBarChangeListener() {
+					@Override
+					public void onProgressChanged(SeekBar arg0, int arg1,
+							boolean arg2) {
+						float percentage = ((SeekBar)findViewById(R.id.replaySpeedBar)).getProgress() / 100.f;
+						int targetSpeed = (int) (percentage * speedArr.length);
+						targetSpeed = targetSpeed == speedArr.length ? targetSpeed-1 : targetSpeed;
+						replaySpeedText.setText(String.format("Replay Speed: %dX", speedArr[targetSpeed]));
+						if(!isPause)
+							setReplayTimer();
+					}
+
+					@Override
+					public void onStartTrackingTouch(SeekBar arg0) {
+					}
+
+					@Override
+					public void onStopTrackingTouch(SeekBar arg0) {
+					}
+				});
+
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		
+		dateList.clear();
+		loadDateList();
+		if(dateList.size() > 0) 
+			new RecordLoader(dateList.get(0)).execute();
 		
 		while(resultList == null);
 		
 		if(resultList != null) {
-			initialSpinner();
+			String[] nameStrArr = getAllNames(resultList);
+			connectSource(this, playerSpinner, nameStrArr);
 			
-			replayTrackBtn.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					//((DrawCanvasView)findViewById(R.id.canvasView)).setLimit(0);
-					if(isPause) {
-						if(timeBar.getProgress() == timeBar.getMax())
-							timeBar.setProgress(0);
-						replayTrackBtn.setImageResource(R.drawable.pause_btn);
-						setReplayTimer();
-						isPause = false;
-					}
-					else {
-						if(replayTimer != null)
-							replayTimer.cancel();
-						if(replayTimerTask != null)
-							replayTimerTask.cancel();
-						replayTrackBtn.setImageResource(R.drawable.replay_btn);
-						isPause = true;
-					}
-				}
-			});
-			
-			replaySpeedBar.setOnSeekBarChangeListener(
-					new OnSeekBarChangeListener() {
-						@Override
-						public void onProgressChanged(SeekBar arg0, int arg1,
-								boolean arg2) {
-							float percentage = ((SeekBar)findViewById(R.id.replaySpeedBar)).getProgress() / 100.f;
-							int targetSpeed = (int) (percentage * speedArr.length);
-							targetSpeed = targetSpeed == speedArr.length ? targetSpeed-1 : targetSpeed;
-							replaySpeedText.setText(String.format("Replay Speed: %dX", speedArr[targetSpeed]));
-							if(!isPause)
-								setReplayTimer();
-						}
-
-						@Override
-						public void onStartTrackingTouch(SeekBar arg0) {
-						}
-
-						@Override
-						public void onStopTrackingTouch(SeekBar arg0) {
-						}
-					});
+			initialSpinner();	
 		} else {
 			Toast.makeText(this, R.string.str_cannot_find_analysis_file, Toast.LENGTH_LONG).show();
 		}
+	}
+	
+	public void loadDateList() {
+		final File folder = new File("/sdcard/Android/data/com.example.playpalgame");
+		for (final File fileEntry : folder.listFiles()) {
+	        if (!fileEntry.isDirectory() && !fileEntry.getName().contains("record") && fileEntry.getName().endsWith(".json")) {
+	        	dateList.add(fileEntry.getName().replace(".json", ""));
+	        	Log.d("Threapy", fileEntry.getName());
+	        }
+	    }
+
+		connectSource(TherapyMainActivity.this, dateSpinner, dateList.toArray(new String[dateList.size()]));
 	}
 	
 	public void setReplayTimer() {
@@ -229,14 +258,20 @@ public class TherapyMainActivity extends Activity {
         }
     };
 
-	public static ArrayList<AnalysisMessage> loadRecord() {
+	public static ArrayList<AnalysisMessage> loadRecord(String targetDate) {
 		try {
-			//FileInputStream input = new FileInputStream(Resources.getSystem().getString(R.string.str_analysis_json_location));
-			FileInputStream input = new FileInputStream("/sdcard/Android/data/com.example.playpalgame/analysis.json");
+			if(resultList != null)
+				resultList.clear();
+			if(targetPlayerList != null)
+				targetPlayerList.clear();
+			if(targetStageList != null)
+				targetStageList.clear();
+			
+			FileInputStream input = new FileInputStream("/sdcard/Android/data/com.example.playpalgame/"+ targetDate +".json");
 			
 			JsonReader reader = new JsonReader(new InputStreamReader(input,
 					"UTF-8"));
-			ArrayList<AnalysisMessage> returnList = readMessagesArray(reader);
+			ArrayList<AnalysisMessage> returnList = readMessagesArray(reader, targetDate);
 			reader.close();
 			return returnList;
 		} catch (FileNotFoundException e) {
@@ -250,9 +285,25 @@ public class TherapyMainActivity extends Activity {
 	}
 	
 	public void initialSpinner() {
-		String[] nameStrArr = getAllNames(resultList);
-		connectSource(this, playerSpinner, nameStrArr);
-
+		dateSpinner
+		.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView adapterView,
+					View view, int position, long id) {
+				loadingBar.setVisibility(View.VISIBLE);
+				resultList = null;
+				new RecordLoader(adapterView.getSelectedItem().toString()).execute();
+				while(resultList == null);
+				String[] nameStrArr = getAllNames(resultList);
+				TherapyMainActivity.connectSource(context, playerSpinner, nameStrArr);
+				loadingBar.setVisibility(View.INVISIBLE);
+			}
+			
+			@Override
+			public void onNothingSelected(AdapterView arg0) {
+			}
+		});
+		
 		playerSpinner
 				.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
 					@Override
@@ -333,7 +384,7 @@ public class TherapyMainActivity extends Activity {
 						canvasView.updatePointList(targetRecord.points);
 						timeBar.setMax(targetRecord.points.size());
 						((TextView)findViewById(R.id.progressText)).setText(String.format("0/%d", timeBar.getMax()));
-						((TextView)findViewById(R.id.totalTimeText)).setText(String.format("Total time: %.3f sec", targetRecord.time/1000.f));
+						((TextView)findViewById(R.id.totalTimeText)).setText(String.format("Total time: %.3f sec", (targetRecord.period)/1000.f));
 						canvasView.invalidate();
 					}
 					
@@ -410,10 +461,10 @@ public class TherapyMainActivity extends Activity {
 
 	public static String[] getAllRecords(ArrayList<AnalysisMessage> targetList) {
 		ArrayList<String> recordList = new ArrayList<String>();
-
+		
 		for (AnalysisMessage msg : targetList) {
-			if (!recordList.contains(msg.date))
-				recordList.add(msg.date);
+			if (!recordList.contains(msg.curTime))
+				recordList.add(msg.curTime);
 		}
 		return (String[]) recordList.toArray(new String[recordList.size()]);
 	}
@@ -438,24 +489,24 @@ public class TherapyMainActivity extends Activity {
 	
 	public static AnalysisMessage getTargetRecord(String targetName, ArrayList<AnalysisMessage> targetList) {
 		for(AnalysisMessage msg : targetList) {
-			if(msg.date.equals(targetName))
+			if(msg.curTime.equals(targetName))
 				return msg;
 		}
 		return null;
 	}
 
-	public static ArrayList<AnalysisMessage> readMessagesArray(JsonReader reader)
+	public static ArrayList<AnalysisMessage> readMessagesArray(JsonReader reader, String targetDate)
 			throws IOException {
 		ArrayList<AnalysisMessage> messages = new ArrayList<AnalysisMessage>();
 
 		reader.beginArray();
 		while (reader.hasNext()) 
-			messages.add(readMessage(reader));
+			messages.add(readMessage(reader, targetDate));
 		reader.endArray();
 		return messages;
 	}
 
-	public static AnalysisMessage readMessage(JsonReader reader) throws IOException {
+	public static AnalysisMessage readMessage(JsonReader reader, String targetDate) throws IOException {
 		AnalysisMessage msg = new AnalysisMessage();
 
 		reader.beginObject();
@@ -465,10 +516,10 @@ public class TherapyMainActivity extends Activity {
 				msg.userName = reader.nextString();
 			else if (name.equals("stage"))
 				msg.stage = reader.nextString();
-			else if (name.equals("date"))
-				msg.date = reader.nextString();
-			else if (name.equals("time"))
-				msg.time = reader.nextInt();
+			else if (name.equals("curTime"))
+				msg.curTime = reader.nextString();
+			else if (name.equals("period"))
+				msg.period = reader.nextLong();
 			else if (name.equals("point")) {
 				reader.beginArray();
 				while (reader.hasNext()) {
@@ -504,8 +555,8 @@ public class TherapyMainActivity extends Activity {
 class AnalysisMessage {
 	public String userName = null;
 	public String stage = null;
-	public String date = null;
-	public int time = -1;
+	public String curTime = null;
+	public long period = -1;
 	public ArrayList<RecordEntry> points = new ArrayList<RecordEntry>();
 
 	public AnalysisMessage() {
@@ -656,9 +707,15 @@ class StageBackgroundInfo {
 
 
 class RecordLoader extends AsyncTask<Void, Integer, Boolean> {
+	private String date;
+	
+	public RecordLoader(String targetDate) {
+		date = targetDate;
+	}
+	
 	@Override
 	protected Boolean doInBackground(Void... arg0) {
-		TherapyMainActivity.resultList = TherapyMainActivity.loadRecord();
+		TherapyMainActivity.resultList = TherapyMainActivity.loadRecord(date);
 		TherapyMainActivity.userInfoList = MainActivity.loadRecord();
 		return true;
 	}

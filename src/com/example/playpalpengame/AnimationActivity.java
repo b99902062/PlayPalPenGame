@@ -78,14 +78,16 @@ public class AnimationActivity extends Activity {
 		if(isWin)
 			mWinCount++;
 		
-		if(isWin && mBadges != 0x111111 && ((gameIndex == 1 && newScore >= mHighScore * 1.1) || (gameIndex != 1 && newScore >= mHighScore * 1.05))) {
+		if(isWin && mBadges != 0x111111 && ((gameIndex == 1 && newScore >= mHighScore * 1.1) || (gameIndex == 2 && newScore >= mHighScore * 1.05) ||(gameIndex >= 3 && newScore >= mHighScore * 1.02))) {
 			if(mHighScore == 0)
 				mHighScore = newScore;
 			else {
 				if(gameIndex == 1)
 					mHighScore = (int) (mHighScore * 1.1);
-				else
+				else if(gameIndex == 2)
 					mHighScore = (int) (mHighScore * 1.05);
+				else
+					mHighScore = (int) (mHighScore * 1.02);
 			}
 			for(int j=0; j<6; j++) {
 				if(((mBadges >> j) & 0x1) == 0) {
@@ -119,7 +121,7 @@ public class AnimationActivity extends Activity {
 		}
 		else if(isWin) {
 			if(mBadges != 0x111111)
-				mHighScore -= 5;
+				mHighScore -= 10;
 			updateRecordJson();
 			setEndAnim();
 		}

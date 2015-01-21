@@ -81,6 +81,8 @@ public class PenRecorder{
 	private static View recorderView;
 	private static RecordTimerTask recorderTask;
 	protected static ArrayList<RecordEntry> posArray;
+	protected static long startTime;
+	protected static long endTime;
 	private static Timer timer;
 	
 	private static String playerName;
@@ -107,6 +109,7 @@ public class PenRecorder{
 	}
 	//call from utility when down
 	protected static void startRecorder(DrawableRelativeLayout drLayout){
+		startTime = System.currentTimeMillis();
 		timer = new Timer( );
 		recorderTask = new RecordTimerTask(drLayout);
 		timer.schedule(recorderTask, 0, 10);
@@ -115,6 +118,7 @@ public class PenRecorder{
 	
 	//call from utility when up
 	protected static void stopRecorder(){
+		endTime = System.currentTimeMillis();
 		if(timer != null) {
 			timer.cancel();
 			timer = null;
@@ -124,13 +128,15 @@ public class PenRecorder{
 	//called after the game finished
 	protected static void outputJSON(){
 		stopRecorder();
-		drLayout.clearEntries();
+		drLayout.clearEntries();		
 		Boolean isTheFirstRecord = false;
 		String jsonString = "";
-		String filePath = android.os.Environment.getExternalStorageDirectory()+ "/Android/data/com.example.playpalgame/analysis.json";
+		SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
+		String date = df.format(Calendar.getInstance().getTime());
+		String filePath = android.os.Environment.getExternalStorageDirectory()+ "/Android/data/com.example.playpalgame/"+ date +".json";
+			
 		FileOutputStream fout = null;
 		RandomAccessFile analysisFile;
-		
 		
 		try {
 			File file = new File(filePath);
@@ -147,14 +153,14 @@ public class PenRecorder{
 			analysisFile = new RandomAccessFile(filePath, "rw");
 			analysisFile.seek(analysisFile.length()-1); 
 				 
+			SimpleDateFormat timeDF = new SimpleDateFormat("HH:mm:ss");
+			String curTime = timeDF.format(Calendar.getInstance().getTime());
+			
 			JSONObject curRecord = new JSONObject();
 			curRecord.put("name",playerName);
 			curRecord.put("stage",stageName);
-			 
-			SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
-			String date = df.format(Calendar.getInstance().getTime());
-			curRecord.put("date",date);
-			curRecord.put("time",(int)passedTime);
+			curRecord.put("curTime",curTime);
+			curRecord.put("period", endTime-startTime);
 			 
 			JSONArray pointJSONArray = new JSONArray();
 			 
