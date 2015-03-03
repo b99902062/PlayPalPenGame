@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF" >
 	
+    
     <view
         class="com.example.playpalpengame.DrawableRelativeLayout"
         android:id="@+id/Game3RelativeLayout"
@@ -30,7 +31,7 @@
             android:id="@+id/timeReminder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="850dp"
+            android:layout_marginLeft="880dp"
             android:layout_marginTop="25dp"
             android:src="@drawable/time_reminder_1"
             android:visibility="invisible" />
@@ -78,9 +79,7 @@
             android:layout_marginTop="190dp"
             android:background="@drawable/game3_oven2"
             android:visibility="invisible"/>
-        
-        
-        
+          
         <ImageView
             android:id="@+id/Game3_dough"
             android:layout_width="wrap_content"
@@ -96,16 +95,16 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="190dp"
-            android:src="@drawable/game3_cake1"
+            android:src="@drawable/game3_cake0"
             android:visibility="invisible"/>
-         
-         <ImageView 
-            android:id="@+id/Game3_cakeDottedLine"
+        
+        <ImageView 
+            android:id="@+id/Game3_cake2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="190dp"
-            android:src="@drawable/game3_cream_line"
+            android:src="@drawable/game3_cake_finished_slice"
             android:visibility="invisible"/>
          
          <ImageView
@@ -126,7 +125,6 @@
             android:src="@drawable/game3_cake_strawberries"
             android:visibility="invisible"/>
          
-		
          <ImageView
             android:id="@+id/Game3_cream"
             android:layout_width="wrap_content"
@@ -134,28 +132,13 @@
             android:src="@drawable/game3_cream"
             android:visibility="invisible"/>
          
-         <ImageView 
-            android:id="@+id/Game3_helicalView"
+         <ImageView
+            android:id="@+id/Game3_cream2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="190dp"
-            android:src="@drawable/helical_2"/>
-       
-        <ImageView
-        	android:id="@+id/Game3_cakeCreamHintView"
-        	android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="190dp"
-            android:src="@drawable/game3_cake_cream_hint"
+            android:src="@drawable/game3_cream2"
             android:visibility="invisible"/>
-        
-        <ImageView
-            android:id="@+id/Game3_teachHand"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="invisible" />
+         
         	
         <TextView
             android:id="@+id/testProgressCount"
@@ -170,7 +153,7 @@
             android:id="@+id/progressBottom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="350dp"
+            android:layout_marginLeft="380dp"
             android:layout_marginTop="40dp"
             android:src="@drawable/progress_bottom" />
 
@@ -179,7 +162,7 @@
              style="?android:attr/progressBarStyleHorizontal"
              android:layout_width="414dip"
              android:layout_height="12dip"
-             android:layout_marginLeft="373dp"
+             android:layout_marginLeft="403dp"
              android:layout_marginTop="61dp"
              android:max="10"
              android:maxWidth="410dp"
@@ -192,7 +175,7 @@
             android:id="@+id/progressMark"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="374dp"
+            android:layout_marginLeft="404dp"
             android:layout_marginTop="61dp"
             android:src="@drawable/progress_mark"
             android:visibility="visible" />    
@@ -201,18 +184,57 @@
             android:id="@+id/progressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="350dp"
+            android:layout_marginLeft="380dp"
             android:layout_marginTop="40dp"
             android:src="@drawable/progress" />
         
-        <ImageView android:id="@+id/Game3_beat" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/game3_eggbeat" android:visibility="invisible" />
-            
+        <ImageView 
+            android:id="@+id/Game3_beat" 
+            android:layout_width="wrap_content" 
+            android:layout_height="wrap_content" 
+            android:src="@drawable/game3_eggbeat" 
+            android:visibility="invisible" />
     </view>
     
+   
+    <ImageView
+            android:id="@+id/Game3_teachHand"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible" />
+    
+    <ImageView 
+	        android:id="@+id/Game3_helicalView"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginLeft="390dp"
+	        android:layout_marginTop="190dp"
+	        android:src="@drawable/helical_2"/>
+     
+    
+    <ImageView 
+            android:id="@+id/Game3_cakeDottedLine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="190dp"
+            android:src="@drawable/game3_cream_line"
+            android:visibility="invisible"/>
+    
+	<ImageView
+        	android:id="@+id/Game3_cakeCreamHintView"
+        	android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="190dp"
+            android:src="@drawable/game3_cake_cream_hint"
+            android:visibility="invisible"/>
+     
     <view
        		class="com.example.playpalpengame.DrawView"
         	android:id="@+id/drawLineView"
         	android:layout_width="match_parent"
             android:layout_height="match_parent" />
-
-</FrameLayout>
+    
+    
+</RelativeLayout>

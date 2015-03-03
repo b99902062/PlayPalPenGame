@@ -18,6 +18,7 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.TranslateAnimation;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -46,7 +47,6 @@ public class Practice4Activity extends Activity {
 	protected boolean canTouchOven = false;
 	protected boolean butterSqueezing = false;
 	
-	
 	protected final int DOUGH_TIME  = 600;
 	protected final int COOKIE_TIME = 600;
 	protected final int CREAM_TIME  = 1800;
@@ -61,7 +61,7 @@ public class Practice4Activity extends Activity {
 	
 	protected final int DOUGH_PROGRESS_END  = 1;
 	protected final int COOKIE_PROGRESS_END = DOUGH_PROGRESS_END + 1;
-	protected final int CREAM_PROGRESS_END  = COOKIE_PROGRESS_END + 8;	
+	protected final int CREAM_PROGRESS_END  = COOKIE_PROGRESS_END + 1;	
 	
 	protected final int COOKIE_NUM = 8;
 	protected final int DOUGH_NUM = 5;
@@ -161,23 +161,23 @@ public class Practice4Activity extends Activity {
 		R.drawable.game4_cream6			
 	};
 	
-	//TO BE FIXED
 	protected Point[][] cookieCreamOffsetArray = new Point[][]{
 			//T
-			{new Point(0,-150),  new Point(-25,-100), new Point(25,-100), new Point(-50,-50), new Point(0,-50),
-			 new Point(50,-50),  new Point(-75,0),    new Point(-25,0),   new Point(25,0),    new Point(75,0),
-			 new Point(-100,50),new Point(-50,50),  new Point(0,50),   new Point(50,50),  new Point(100,50), new Point(100,50)},
+			{new Point(0,-150),  
+			 new Point(-25,-100),new Point(25,-100), 
+			 new Point(-50,-50), new Point(0,-50), new Point(50,-50),  
+			 new Point(-75,50),	 new Point(-25,50),   new Point(25,50),	new Point(75,50),
+			 new Point(-100,150),new Point(-50,150),  new Point(0,150), new Point(50,150),  new Point(100,150), new Point(100,150)},
 			//S
-			 {new Point(-150,-150),new Point(-50,-150),new Point(50,-150),new Point(150,-150),
-			  new Point(-150,-50), new Point(-50,-50), new Point(50,-50), new Point(150,-50),
-			  new Point(-150,50),  new Point(-50,50),  new Point(50,50),  new Point(150,50),
-			  new Point(-150,150), new Point(-50,150), new Point(50,150), new Point(150,150)}, 
+			 {new Point(-120,-120),new Point(-40,-120),new Point(40,-120),new Point(120,-120),
+			  new Point(-120,-40), new Point(-40,-40), new Point(40,-40), new Point(120,-40),
+			  new Point(-120,40),  new Point(-40,40),  new Point(40,40),  new Point(120,40),
+			  new Point(-120,120), new Point(-40,120), new Point(40,120), new Point(120,120)}, 
 			//C
-			{new Point(-150,-150),new Point(-50,-150),new Point(50,-150),new Point(150,-150),
-		     new Point(-150,-50), new Point(-50,-50), new Point(50,-50), new Point(150,-50),
-		     new Point(-150,50),  new Point(-50,50),  new Point(50,50),  new Point(150,50),
-		     new Point(-150,150), new Point(-50,150), new Point(50,150), new Point(150,150)}};
-	
+			{new Point(-120,-120),new Point(-40,-120),new Point(40,-120),new Point(120,-120),
+		     new Point(-120,-40), new Point(-40,-40), new Point(40,-40), new Point(120,-40),
+		     new Point(-120,40),  new Point(-40,40),  new Point(40,40),  new Point(120,40),
+		     new Point(-120,120), new Point(-40,120), new Point(40,120), new Point(120,120)}};
 
 	
 	@Override
@@ -322,8 +322,8 @@ public class Practice4Activity extends Activity {
 	private void setTeachHandLinear(int bX, int bY, int xOffset, int yOffset) {
 		teachHandView.setVisibility(View.VISIBLE);
 		
-		LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT,
-				LayoutParams.WRAP_CONTENT);
+		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
+				FrameLayout.LayoutParams.WRAP_CONTENT);
 		params.setMargins(bX, bY, 0, 0);
 		teachHandView.setLayoutParams(params);
 		
@@ -566,7 +566,7 @@ public class Practice4Activity extends Activity {
 					PlayPalUtility.playTeachVoice(gameContext, 405, 406);
 					
 					teachHandView.setVisibility(ImageView.VISIBLE);
-					LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+					FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 					params.setMargins(lonelyCookie.center.x-TEACH_HAND_BTN_OFFSET_X, lonelyCookie.center.y-TEACH_HAND_BTN_OFFSET_Y, 0, 0);
 					teachHandView.setLayoutParams(params);
 					teachHandView.bringToFront();
@@ -609,10 +609,7 @@ public class Practice4Activity extends Activity {
 	protected Integer handleCookieCreamAction(View view){    
 		curProgress++;
 		progressCountText.setText("ProgressCount: " + new String("" + curProgress));
-		
-		int idx = PlayPalUtility.getLastTriggerSetIndex();
-		PlayPalUtility.cancelGestureSet(idx);
-		
+
 		
 		if(curProgress >= CREAM_PROGRESS_END){
 			score += PlayPalUtility.killTimeBar();
@@ -634,8 +631,11 @@ public class Practice4Activity extends Activity {
 			Timer timer = new Timer(true);
 			timer.schedule(new WaitTimerTask(this, newAct), 5000);
 			
-			return 0;
 		}
+		
+		int idx = PlayPalUtility.getLastTriggerSetIndex();
+		PlayPalUtility.cancelGestureSet(idx);
+		
 		return 1;
 	}
 	
@@ -650,7 +650,7 @@ public class Practice4Activity extends Activity {
 	private void setTeachHandCircular(int bX, int bY, int range) {
 		teachHandView.setVisibility(View.VISIBLE);
 		
-		LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 		params.setMargins(bX, bY, 0, 0);
 		teachHandView.setLayoutParams(params);
 		

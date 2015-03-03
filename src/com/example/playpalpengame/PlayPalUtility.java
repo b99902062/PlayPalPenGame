@@ -70,6 +70,7 @@ public class PlayPalUtility {
 	protected final static int FROM_CUR_TO_OUTRIGHT = 2;
 	protected final static int FROM_OUTRIGHT_TO_CUR = 3;
 	protected final static int FROM_CUR_TO_OUTLEFT = 4;
+	protected final static int FROM_CUR_TO_LITTLERIGHT = 5;
 	
 	protected final static int TIME_MODE = 1;
 	protected final static int PROGRESS_MODE = 2;
@@ -107,6 +108,8 @@ public class PlayPalUtility {
 	private static ImageView progressBack;
 	
 	private static boolean isPressing;
+	private static boolean isFinished;
+	private static boolean isLastOne;
 	
 	protected static ArrayList<GestureSet> gestureSetList = new ArrayList<GestureSet>();
 	protected static ArrayList<StrokeSet> strokeSetList = new ArrayList<StrokeSet>();
@@ -174,6 +177,14 @@ public class PlayPalUtility {
 					(float) 0.0, Animation.RELATIVE_TO_PARENT, (float) -1.0,
 					Animation.RELATIVE_TO_SELF, (float) 0.0,
 					Animation.RELATIVE_TO_SELF, (float) 0.0);
+		else if (translateType == FROM_CUR_TO_LITTLERIGHT){
+			newAnim = new TranslateAnimation(
+					Animation.RELATIVE_TO_SELF, (float) 0.0, 
+					Animation.RELATIVE_TO_SELF, (float) 0.1,
+					Animation.RELATIVE_TO_SELF, (float) 0.0,
+					Animation.RELATIVE_TO_SELF, (float) 0.0);
+			newAnim.setFillAfter(true);
+		}
 		else
 			newAnim = new TranslateAnimation(Animation.RELATIVE_TO_SELF,
 					(float) 0.0, Animation.RELATIVE_TO_SELF, (float) 0.0,
@@ -245,15 +256,21 @@ public class PlayPalUtility {
 		targetView = null;
 	}
 	
-	protected static void unregisterHoverLineGesture(View view){
+	protected static void unregisterHoverGesture(View view){
 		mSPenEventLibrary.setSPenHoverListener(null, null);
 		targetView = null;
+	}
+	
+	protected static void setLastSingleHoverPoint(boolean val){
+		isLastOne = val;
 	}
 		
 	protected static void registerSingleHoverPoint(final boolean isHovering, View view, Context context, final Callable<Integer> func) {
 		targetView = view;
 		targetContext = context;
-		
+		isLastOne = false;
+		isFinished = false;
+
 		mSPenEventLibrary.setSPenHoverListener(targetView, new SPenHoverListener(){
 			Point startPoint;
 			ImageView curButterView;
@@ -261,6 +278,16 @@ public class PlayPalUtility {
 			@Override
 			public void onHoverButtonUp(View v, MotionEvent event) {
 				isPressing = false;
+							
+				if(isFinished){
+					isFinished = false;
+					try {
+						func.call();
+					} catch(Exception ex) {
+						ex.printStackTrace();
+					}
+				}
+				
 				for(int setIndex=0; setIndex<gestureSetList.size(); setIndex++) {
 					GestureSet curSet = gestureSetList.get(setIndex);
 					ArrayList<Integer> pointPassedList = curSet.passedList;
@@ -268,7 +295,7 @@ public class PlayPalUtility {
 						continue;
 					
 					//testing the first point 
-					if(isWithinBox(setIndex, 0, new Point((int)event.getX(), (int)event.getY()))){
+					if(isWithinBox(setIndex, 0, new Point((int)event.getX(), (int)event.getY())) ){
 						curSet.isValid = false;
 						lastTriggerSetIndex = setIndex;
 						try {
@@ -283,7 +310,10 @@ public class PlayPalUtility {
 
 			@Override
 			public boolean onHover(View arg0, MotionEvent event) {
-				if(isHovering && isPressing){
+				if(!isLineGestureOn)
+					return false;
+				
+				if(isPressing && isHovering){
 					for(int setIndex=0; setIndex<gestureSetList.size(); setIndex++) {
 						GestureSet curSet = gestureSetList.get(setIndex);
 						if(!curSet.isValid)
@@ -291,12 +321,18 @@ public class PlayPalUtility {
 						
 						//testing the first point 
 						if(isWithinBox(setIndex, 0, new Point((int)event.getX(), (int)event.getY()))){
-							curSet.isValid = false;
-							lastTriggerSetIndex = setIndex;
-							try {
-								func.call();
-							} catch(Exception ex) {
-								ex.printStackTrace();
+							if(isLastOne){
+								isFinished = true;
+								lastTriggerSetIndex = setIndex;
+							}
+							else{
+								curSet.isValid = false;
+								lastTriggerSetIndex = setIndex;
+								try {
+									func.call();
+								} catch(Exception ex) {
+									ex.printStackTrace();
+								}
 							}
 						}
 					}

@@ -1,6 +1,7 @@
 package com.example.playpalpengame;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Callable;
@@ -18,6 +19,7 @@ import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationSet;
 import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -80,7 +82,8 @@ public class Practice3Activity extends Activity {
 	protected final int MIX_PROGRESS_START = 1;
 	protected final int MIX_PROGRESS_HALF  = 2;
 	protected final int MIX_PROGRESS_END = 3;
-	protected final int CREAM_PROGRESS_END = 5;
+	protected final int DOTTED_LINE_PROGRESS_END = 5;
+	protected final int CREAM_PROGRESS_END = 6;
 	
 	protected final int MIX_TIME   = 600;
 	protected final int CREAM_TIME = 600;
@@ -102,15 +105,15 @@ public class Practice3Activity extends Activity {
 	
 	ImageView mixView, mixView2;
 	ImageView ovenView, ovenView2;
-	ImageView cakeView;
+	ImageView cakeView, cakeView2;
 	ImageView cakeDottedLineView;
-	ImageView cakeCreamView;
-	ImageView cakeStrawberryView;
+	ImageView cakeStrawberryView, cakeStrawberryView2;
 	ImageView eggbeatView;
 	ImageView helicalView;
 	ImageView currentFoodView;
 	ImageView cakeCreamHintView;
 	ImageView teachHandView;
+	
 	
 	FramesSequenceAnimation pressAnim;
 	FramesSequenceAnimation btnAnim;
@@ -120,6 +123,7 @@ public class Practice3Activity extends Activity {
 	protected DrawableRelativeLayout game3RelativeLayout;
 	protected Context gameContext;
 	private SPenEventLibrary mSPenEventLibrary;
+	private List<ImageView> creamList = new ArrayList<ImageView>();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
@@ -159,10 +163,12 @@ public class Practice3Activity extends Activity {
 		ovenView = (ImageView)findViewById(R.id.Game3_oven);
 		ovenView2 = (ImageView)findViewById(R.id.Game3_oven2);
 		cakeView = (ImageView)findViewById(R.id.Game3_cake);
+		cakeView2 = (ImageView)findViewById(R.id.Game3_cake2);
 		cakeDottedLineView = (ImageView)findViewById(R.id.Game3_cakeDottedLine);
 		eggbeatView = (ImageView)findViewById(R.id.Game3_beat);
-		cakeCreamView = (ImageView)findViewById(R.id.Game3_cakeCream);
+		
 		cakeStrawberryView = (ImageView)findViewById(R.id.Game3_cakeStrawberry);
+		
 		helicalView = (ImageView)findViewById(R.id.Game3_helicalView);
 		cakeCreamHintView = (ImageView)findViewById(R.id.Game3_cakeCreamHintView);
 		teachHandView = (ImageView)findViewById(R.id.Game3_teachHand);
@@ -218,11 +224,12 @@ public class Practice3Activity extends Activity {
 				PlayPalUtility.curEntry = new RecordEntry(
 						new Point((int)event.getRawX(), (int)event.getRawY()), RecordEntry.STATE_HOVER_BTN_MOVE);
 				
-				if(curProgress < CREAM_PROGRESS_END-1){
+				if(curProgress < DOTTED_LINE_PROGRESS_END){
 					if(ratio == INIT_CREAM_RATIO || curButterView == null){
 						curButterView = new ImageView(gameContext);
 						curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game3_cream));
 						game3RelativeLayout.addView(curButterView);
+						creamList.add(curButterView);
 					}
 					
 					if(ratio < CREAM_MAX_RATIO)
@@ -252,6 +259,7 @@ public class Practice3Activity extends Activity {
 						curButterView = new ImageView(gameContext);
 						curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game3_cream2));
 						game3RelativeLayout.addView(curButterView);
+						creamList.add(curButterView);
 					}
 					if(ratio < CREAM_MAX_RATIO)
 						ratio++;
@@ -271,7 +279,6 @@ public class Practice3Activity extends Activity {
 				PlayPalUtility.curEntry = new RecordEntry(
 						new Point((int)event.getRawX(), (int)event.getRawY()), RecordEntry.STATE_HOVER_BTN_START);
 				
-				Log.d("Penpal","pressing");
 				butterSqueezing = true;				
 				
 				ratio = INIT_CREAM_RATIO;
@@ -289,13 +296,11 @@ public class Practice3Activity extends Activity {
 				PlayPalUtility.curEntry = new RecordEntry(
 						new Point((int)event.getRawX(), (int)event.getRawY()), RecordEntry.STATE_HOVER_BTN_END);
 				
-				Log.d("Penpal","releasing");
 				butterSqueezing = false;
-				
 				ratio = 0;
 				curButterView = null;
 			}
-			
+			 
 		});
 
 		PlayPalUtility.setDebugMode(false);
@@ -489,35 +494,40 @@ public class Practice3Activity extends Activity {
 	protected Integer handleCakeAction(View view){
 		curProgress++;
 		progressCountText.setText("ProgressCount: " + new String("" + curProgress));
-		teachHandView.clearAnimation();
 		
-		PlayPalUtility.playTeachVoice(this, 308);
+		int idx = PlayPalUtility.getLastTriggerSetIndex();
+		PlayPalUtility.cancelGestureSet(idx);
 		
-		btnAnim.start();
+		if(curProgress == DOTTED_LINE_PROGRESS_END-1){
+			PlayPalUtility.setLastSingleHoverPoint(true);
+		}
 		
-		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-    	params.setMargins(creamPosArray[4].x-TEACH_HAND_BTN_OFFSET_X, creamPosArray[4].y-TEACH_HAND_BTN_OFFSET_Y, 0, 0);
-    	teachHandView.setLayoutParams(params);
-       
-		cakeCreamHintView.setVisibility(ImageView.VISIBLE);
-		cakeCreamHintView.bringToFront();
-		game3RelativeLayout.invalidate();
-		PlayPalUtility.clearGestureSets();
-		PlayPalUtility.unregisterHoverLineGesture(game3RelativeLayout);
-		PlayPalUtility.clearDrawView();
-		
-		PlayPalUtility.registerSingleHoverPoint(false,game3RelativeLayout, this, new Callable<Integer>() {
-			@Override
-			public Integer call() throws Exception {
-				return handleCream(cakeCreamView);
-			}
-		});
-		
-		PlayPalUtility.setLineGesture(true);
-		PlayPalUtility.initialLineGestureParams(false, false, boxSize/2, creamPosArray[4]);
-		
-	
-		return 1;
+		else if(curProgress == DOTTED_LINE_PROGRESS_END){
+			teachHandView.clearAnimation();
+			PlayPalUtility.playTeachVoice(this, 308);
+			btnAnim.start();
+			
+			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+	    	params.setMargins(creamPosArray[4].x-TEACH_HAND_BTN_OFFSET_X, creamPosArray[4].y-TEACH_HAND_BTN_OFFSET_Y, 0, 0);
+	    	teachHandView.setLayoutParams(params);
+	       
+	    	cakeDottedLineView.setVisibility(ImageView.GONE);
+			cakeCreamHintView.setVisibility(ImageView.VISIBLE);
+			PlayPalUtility.clearGestureSets();
+			PlayPalUtility.unregisterHoverGesture(game3RelativeLayout);
+			PlayPalUtility.clearDrawView();
+			
+			PlayPalUtility.registerSingleHoverPoint(false,game3RelativeLayout, this, new Callable<Integer>() {
+				@Override
+				public Integer call() throws Exception {
+					return handleCream(cakeCreamHintView);
+				}
+			});
+			PlayPalUtility.setLastSingleHoverPoint(true);
+			PlayPalUtility.setLineGesture(true);
+			PlayPalUtility.initialLineGestureParams(false, false, boxSize, creamPosArray[4]);
+		}
+		return 0;
 	}
 	
 	protected Integer handleCream(View view){
@@ -529,6 +539,13 @@ public class Practice3Activity extends Activity {
 		PlayPalUtility.cancelGestureSet(idx);
 		
 		if(curProgress == CREAM_PROGRESS_END){
+			cakeDottedLineView.setVisibility(ImageView.GONE);
+			cakeCreamHintView.setVisibility(ImageView.GONE);
+			for(ImageView cream : creamList)
+				game3RelativeLayout.removeView(cream);
+			cakeView.setImageResource(R.drawable.game3_cake_finished);
+			
+			
 			
 			mSPenEventLibrary.setSPenHoverListener(cakeView,null);
 			teachHandView.clearAnimation();
@@ -536,35 +553,37 @@ public class Practice3Activity extends Activity {
 			
 			PlayPalUtility.playTeachVoice(this, 309, 310);
 			
-			LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 			params.setMargins(1560-TEACH_HAND_DOWN_OFFSET_X, 600-TEACH_HAND_DOWN_OFFSET_Y, 0, 0);
 			teachHandView.setLayoutParams(params);
 			
 			teachHandView.setVisibility(ImageView.VISIBLE);
+			setTeachHandLinearV(1560-TEACH_HAND_DOWN_OFFSET_X, 600-TEACH_HAND_DOWN_OFFSET_Y, centralPoint.x-1560, centralPoint.y-600);
 			
-			//pressAnim = AnimationsContainer.getInstance().createGame3TeachHandAnim(teachHandView);
-			//pressAnim.start();
-			
+			/*
+			pressAnim = AnimationsContainer.getInstance().createGame3TeachHandAnim(teachHandView);
+			pressAnim.start();
 			teachHandView.setOnTouchListener(new View.OnTouchListener() {
 				@Override
 				public boolean onTouch(View v, MotionEvent event){
 					if(event.getAction() == MotionEvent.ACTION_DOWN) {
-						setTeachHandLinear(1560-TEACH_HAND_DOWN_OFFSET_X, 600-TEACH_HAND_DOWN_OFFSET_Y, centralPoint.x-1560, centralPoint.y-600);
+						
 						v.setOnTouchListener(null);
 					}
 					return false;
 				}
 			});
+			*/
 			
+			cakeCreamHintView.setVisibility(ImageView.GONE);
+			cakeView.setImageResource(R.drawable.game3_cake_finished_cut);
 			
-			cakeDottedLineView.setVisibility(ImageView.INVISIBLE);
-			cakeStrawberryView.setVisibility(ImageView.VISIBLE);
-			cakeStrawberryView.bringToFront();
-			game3RelativeLayout.invalidate();
+			//cakeStrawberryView.setVisibility(ImageView.VISIBLE);
+			//cakeStrawberryView.bringToFront();
 			PlayPalUtility.setAlphaAnimation(cakeStrawberryView,true);
 			
 			PlayPalUtility.clearGestureSets();
-			PlayPalUtility.unregisterHoverLineGesture(game3RelativeLayout);
+			PlayPalUtility.unregisterHoverGesture(game3RelativeLayout);
 			
 			PlayPalUtility.registerLineGesture(game3RelativeLayout, this, new Callable<Integer>() {
 				public Integer call() {
@@ -573,8 +592,8 @@ public class Practice3Activity extends Activity {
 			});
 			
 			PlayPalUtility.clearDrawView();
-			PlayPalUtility.initialLineGestureParams(false, false, boxSize, new Point(1560,600) ,centralPoint);
-			PlayPalUtility.setStraightStroke(new Point(1560,600) ,centralPoint);
+			PlayPalUtility.initialLineGestureParams(false, false, boxSize, new Point(1560,600), centralPoint, new Point(1620,1100));
+			PlayPalUtility.setStraightStroke(new Point(1560,600) ,centralPoint,  new Point(1620,1100) );
 			
 			eggbeatView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game1_knife));
 		}
@@ -582,6 +601,7 @@ public class Practice3Activity extends Activity {
 	}	
 	
 	protected Integer handleCutting(View view) {
+		
 		//finishing game3
 		//score += PlayPalUtility.killTimeBar();
 		score = 0;
@@ -591,7 +611,6 @@ public class Practice3Activity extends Activity {
 		PlayPalUtility.clearDrawView();
 		
 		PlayPalUtility.playTeachVoice(this, 311);
-		
 		BackgroundMusicHandler.setCanRecycle(false);
     	
     	Intent newAct = new Intent();
@@ -602,15 +621,92 @@ public class Practice3Activity extends Activity {
 		
 		Timer timer = new Timer(true);
 		timer.schedule(new WaitTimerTask(this, newAct), 5000);
-				
+		
+		Animation cakeAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_LITTLERIGHT);
+		cakeAnim.setAnimationListener(new AnimationListener() {
+			@Override
+			public void onAnimationEnd(Animation anim) {
+				//finish game3
+				Intent newAct = new Intent();
+				newAct.setClass(Practice3Activity.this, AnimationActivity.class);
+				Bundle bundle = new Bundle();
+				bundle.putInt("GameIndex", 3);
+				bundle.putBoolean("isWin", true);
+				bundle.putString("userName", userName);
+				bundle.putInt("GameBadges", mBadges);
+				bundle.putInt("GameHighScore", mHighScore);
+				bundle.putInt("GameWinCount", mWinCount);
+				bundle.putInt("NewScore", score);
+		        newAct.putExtras(bundle);
+				startActivityForResult(newAct, 0);
+				Practice3Activity.this.finish();
+			}
+
+			@Override
+			public void onAnimationRepeat(Animation animation) {
+			}
+
+			@Override
+			public void onAnimationStart(Animation animation) {
+			}
+		});
+		cakeView.setImageResource(R.drawable.game3_cake_finished_cut);
+		cakeView2.setVisibility(ImageView.VISIBLE);
+		cakeView2.setAnimation(cakeAnim);
+		cakeAnim.startNow();
 		return 1;
 	}
 	
 	
+	private void setTeachHandLinearV(final int bX, final int bY, final int xOffset, final int yOffset){
+		teachHandView.setVisibility(View.VISIBLE);
+		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
+		params.setMargins(bX, bY, 0, 0);
+		teachHandView.setLayoutParams(params);
+		
+		Animation am1 = new TranslateAnimation(0, xOffset,  0, yOffset);
+		Animation am2 = new TranslateAnimation(0, -xOffset, 0, yOffset);
+		
+		am1.setDuration(1000);
+		am1.setStartOffset(0);
+		am1.setFillAfter(true);
+		
+		am2.setDuration(1000);
+		am2.setStartOffset(1000);
+		am2.setFillAfter(false);
+		am2.setAnimationListener(new AnimationListener(){
+			@Override
+			  public void onAnimationEnd(Animation animation) {
+                setTeachHandLinearV(bX, bY, xOffset, yOffset);
+			}
+
+			@Override
+			public void onAnimationStart(Animation animation) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onAnimationRepeat(Animation animation) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		AnimationSet amset = new AnimationSet(false);
+		amset.addAnimation(am1);
+		amset.addAnimation(am2);
+		amset.setDuration(2000);
+		amset.setRepeatCount(-1);
+		
+		teachHandView.setAnimation(amset);	
+	}
+	
 	private void setTeachHandLinear(int bX, int bY, int xOffset, int yOffset) {
 		teachHandView.setVisibility(View.VISIBLE);
 		
-		LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
+				RelativeLayout.LayoutParams.WRAP_CONTENT);
 		params.setMargins(bX, bY, 0, 0);
 		teachHandView.setLayoutParams(params);
 		
@@ -624,16 +720,16 @@ public class Practice3Activity extends Activity {
 	private void setTeachHandCircular(int bX, int bY, int range) {
 		teachHandView.setVisibility(View.VISIBLE);
 		
-		LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 		params.setMargins(bX, bY, 0, 0);
 		teachHandView.setLayoutParams(params);
 		
 		Animation am = new CircularTranslateAnimation(teachHandView, range);
 		am.setDuration(2000);
 		am.setRepeatCount(-1);
-		am.setFillEnabled(true);
-		am.setFillAfter(true);
-		am.setFillBefore(true);
+		//am.setFillEnabled(true);
+		//am.setFillAfter(true);
+		//am.setFillBefore(true);
 		teachHandView.startAnimation(am);
 	}
 

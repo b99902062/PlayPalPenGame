@@ -42,49 +42,49 @@
             android:id="@+id/timeReminder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="850dp"
+            android:layout_marginLeft="880dp"
             android:layout_marginTop="25dp"
             android:src="@drawable/time_reminder_1"
             android:visibility="invisible" />
 
-         <ImageView
+		<ImageView
             android:id="@+id/progressBottom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="350dp"
+            android:layout_marginLeft="380dp"
             android:layout_marginTop="40dp"
             android:src="@drawable/progress_bottom" />
 
-         <ProgressBar
-             android:id="@+id/progressBarRed"
-             style="?android:attr/progressBarStyleHorizontal"
-             android:layout_width="414dip"
-             android:layout_height="12dip"
-             android:layout_marginLeft="373dp"
-             android:layout_marginTop="61dp"
-             android:max="10"
-             android:maxWidth="410dp"
-             android:minWidth="0dp"
-             android:progress="10"
-             android:progressDrawable="@drawable/progress_bar_states"
-             android:visibility="visible" />
-        
-        <ImageView
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="350dp"
-            android:layout_marginTop="40dp"
-            android:src="@drawable/progress" />
-
-        <ImageView
-            android:id="@+id/progressMark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="374dp"
-            android:layout_marginTop="61dp"
-            android:src="@drawable/progress_mark"
-            android:visibility="visible" />
+		<ProgressBar
+	    	android:id="@+id/progressBarRed"
+		    style="?android:attr/progressBarStyleHorizontal"
+		    android:layout_width="414dip"
+		    android:layout_height="12dip"
+		    android:layout_marginLeft="403dp"
+		    android:layout_marginTop="61dp"
+		    android:max="10"
+		    android:maxWidth="410dp"
+		    android:minWidth="0dp"
+		    android:progress="10"
+		    android:progressDrawable="@drawable/progress_bar_states"
+		    android:visibility="visible" />
+		
+		<ImageView
+		    android:id="@+id/progressMark"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_marginLeft="404dp"
+		    android:layout_marginTop="61dp"
+		    android:src="@drawable/progress_mark"
+		    android:visibility="visible" />    
+		
+		<ImageView
+		    android:id="@+id/progressBar"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_marginLeft="380dp"
+		    android:layout_marginTop="40dp"
+		    android:src="@drawable/progress" />
 
         <ImageView
             android:id="@+id/boardView"
@@ -131,15 +131,7 @@
             android:layout_marginLeft="390dp"
             android:layout_marginTop="190dp"
             android:visibility="invisible" />
-
-        <ImageView
-            android:id="@+id/helicalView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="390dp"
-            android:layout_marginTop="190dp"
-            android:src="@drawable/helical_2"
-            android:visibility="invisible" />
+       
 
         <RelativeLayout
             android:id="@+id/board2RelativeLayout"
@@ -185,6 +177,16 @@
             android:layout_alignParentTop="true"
             android:src="@drawable/teach_hand1_down" 
             android:visibility="invisible" />
+    
+     <ImageView
+            android:id="@+id/helicalView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="390dp"
+            android:layout_marginTop="190dp"
+            android:src="@drawable/helical_2"
+            android:visibility="invisible" />
+    
     
     <view
        		class="com.example.playpalpengame.DrawView"

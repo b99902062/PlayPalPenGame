@@ -84,9 +84,9 @@ public class TherapyMainActivity extends Activity {
 			new SimpleEntry("2-1", new StageBackgroundInfo(R.drawable.game2_basket_1, 1568, 304, 0, 176)),
 			new SimpleEntry("2-2", new StageBackgroundInfo(R.drawable.game2_grill, 304, 304, 304, 176)),
 			new SimpleEntry("3-1", new StageBackgroundInfo(R.drawable.game3_mixbowl, 624, 304, 624, 176)),
-			new SimpleEntry("3-2", new StageBackgroundInfo(R.drawable.game3_cake1, 624, 304, 624, 176)),
-			new SimpleEntry("3-3", new StageBackgroundInfo(R.drawable.game3_cake1, 624, 304, 624, 176)),
-			new SimpleEntry("3-4", new StageBackgroundInfo(R.drawable.game3_cake1, 624, 304, 624, 176)),
+			new SimpleEntry("3-2", new StageBackgroundInfo(R.drawable.game3_cake0, 624, 304, 624, 176)),
+			new SimpleEntry("3-3", new StageBackgroundInfo(R.drawable.game3_cake0, 624, 304, 624, 176)),
+			new SimpleEntry("3-4", new StageBackgroundInfo(R.drawable.game3_cake0, 624, 304, 624, 176)),
 			new SimpleEntry("4-1", new StageBackgroundInfo(R.drawable.game4_plate, 304, 304, 304, 176)),
 			new SimpleEntry("4-2", new StageBackgroundInfo(R.drawable.game4_plate, 304, 304, 304, 176)),
 			new SimpleEntry("4-3", new StageBackgroundInfo(R.drawable.game4_plate, 304, 304, 304, 176))
