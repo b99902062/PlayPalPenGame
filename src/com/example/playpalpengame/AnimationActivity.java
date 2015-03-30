@@ -220,11 +220,24 @@ public class AnimationActivity extends Activity {
 	}
 	
 	private void setEndAnim() {
-		((ImageView)findViewById(R.id.homeBtn)).setVisibility(ImageView.VISIBLE);
-		((ImageView)findViewById(R.id.replayBtn)).setVisibility(ImageView.VISIBLE);
+		//((ImageView)findViewById(R.id.homeBtn)).setVisibility(ImageView.VISIBLE);
+		//((ImageView)findViewById(R.id.replayBtn)).setVisibility(ImageView.VISIBLE);
 		anim = AnimationsContainer.getInstance()
 				.createGameAnim(monsterView, gameIndex, isWin);
+		anim.setStoppedAnimListener(new Callable<Integer>() {			
+			public Integer call() {
+				Intent newAct = new Intent();
+				newAct.setClass(AnimationActivity.this, MainActivity.class);
+				Bundle bundle = new Bundle();
+				bundle.putString("userName", mUserName);
+	            newAct.putExtras(bundle);
+				startActivityForResult(newAct, 0);
+				AnimationActivity.this.finish();
+				return 0;
+			}
+		});
 		anim.start();
+		
 	}
 	
 	protected void setHomeListener(View targetView) {
