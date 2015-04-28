@@ -583,7 +583,6 @@ public class Game4Activity extends Activity {
 		int idx = PlayPalUtility.getLastTriggerSetIndex();
 		PlayPalUtility.cancelGestureSet(idx);
 		cookieArray[idx].view.setVisibility(ImageView.VISIBLE);
-		
 		cookieArray[idx].beCutted();
 		
 		if(curProgress == COOKIE_PROGRESS_END){
@@ -701,7 +700,7 @@ public class Game4Activity extends Activity {
 		protected int type;
 		protected int creamColor;
 		protected int numCream;
-		protected int cookieRadius = 175;
+		protected int cookieRadius = 160;
 		protected int temp_Length  = (int)(cookieRadius/Math.sqrt(2));
 		protected int temp_Length2 = (int)(cookieRadius*Math.sin(Math.PI/3));
 		protected int temp_Length3 = (int)(cookieRadius*Math.cos(Math.PI/3));

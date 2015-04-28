@@ -32,6 +32,7 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.AnimationDrawable;
 
+import com.example.playpalpengame.Game4Activity.Cookie;
 import com.example.playpalpengame.Game4Activity.cookieCuttingHandler;
 import com.samsung.spen.lib.input.SPenEventLibrary;
 import com.samsung.spensdk.applistener.SPenHoverListener;
@@ -60,10 +61,11 @@ public class Practice4Activity extends Activity {
 	
 	
 	protected final int DOUGH_PROGRESS_END  = 1;
-	protected final int COOKIE_PROGRESS_END = DOUGH_PROGRESS_END + 1;
-	protected final int CREAM_PROGRESS_END  = COOKIE_PROGRESS_END + 1;	
+	protected final int COOKIE_PROGRESS_END = 3;
+	protected final int CREAM_PROGRESS_HALF = 11;
+	protected final int CREAM_PROGRESS_END  = 19;	
 	
-	protected final int COOKIE_NUM = 8;
+	protected final int COOKIE_NUM = 2;
 	protected final int DOUGH_NUM = 5;
 	
 	private boolean isFirstCookie = true;
@@ -122,7 +124,8 @@ public class Practice4Activity extends Activity {
 		R.drawable.game4_dough4,			
 	};
 		
-	protected Cookie lonelyCookie;
+	protected Cookie[] cookieArray = new Cookie[2];
+	
 	protected int[] cuttingCookieArray = {
 		R.drawable.game4_cookie1,	
 		R.drawable.game4_cookie2,
@@ -335,88 +338,98 @@ public class Practice4Activity extends Activity {
 	}
 	
 	protected void initCookieView(){
-		teachHandView.clearAnimation();
-
-		lonelyCookie = new Cookie(4, 2, (ImageView)findViewById(cookieViewArray[4]));
-		lonelyCookie.setCreamColor();
-		lonelyCookie.setGesturePoint();
-		lonelyCookie.setGestureDottedLine();
-		lonelyCookie.view.setVisibility(ImageView.INVISIBLE);
-		
-		mSPenEventLibrary.setSPenHoverListener(lonelyCookie.view, new SPenHoverListener(){
-			Point startPoint;
-			ImageView curButterView;
-			int ratio = CREAM_INIT_RATIO;
-			int w = 50;
-			int h = 50;
+		teachHandView.clearAnimation();		
+		Random ran = new Random();
+		for(int i=0; i<cookieArray.length; i++){
+			if(i == 0 )
+				cookieArray[i] = new Cookie(i, 2, (ImageView)findViewById(cookieViewArray[4]));
+			else
+				cookieArray[i] = new Cookie(i, 2, (ImageView)findViewById(cookieViewArray[6]));
 			
-			@Override
-			public boolean onHover(View arg0, MotionEvent event) {
-				if(!butterSqueezing){
+			final Cookie curCookie = cookieArray[i];
+			curCookie.setCreamColor();
+			curCookie.setGestureDottedLine();
+			curCookie.view.setVisibility(ImageView.INVISIBLE);
+			
+			mSPenEventLibrary.setSPenHoverListener(curCookie.view, new SPenHoverListener(){
+				Point startPoint;
+				ImageView curButterView;
+				int ratio = CREAM_INIT_RATIO;
+				int w = 50;
+				int h = 50;
+				
+				@Override
+				public boolean onHover(View arg0, MotionEvent event) {
+					if(!butterSqueezing){
+						return false;
+					}
+					
+					if(startPoint == null)
+						startPoint = new Point((int)event.getX(),(int)event.getY());
+					
+					PlayPalUtility.curEntry = new RecordEntry(new Point((int)event.getRawX(), (int)event.getRawY()), RecordEntry.STATE_HOVER_BTN_MOVE);
+					
+					if(ratio < CREAM_MAX_RATIO)
+						ratio++;
+						
+					Point curPoint = new Point((int)event.getX(),(int)event.getY());
+					float dist = calcDistance(startPoint, curPoint);
+				
+					if(dist>=CREAM_DIST){
+						PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_POP, Practice4Activity.this);
+						curButterView = new ImageView(gameContext);
+						curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, creamArray[curCookie.creamColor]));
+						game4RelativeLayout.addView(curButterView);
+						
+						ratio = CREAM_INIT_RATIO;	
+						startPoint = new Point((int)event.getX(),(int)event.getY());
+					}
+					
+					if(curButterView != null){
+						RelativeLayout.LayoutParams params = (LayoutParams) curButterView.getLayoutParams();			
+						params.width = params.height = (int)(CREAM_SIZE*ratio/CREAM_MAX_RATIO);
+						params.setMargins(curCookie.view.getLeft()+(int)event.getX()-params.height/2, 
+								curCookie.view.getTop()+(int)event.getY()-params.width/2, 0, 0);	
+						curButterView.setLayoutParams(params);
+					}
+	
 					return false;
 				}
-				
-				PlayPalUtility.curEntry = new RecordEntry(new Point((int)event.getRawX(), (int)event.getRawY()), RecordEntry.STATE_HOVER_BTN_MOVE);
-				
-				if(ratio < CREAM_MAX_RATIO)
-					ratio++;
+	
+				@Override
+				public void onHoverButtonDown(View arg0, MotionEvent event) {
+					PlayPalUtility.curEntry = new RecordEntry(
+							new Point((int)event.getRawX(), (int)event.getRawY()), RecordEntry.STATE_HOVER_BTN_START);
+					Log.d("Penpal","pressing");
+					butterSqueezing = true;				
 					
-				Point curPoint = new Point((int)event.getX(),(int)event.getY());
-				float dist = calcDistance(startPoint, curPoint);
-			
-				if(dist>=CREAM_DIST){
-					PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_POP, Practice4Activity.this);
 					curButterView = new ImageView(gameContext);
-					curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, creamArray[lonelyCookie.creamColor]));
 					game4RelativeLayout.addView(curButterView);
 					
-					ratio = CREAM_INIT_RATIO;	
+					ratio = CREAM_INIT_RATIO;
 					startPoint = new Point((int)event.getX(),(int)event.getY());
 				}
-				
-				if(curButterView != null){
-					RelativeLayout.LayoutParams params = (LayoutParams) curButterView.getLayoutParams();			
-					params.width = params.height = (int)(CREAM_SIZE*ratio/CREAM_MAX_RATIO);
-					params.setMargins(	lonelyCookie.view.getLeft()+(int)event.getX()-params.height/2, 
-							lonelyCookie.view.getTop()+(int)event.getY()-params.width/2, 0, 0);	
-					curButterView.setLayoutParams(params);
+	
+				@Override
+				public void onHoverButtonUp(View arg0, MotionEvent event) {
+					PlayPalUtility.curEntry = new RecordEntry(
+							new Point((int)event.getRawX(), (int)event.getRawY()), RecordEntry.STATE_HOVER_BTN_END);
+					Log.d("Penpal","releasing");
+					butterSqueezing = false;
+					
+					ratio = 0;
+					curButterView = null;
 				}
-
-				return false;
-			}
-
-			@Override
-			public void onHoverButtonDown(View arg0, MotionEvent event) {
-				PlayPalUtility.curEntry = new RecordEntry(
-						new Point((int)event.getRawX(), (int)event.getRawY()), RecordEntry.STATE_HOVER_BTN_START);
-				Log.d("Penpal","pressing");
-				butterSqueezing = true;				
 				
-				curButterView = new ImageView(gameContext);
-				game4RelativeLayout.addView(curButterView);
-				
-				ratio = CREAM_INIT_RATIO;
-				startPoint = new Point((int)event.getX(),(int)event.getY());
-			}
-
-			@Override
-			public void onHoverButtonUp(View arg0, MotionEvent event) {
-				PlayPalUtility.curEntry = new RecordEntry(
-						new Point((int)event.getRawX(), (int)event.getRawY()), RecordEntry.STATE_HOVER_BTN_END);
-				Log.d("Penpal","releasing");
-				butterSqueezing = false;
-				
-				ratio = 0;
-				curButterView = null;
-			}
-			
-		});			
+			});		
+		}
 		
+		cookieArray[0].setGesturePoint();
 		
 		PlayPalUtility.registerLineGesture(game4RelativeLayout, this, 
 			new Callable<Integer>(){
 				public Integer call() {
-					return handleCookieProgress(lonelyCookie.view);
+					return handleCookieProgress();
 				}
 			});
 	}
@@ -438,9 +451,8 @@ public class Practice4Activity extends Activity {
 			
 			initCookieView();
 			
-			setTeachHandCircular(lonelyCookie.center.x-TEACH_HAND_DOWN_OFFSET_X, lonelyCookie.center.y-TEACH_HAND_DOWN_OFFSET_Y, 175);
+			setTeachHandCircular(cookieArray[0].center.x-TEACH_HAND_DOWN_OFFSET_X, cookieArray[0].center.y-TEACH_HAND_DOWN_OFFSET_Y, 160);
 			teachHandView.setVisibility(ImageView.VISIBLE);
-			
 		}
 		else if(curProgress < DOUGH_PROGRESS_END){
 			
@@ -504,7 +516,7 @@ public class Practice4Activity extends Activity {
 	}
 	
 	
-	protected Integer handleCookieProgress (View view){
+	protected Integer handleCookieProgress (){
 		PlayPalUtility.playSoundEffect(PlayPalUtility.SOUND_CUT_DOUGH, this);
 		curProgress++;
 		progressCountText.setText("ProgressCount: " + new String("" + curProgress));
@@ -512,13 +524,22 @@ public class Practice4Activity extends Activity {
 		int idx = PlayPalUtility.getLastTriggerSetIndex();
 		PlayPalUtility.cancelGestureSet(idx);
 		
-		teachHandView.clearAnimation();
-		teachHandView.setVisibility(ImageView.INVISIBLE);
 		
-		lonelyCookie.view.setVisibility(ImageView.VISIBLE);
-		lonelyCookie.beCutted();
-		
-		if(curProgress == COOKIE_PROGRESS_END){
+		if(curProgress == COOKIE_PROGRESS_END-1 ){
+			
+			
+			setTeachHandCircular(cookieArray[1].center.x-TEACH_HAND_DOWN_OFFSET_X, cookieArray[1].center.y-TEACH_HAND_DOWN_OFFSET_Y, 160);
+			cookieArray[0].view.setVisibility(ImageView.VISIBLE);
+			cookieArray[0].beCutted();
+			cookieArray[1].setGesturePoint();
+		}
+		else if(curProgress == COOKIE_PROGRESS_END){
+			teachHandView.clearAnimation();
+			teachHandView.setVisibility(ImageView.INVISIBLE);
+				
+			cookieArray[1].view.setVisibility(ImageView.VISIBLE);
+			cookieArray[1].beCutted();
+			
 			score += PlayPalUtility.killTimeBar();
 			PlayPalUtility.clearDrawView();
 			
@@ -546,79 +567,118 @@ public class Practice4Activity extends Activity {
 				doughAnim.startNow();
 			}
 			
+			
+			for(int i=0; i<COOKIE_NUM; i++){	
+				final Cookie curCookie = cookieArray[i];
+				Animation cookieAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTLEFT);
+			
+				cookieAnim.setAnimationListener(new AnimationListener() {
+					@Override
+					public void onAnimationEnd(Animation anim) {
+						curCookie.view.clearAnimation();						
+						curCookie.beBaked();
+						
+						if(isFirstCookie){
+							PlayPalUtility.playTeachVoice(gameContext, 405, 406);
+							isFirstCookie = false;
+						}
+						
+						PlayPalUtility.setAlphaAnimation(curCookie.view, true);
+						laddleView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game4_squeezer));
+						
+						teachHandView.setVisibility(ImageView.VISIBLE);
+						FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+						params.setMargins(curCookie.center.x-TEACH_HAND_BTN_OFFSET_X, curCookie.center.y-TEACH_HAND_BTN_OFFSET_Y-50, 0, 0);
+						teachHandView.setLayoutParams(params);
+						teachHandView.bringToFront();
+						game4RelativeLayout.invalidate();							
+						
+						btnAnim = AnimationsContainer.getInstance().createGame4TeachHandBtnAnim(teachHandView);
+						btnAnim.start();
+						//PlayPalUtility.setLineGesture(false);
+					}
 	
-			final Cookie curCookie = lonelyCookie;
-			Animation cookieAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTLEFT);
+					@Override
+					public void onAnimationRepeat(Animation animation) {
+					}
+	
+					@Override
+					public void onAnimationStart(Animation animation) {
+					}
+				});
+	
+				game4RelativeLayout.invalidate();
+				
+				curCookie.view.setAnimation(cookieAnim);
+				cookieAnim.startNow();
+			}
 			
-			cookieAnim.setAnimationListener(new AnimationListener() {
-				@Override
-				public void onAnimationEnd(Animation anim) {
-					curCookie.view.clearAnimation();
-					
-					curCookie.beBaked();
-					
-					for(int j=0; j<16; j++)
-						PlayPalUtility.initialLineGestureParams(false, true, CREAM_BOX_SIZE, pointAddition(curCookie.center, cookieCreamOffsetArray[curCookie.type][j]));
-					
-					PlayPalUtility.setAlphaAnimation(curCookie.view, true);
-					
-					laddleView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game4_squeezer));
-					PlayPalUtility.playTeachVoice(gameContext, 405, 406);
-					
-					teachHandView.setVisibility(ImageView.VISIBLE);
-					FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-					params.setMargins(lonelyCookie.center.x-TEACH_HAND_BTN_OFFSET_X, lonelyCookie.center.y-TEACH_HAND_BTN_OFFSET_Y, 0, 0);
-					teachHandView.setLayoutParams(params);
-					teachHandView.bringToFront();
-					game4RelativeLayout.invalidate();							
-					
-					btnAnim = AnimationsContainer.getInstance().createGame4TeachHandBtnAnim(teachHandView);
-					btnAnim.start();
-					PlayPalUtility.setLineGesture(false);
-				}
-
-				@Override
-				public void onAnimationRepeat(Animation animation) {
-				}
-
-				@Override
-				public void onAnimationStart(Animation animation) {
-				}
-			});
-			//curCookie.view.bringToFront();
-			game4RelativeLayout.invalidate();
-			
-			curCookie.view.setAnimation(cookieAnim);
-			cookieAnim.startNow();	
 			
 			PlayPalUtility.clearGestureSets();
+			PlayPalUtility.unregisterLineGesture(game4RelativeLayout);
+			
+			
+				
+			for(int j=0; j<16; j++)
+				PlayPalUtility.initialLineGestureParams(false, true, CREAM_BOX_SIZE, pointAddition(cookieArray[0].center, cookieCreamOffsetArray[cookieArray[0].type][j]));
+			
+			
+		
 			PlayPalUtility.registerSingleHoverPoint(true, game4RelativeLayout, this, new Callable<Integer>() {
 				public Integer call() {
-					return handleCookieCreamAction(lonelyCookie.view);
+					return handleCookieCreamAction(cookieArray[0].view);
 				}
 			});
 	
 			PlayPalUtility.setLineGesture(true);
+			
 		}
-		
-		
 		return 1;
 	}
+	
 	
 	
 	protected Integer handleCookieCreamAction(View view){    
 		curProgress++;
 		progressCountText.setText("ProgressCount: " + new String("" + curProgress));
-
 		
-		if(curProgress >= CREAM_PROGRESS_END){
+		int idx = PlayPalUtility.getLastTriggerSetIndex();
+		PlayPalUtility.cancelGestureSet(idx);
+		
+
+		if(curProgress == CREAM_PROGRESS_HALF-1){
+			PlayPalUtility.playTeachVoice(this, 407);
+			
+			cookieArray[0].doFinish();
+			
+			PlayPalUtility.setLastSingleHoverPoint(true);
+		}
+		else if(curProgress == CREAM_PROGRESS_HALF){
+			
+			teachHandView.clearAnimation();
+			FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+			params.setMargins(cookieArray[1].center.x-TEACH_HAND_BTN_OFFSET_X, cookieArray[1].center.y-TEACH_HAND_BTN_OFFSET_Y, 0, 0);
+			teachHandView.setLayoutParams(params);
+										
+			PlayPalUtility.clearGestureSets();
+			for(int j=0; j<16; j++)
+				PlayPalUtility.initialLineGestureParams(false, true, CREAM_BOX_SIZE, pointAddition(cookieArray[1].center, cookieCreamOffsetArray[cookieArray[1].type][j]));
+			PlayPalUtility.setLastSingleHoverPoint(false);
+		}else if(curProgress == CREAM_PROGRESS_END-1){
+			PlayPalUtility.playTeachVoice(this, 408);
+			cookieArray[1].doFinish();
+			
+			PlayPalUtility.setLastSingleHoverPoint(true);
+		}else if(curProgress >= CREAM_PROGRESS_END){
+			
 			score += PlayPalUtility.killTimeBar();
+			
 			PlayPalUtility.setLineGesture(false);
 			PlayPalUtility.unregisterLineGesture(game4RelativeLayout);
 			PlayPalUtility.clearGestureSets();
 			PlayPalUtility.clearDrawView();
 			
-			PlayPalUtility.playTeachVoice(this, 407);
+			
 			
 			BackgroundMusicHandler.setCanRecycle(false);
 	    	
@@ -633,9 +693,7 @@ public class Practice4Activity extends Activity {
 			
 		}
 		
-		int idx = PlayPalUtility.getLastTriggerSetIndex();
-		PlayPalUtility.cancelGestureSet(idx);
-		
+		game4RelativeLayout.invalidate();
 		return 1;
 	}
 	
@@ -657,9 +715,9 @@ public class Practice4Activity extends Activity {
 		Animation am = new CircularTranslateAnimation(teachHandView, range);
 		am.setDuration(2000);
 		am.setRepeatCount(1);//bug #13
-		am.setFillEnabled(true);
-		am.setFillAfter(true);
-		am.setFillBefore(true);
+		//am.setFillEnabled(true);
+		//am.setFillAfter(true);
+		//am.setFillBefore(true);
 		teachHandView.startAnimation(am);
 	}
 	
@@ -672,7 +730,7 @@ public class Practice4Activity extends Activity {
 		protected int id;
 		protected int type;
 		protected int creamColor;
-		protected int cookieRadius = 175;
+		protected int cookieRadius = 160;
 		protected int temp_Length  = (int)(cookieRadius/Math.sqrt(2));
 		protected int temp_Length2 = (int)(cookieRadius*Math.sin(Math.PI/3));
 		protected int temp_Length3 = (int)(cookieRadius*Math.cos(Math.PI/3));
@@ -713,9 +771,22 @@ public class Practice4Activity extends Activity {
 			view.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, cookieResArray3[type]));
 		}
 		
+		
+		
+		public void setCreamColor(int c){
+			if(c>=0 && c < CREAM_COLOR_NUM)
+				creamColor = c;
+			else
+				setCreamColor();
+		}
+		
 		public void setCreamColor(){
 			Random rand = new Random();
 			creamColor = rand.nextInt(CREAM_COLOR_NUM);
+		}
+		
+		public int getCreamColor(){
+			return creamColor;
 		}
 		
 		public void setGesturePoint(){ 
@@ -743,12 +814,19 @@ public class Practice4Activity extends Activity {
 				PlayPalUtility.setCircleStroke(this.center, cookieRadius);
 			}
 		}
+		
+		public void doFinish(){
+			
+			FramesSequenceAnimation largeAnim = AnimationsContainer.getInstance().createGame4BigCookieAnim(view, type);
+			PlayPalUtility.playSoundEffect (PlayPalUtility.SOUND_COOKIE_POP, Game4Activity.gameContext);
+			largeAnim.start(); 
+		}
 	}
 	
 	public class cookieCuttingHandler extends Handler{
 		public void handleMessage(Message msg) {
 			int idx = msg.what;
-			Cookie curCookie = lonelyCookie;
+			Cookie curCookie = cookieArray[idx];
 			curCookie.view.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, cuttedCookieArray[curCookie.type]));
 		}
 	}
