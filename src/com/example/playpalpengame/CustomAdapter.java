@@ -24,7 +24,7 @@ public class CustomAdapter extends BaseAdapter {
 	private ItemView itemView;
 
 	private class ItemView {
-		ImageView itemHeadImage;
+		RoundedImageView itemHeadImage;
 		TextView itemUserName;
 		TextView itemMoreInfo;
 	}
@@ -63,7 +63,7 @@ public class CustomAdapter extends BaseAdapter {
 		} else {
 			convertView = mInflater.inflate(R.layout.user_list_layout, null);
 			itemView = new ItemView();
-			itemView.itemHeadImage = (ImageView) convertView
+			itemView.itemHeadImage = (RoundedImageView) convertView
 					.findViewById(valueViewID[0]);
 			itemView.itemUserName = (TextView) convertView
 					.findViewById(valueViewID[1]);
