@@ -137,7 +137,7 @@ public class PlayPalUtility {
 	private static int[][] voiceRes = {{R.raw.voice_1_1, R.raw.voice_1_2, R.raw.voice_1_3, R.raw.voice_1_4, R.raw.voice_1_5, R.raw.voice_1_6, R.raw.voice_1_7, R.raw.voice_1_8, R.raw.voice_1_9, R.raw.voice_1_10},
 		{R.raw.voice_2_1, R.raw.voice_2_2, R.raw.voice_2_3, R.raw.voice_2_4, R.raw.voice_2_5, R.raw.voice_2_6, R.raw.voice_2_7},
 		{R.raw.voice_3_1, R.raw.voice_3_2, R.raw.voice_3_3, R.raw.voice_3_4, R.raw.voice_3_5, R.raw.voice_3_6, R.raw.voice_3_7, R.raw.voice_3_8, R.raw.voice_3_9, R.raw.voice_3_10, R.raw.voice_3_11}, 
-		{R.raw.voice_4_1, R.raw.voice_4_2, R.raw.voice_4_3, R.raw.voice_4_4, R.raw.voice_4_5, R.raw.voice_4_6, R.raw.voice_4_7}}; 
+		{R.raw.voice_4_1, R.raw.voice_4_2, R.raw.voice_4_3, R.raw.voice_4_4, R.raw.voice_4_5, R.raw.voice_4_6, R.raw.voice_4_7, R.raw.voice_4_8}}; 
 	
 	protected static boolean butterSqueezing = false;
 	protected static SPenEventLibrary mSPenEventLibrary = new SPenEventLibrary();

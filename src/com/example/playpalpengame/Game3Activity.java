@@ -120,6 +120,7 @@ public class Game3Activity extends Activity {
 
 	AnimationDrawable mixStirAnim;
 	AnimationDrawable ovenAnimation;
+	protected RelativeLayout game3ParentLayout;
 	protected DrawableRelativeLayout game3RelativeLayout;
 	protected Game3Activity gameContext;
 	private SPenEventLibrary mSPenEventLibrary;
@@ -163,7 +164,7 @@ public class Game3Activity extends Activity {
 		helicalView = (ImageView)findViewById(R.id.Game3_helicalView);
 		cakeCreamHintView = (ImageView)findViewById(R.id.Game3_cakeCreamHintView);
 		
-		
+		game3ParentLayout   = (RelativeLayout) findViewById(R.id.Game3ParentLayout);
 		game3RelativeLayout = (DrawableRelativeLayout) findViewById(R.id.Game3RelativeLayout);
 		game3RelativeLayout.setOnHoverListener(new View.OnHoverListener() {
             @Override
@@ -235,7 +236,7 @@ public class Game3Activity extends Activity {
 					
 			@Override
 			public boolean onHover(View arg0, MotionEvent event) {
-				cakeCreamHintView.bringToFront();
+				
 				if(!butterSqueezing){
 					return false;
 				}
@@ -247,8 +248,10 @@ public class Game3Activity extends Activity {
 					if(ratio == INIT_CREAM_RATIO || curButterView == null){
 						curButterView = new ImageView(gameContext);
 						curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game3_cream));
-						game3RelativeLayout.addView(curButterView);
+						game3ParentLayout.addView(curButterView);
+						curButterView.bringToFront();
 						creamList.add(curButterView);
+						
 					}
 					
 					if(ratio < CREAM_MAX_RATIO)
@@ -278,7 +281,8 @@ public class Game3Activity extends Activity {
 					if(ratio == INIT_CREAM_RATIO  || curButterView == null){
 						curButterView = new ImageView(gameContext);
 						curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game3_cream2));
-						game3RelativeLayout.addView(curButterView);
+						game3ParentLayout.addView(curButterView);
+						curButterView.bringToFront();
 						creamList.add(curButterView);
 					}
 					if(ratio < CREAM_MAX_RATIO)
@@ -514,6 +518,7 @@ public class Game3Activity extends Activity {
 		}
 		else if( curProgress == MIX_PROGRESS_END){
 			helicalView.setVisibility(ImageView.GONE);
+			game3ParentLayout.invalidate();
 
 			score += PlayPalUtility.killTimeBar();
 			eggbeatView.setImageResource(0);
@@ -623,6 +628,8 @@ public class Game3Activity extends Activity {
 			
 			cakeDottedLineView.setVisibility(ImageView.GONE);
 			cakeCreamHintView.setVisibility(ImageView.VISIBLE);
+			cakeCreamHintView.bringToFront();
+			game3ParentLayout.invalidate();
 			
 			PlayPalUtility.clearGestureSets();
 			PlayPalUtility.clearDrawView();
@@ -641,7 +648,7 @@ public class Game3Activity extends Activity {
 			PlayPalUtility.registerSingleHoverPoint(false,game3RelativeLayout, this, new Callable<Integer>() {
 				@Override
 				public Integer call() throws Exception {
-					return handleCream(curButterView);
+					return handleCream(cakeCreamHintView);
 				}
 			});
 				
@@ -649,7 +656,6 @@ public class Game3Activity extends Activity {
 			PenRecorder.registerRecorder(game3RelativeLayout, this, userName, "3-3");
 			
 			progressCountText.setText("ProgressCount: " + new String("" + curProgress)+"hahaha");
-			game3RelativeLayout.invalidate();
 			
 			if(curButterView != null)
 				curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game3_cream2));
@@ -678,8 +684,9 @@ public class Game3Activity extends Activity {
 			cakeDottedLineView.setVisibility(ImageView.GONE);
 			cakeCreamHintView.setVisibility(ImageView.GONE);
 			for(ImageView cream : creamList)
-				game3RelativeLayout.removeView(cream);
-			cakeView.setImageResource(R.drawable.game3_cake_finished);
+				game3ParentLayout.removeView(cream);
+			cakeView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game3_cake_finished));
+			
 				
 			PlayPalUtility.clearGestureSets();
 			PlayPalUtility.unregisterHoverGesture(game3RelativeLayout);
@@ -695,8 +702,8 @@ public class Game3Activity extends Activity {
 			PenRecorder.registerRecorder(game3RelativeLayout, this, userName, "3-4");
 			
 			PlayPalUtility.clearDrawView();
-			PlayPalUtility.initialLineGestureParams(false, false, boxSize, new Point(1560,600) ,centralPoint, new Point(1620,1100) );
-			PlayPalUtility.setStraightStroke(new Point(1560,600) ,centralPoint,  new Point(1620,1100) );
+			PlayPalUtility.initialLineGestureParams(false, false, boxSize, new Point(1600,630) ,centralPoint, new Point(1620,1100) );
+			PlayPalUtility.setStraightStroke(new Point(1600,630) ,centralPoint,  new Point(1620,1100) );
 			
 			eggbeatView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game1_knife));
 		}

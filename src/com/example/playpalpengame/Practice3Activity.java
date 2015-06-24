@@ -120,6 +120,7 @@ public class Practice3Activity extends Activity {
 	AnimationDrawable mixStirAnim;
 	AnimationDrawable ovenAnimation;
 	
+	protected RelativeLayout game3ParentLayout;
 	protected DrawableRelativeLayout game3RelativeLayout;
 	protected Context gameContext;
 	private SPenEventLibrary mSPenEventLibrary;
@@ -172,7 +173,8 @@ public class Practice3Activity extends Activity {
 		helicalView = (ImageView)findViewById(R.id.Game3_helicalView);
 		cakeCreamHintView = (ImageView)findViewById(R.id.Game3_cakeCreamHintView);
 		teachHandView = (ImageView)findViewById(R.id.Game3_teachHand);
-		
+
+		game3ParentLayout   = (RelativeLayout) findViewById(R.id.Game3ParentLayout);
 		game3RelativeLayout = (DrawableRelativeLayout) findViewById(R.id.Game3RelativeLayout);
 
 		game3RelativeLayout.setOnHoverListener(new View.OnHoverListener() {
@@ -228,8 +230,9 @@ public class Practice3Activity extends Activity {
 					if(ratio == INIT_CREAM_RATIO || curButterView == null){
 						curButterView = new ImageView(gameContext);
 						curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game3_cream));
-						game3RelativeLayout.addView(curButterView);
+						game3ParentLayout.addView(curButterView);
 						creamList.add(curButterView);
+						teachHandView.bringToFront();
 					}
 					
 					if(ratio < CREAM_MAX_RATIO)
@@ -258,8 +261,9 @@ public class Practice3Activity extends Activity {
 					if(ratio == INIT_CREAM_RATIO){
 						curButterView = new ImageView(gameContext);
 						curButterView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game3_cream2));
-						game3RelativeLayout.addView(curButterView);
+						game3ParentLayout.addView(curButterView);
 						creamList.add(curButterView);
+						teachHandView.bringToFront();
 					}
 					if(ratio < CREAM_MAX_RATIO)
 						ratio++;
@@ -419,7 +423,8 @@ public class Practice3Activity extends Activity {
 			teachHandView.setVisibility(ImageView.INVISIBLE);
 
 			helicalView.setVisibility(ImageView.GONE);
-
+			game3ParentLayout.invalidate();
+			
 			//score += PlayPalUtility.killTimeBar();
 			eggbeatView.setImageResource(0);
 			Animation mixAnim = PlayPalUtility.CreateTranslateAnimation(PlayPalUtility.FROM_CUR_TO_OUTLEFT);
@@ -513,6 +518,8 @@ public class Practice3Activity extends Activity {
 	       
 	    	cakeDottedLineView.setVisibility(ImageView.GONE);
 			cakeCreamHintView.setVisibility(ImageView.VISIBLE);
+			game3ParentLayout.invalidate();
+			
 			PlayPalUtility.clearGestureSets();
 			PlayPalUtility.unregisterHoverGesture(game3RelativeLayout);
 			PlayPalUtility.clearDrawView();
@@ -542,10 +549,9 @@ public class Practice3Activity extends Activity {
 			cakeDottedLineView.setVisibility(ImageView.GONE);
 			cakeCreamHintView.setVisibility(ImageView.GONE);
 			for(ImageView cream : creamList)
-				game3RelativeLayout.removeView(cream);
-			cakeView.setImageResource(R.drawable.game3_cake_finished);
-			
-			
+				game3ParentLayout.removeView(cream);
+			cakeView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game3_cake_finished));
+
 			
 			mSPenEventLibrary.setSPenHoverListener(cakeView,null);
 			teachHandView.clearAnimation();
@@ -554,11 +560,11 @@ public class Practice3Activity extends Activity {
 			PlayPalUtility.playTeachVoice(this, 309, 310);
 			
 			RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-			params.setMargins(1560-TEACH_HAND_DOWN_OFFSET_X, 600-TEACH_HAND_DOWN_OFFSET_Y, 0, 0);
+			params.setMargins(1600-TEACH_HAND_DOWN_OFFSET_X, 630-TEACH_HAND_DOWN_OFFSET_Y, 0, 0);
 			teachHandView.setLayoutParams(params);
 			
 			teachHandView.setVisibility(ImageView.VISIBLE);
-			setTeachHandLinearV(1560-TEACH_HAND_DOWN_OFFSET_X, 600-TEACH_HAND_DOWN_OFFSET_Y, centralPoint.x-1560, centralPoint.y-600);
+			setTeachHandLinearV(1600-TEACH_HAND_DOWN_OFFSET_X, 630-TEACH_HAND_DOWN_OFFSET_Y, centralPoint.x-1620, centralPoint.y-660);
 			
 			/*
 			pressAnim = AnimationsContainer.getInstance().createGame3TeachHandAnim(teachHandView);
@@ -576,11 +582,10 @@ public class Practice3Activity extends Activity {
 			*/
 			
 			cakeCreamHintView.setVisibility(ImageView.GONE);
-			cakeView.setImageResource(R.drawable.game3_cake_finished_cut);
 			
 			//cakeStrawberryView.setVisibility(ImageView.VISIBLE);
 			//cakeStrawberryView.bringToFront();
-			PlayPalUtility.setAlphaAnimation(cakeStrawberryView,true);
+			//PlayPalUtility.setAlphaAnimation(cakeStrawberryView,true);
 			
 			PlayPalUtility.clearGestureSets();
 			PlayPalUtility.unregisterHoverGesture(game3RelativeLayout);
@@ -592,8 +597,8 @@ public class Practice3Activity extends Activity {
 			});
 			
 			PlayPalUtility.clearDrawView();
-			PlayPalUtility.initialLineGestureParams(false, false, boxSize, new Point(1560,600), centralPoint, new Point(1620,1100));
-			PlayPalUtility.setStraightStroke(new Point(1560,600) ,centralPoint,  new Point(1620,1100) );
+			PlayPalUtility.initialLineGestureParams(false, false, boxSize, new Point(1600,630), centralPoint, new Point(1620,1100));
+			PlayPalUtility.setStraightStroke(new Point(1600,630) ,centralPoint,  new Point(1620,1100) );
 			
 			eggbeatView.setImageBitmap(BitmapHandler.getLocalBitmap(gameContext, R.drawable.game1_knife));
 		}
@@ -727,8 +732,9 @@ public class Practice3Activity extends Activity {
 		Animation am = new CircularTranslateAnimation(teachHandView, range);
 		am.setDuration(2000);
 		am.setRepeatCount(-1);
+		am.setFillAfter(true);
 		//am.setFillEnabled(true);
-		//am.setFillAfter(true);
+		
 		//am.setFillBefore(true);
 		teachHandView.startAnimation(am);
 	}
